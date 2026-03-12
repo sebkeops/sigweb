@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Logo from '@/components/ui/Logo'
 
 const navLinks = [
   { href: '/simulations', label: 'Simulations' },
@@ -12,8 +13,9 @@ export default function Header() {
       <div className="container-wide section-pad py-0">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 text-ink">
-            <span className="font-heading text-xl font-bold text-primary">Sigweb</span>
+          <Link href="/" className="flex items-center gap-2.5 text-ink">
+            <Logo size={70} uid="header" />
+            <span className="font-heading text-xl font-bold text-primary">SIGWEB</span>
           </Link>
 
           {/* Navigation */}
