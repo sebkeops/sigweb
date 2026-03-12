@@ -2,14 +2,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { LinkButton } from '@/components/ui/Button'
 
-const pills = [
-  'Boulangeries',
-  'Restaurants',
-  'Artisans',
-  'Coiffeurs',
-  'Boucheries',
-  'Commerces locaux',
-]
 
 export default function Hero() {
   return (
@@ -48,7 +40,7 @@ export default function Hero() {
                 Je crée des sites simples et efficaces pour les commerces locaux.
               </p>
 
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap justify-center gap-4 md:justify-start">
                 <LinkButton href="/simulations" variant="primary" size="lg">
                   Voir les simulations
                 </LinkButton>
@@ -61,43 +53,23 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Carte démo */}
-            <div className="rounded-lg bg-surface p-6 shadow-card lg:p-8">
-              <p className="mb-4 font-body text-xs font-semibold uppercase tracking-widest text-primary">
-                Pensé pour votre activité
-              </p>
-              <div className="mb-8 flex flex-wrap gap-2">
-                {pills.map((p) => (
-                  <span
-                    key={p}
-                    className="rounded-full border border-border bg-surface-soft px-4 py-2 font-body text-sm font-semibold text-ink"
-                  >
-                    {p}
-                  </span>
-                ))}
-              </div>
-
-              <div className="overflow-hidden rounded-md border border-border">
-                <div className="bg-primary px-5 py-4">
-                  <p className="font-heading text-lg font-bold text-white">Boulangerie Artisane</p>
-                  <p className="font-body text-sm text-primary-soft">
-                    Ouvert du mardi au dimanche · 7h–13h
+            {/* Chiffres clés */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:grid-cols-1">
+              {[
+                { value: '2 semaines', label: 'Délai moyen de mise en ligne' },
+                { value: '100%', label: 'Adapté au téléphone' },
+                { value: 'Gratuit', label: 'Simulation sans engagement' },
+              ].map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-lg bg-white/10 px-6 py-5 backdrop-blur-sm"
+                >
+                  <p className="mb-1 font-heading text-2xl font-extrabold text-accent">
+                    {item.value}
                   </p>
+                  <p className="font-body text-sm text-white/80">{item.label}</p>
                 </div>
-                <div className="bg-surface-soft p-5">
-                  <div className="mb-2 flex items-center gap-2 font-body text-sm text-muted">
-                    <span>📍</span>
-                    <span>12 rue du Marché, Toulouse</span>
-                  </div>
-                  <div className="mb-4 flex items-center gap-2 font-body text-sm text-muted">
-                    <span>📞</span>
-                    <span>05 61 xx xx xx</span>
-                  </div>
-                  <div className="inline-block rounded-sm bg-cta px-4 py-2 font-body text-sm font-semibold text-white">
-                    Commander en ligne
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>

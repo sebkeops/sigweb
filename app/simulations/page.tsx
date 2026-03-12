@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import ProjectCard from '@/components/sections/ProjectCard'
+import PageHero from '@/components/ui/PageHero'
 import { createClient } from '@/lib/supabase/server'
 import type { Project } from '@/types'
 
@@ -29,25 +30,16 @@ export default async function SimulationsPage() {
     <>
       <Header />
       <main>
-        {/* Hero */}
-        <section className="section-pad bg-bg">
-          <div className="container-narrow">
-            <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-accent-soft px-4 py-1.5 font-body text-sm font-semibold text-accent">
-              Avant de vous décider
-            </span>
-            <h1 className="mb-4 font-heading text-4xl font-extrabold text-ink md:text-5xl">
-              Simulations
-            </h1>
-            <p className="font-body text-lg leading-relaxed text-muted">
-              Pas encore prêt à vous lancer ? Voici des exemples concrets de ce que votre site
-              pourrait ressembler. Ces simulations sont réalisées à partir de commerces réels ou
-              fictifs pour illustrer nos capacités.
-            </p>
-          </div>
-        </section>
+        <PageHero
+          label="Avant de vous décider"
+          title="Simulations"
+          description="Pas encore prêt à vous lancer ? Voici des exemples concrets de ce que votre site pourrait ressembler, avant tout engagement."
+          imageUrl="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=1600&q=80"
+          imageAlt="Création de site web sur ordinateur"
+        />
 
         {/* Grille */}
-        <section className="section-pad bg-surface pt-0">
+        <section className="section-pad bg-surface">
           <div className="container-wide">
             {projects.length > 0 ? (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

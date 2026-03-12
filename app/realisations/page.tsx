@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import ProjectCard from '@/components/sections/ProjectCard'
+import PageHero from '@/components/ui/PageHero'
 import { createClient } from '@/lib/supabase/server'
 import type { Project } from '@/types'
 
@@ -29,24 +30,16 @@ export default async function RealisationsPage() {
     <>
       <Header />
       <main>
-        {/* Hero */}
-        <section className="section-pad bg-bg">
-          <div className="container-narrow">
-            <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-soft px-4 py-1.5 font-body text-sm font-semibold text-primary-dark">
-              Ce qu&apos;on a déjà fait
-            </span>
-            <h1 className="mb-4 font-heading text-4xl font-extrabold text-ink md:text-5xl">
-              Réalisations
-            </h1>
-            <p className="font-body text-lg leading-relaxed text-muted">
-              Des sites livrés, utilisés chaque jour par des commerçants et artisans. Chaque
-              réalisation est unique, adaptée à l&apos;activité et aux besoins du client.
-            </p>
-          </div>
-        </section>
+        <PageHero
+          label="Ce qu'on a déjà fait"
+          title="Réalisations"
+          description="Des sites livrés, utilisés chaque jour par des commerçants et artisans. Chaque réalisation est unique, adaptée à l'activité et aux besoins du client."
+          imageUrl="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80"
+          imageAlt="Intérieur d'un commerce local"
+        />
 
         {/* Grille */}
-        <section className="section-pad bg-surface pt-0">
+        <section className="section-pad bg-surface">
           <div className="container-wide">
             {projects.length > 0 ? (
               <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

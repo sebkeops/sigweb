@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
+import PageHero from '@/components/ui/PageHero'
 import { LinkButton } from '@/components/ui/Button'
 
 export const metadata: Metadata = {
@@ -68,18 +69,13 @@ export default function MethodePage() {
     <>
       <Header />
       <main>
-        {/* Hero */}
-        <section className="section-pad bg-bg">
-          <div className="container-narrow">
-            <h1 className="mb-4 font-heading text-4xl font-extrabold text-ink md:text-5xl">
-              Notre méthode
-            </h1>
-            <p className="font-body text-lg leading-relaxed text-muted">
-              On croit qu&apos;un bon site web ça commence par une bonne écoute. Voici comment on
-              travaille, de a à z.
-            </p>
-          </div>
-        </section>
+        <PageHero
+          label="Comment ça se passe"
+          title="Ma méthode"
+          description="Je crois qu'un bon site ça commence par une bonne écoute. Voici comment je travaille, de a à z."
+          imageUrl="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1600&q=80"
+          imageAlt="Échange avec un commerçant"
+        />
 
         {/* Étapes */}
         <section className="section-pad bg-surface">
@@ -88,9 +84,9 @@ export default function MethodePage() {
               {steps.map((step) => (
                 <div
                   key={step.num}
-                  className="grid gap-6 rounded-md border border-border bg-surface-soft p-8 sm:grid-cols-[auto_1fr]"
+                  className="grid gap-6 rounded-md border border-border bg-surface-soft p-8 sm:grid-cols-[auto_1fr] sm:items-center"
                 >
-                  <div>
+                  <div className="flex items-center justify-center sm:items-center sm:justify-start">
                     <span className="font-heading text-5xl font-extrabold text-primary-soft">
                       {step.num}
                     </span>
