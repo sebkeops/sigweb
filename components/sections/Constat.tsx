@@ -1,3 +1,5 @@
+import AnimateIn from '@/components/ui/AnimateIn'
+
 const problems = [
   "Pas de site du tout — vos clients ne vous trouvent pas en ligne",
   "Un site créé il y a des années, peu lisible sur téléphone",
@@ -12,7 +14,7 @@ export default function Constat() {
       <div className="container-wide">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           {/* Texte */}
-          <div>
+          <AnimateIn>
             <span className="mb-4 inline-block font-body text-sm font-semibold uppercase tracking-widest text-accent">
               Un constat simple
             </span>
@@ -24,22 +26,24 @@ export default function Constat() {
               n&apos;a pas encore été traitée sérieusement. Et aujourd&apos;hui, ça fait vraiment
               la différence.
             </p>
-          </div>
+          </AnimateIn>
 
           {/* Liste des problèmes */}
-          <ul className="space-y-3">
-            {problems.map((problem) => (
-              <li
-                key={problem}
-                className="flex items-start gap-4 rounded-md border border-border bg-bg p-4"
-              >
-                <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent-soft font-body text-sm font-bold text-accent">
-                  !
-                </span>
-                <span className="font-body text-sm leading-relaxed text-muted">{problem}</span>
-              </li>
-            ))}
-          </ul>
+          <AnimateIn delay={150}>
+            <ul className="space-y-3">
+              {problems.map((problem) => (
+                <li
+                  key={problem}
+                  className="flex items-start gap-4 rounded-md border border-border bg-bg p-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
+                >
+                  <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-accent-soft font-body text-sm font-bold text-accent">
+                    !
+                  </span>
+                  <span className="font-body text-sm leading-relaxed text-muted">{problem}</span>
+                </li>
+              ))}
+            </ul>
+          </AnimateIn>
         </div>
       </div>
     </section>

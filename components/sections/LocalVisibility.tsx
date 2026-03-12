@@ -1,3 +1,5 @@
+import AnimateIn from '@/components/ui/AnimateIn'
+
 const points = [
   {
     title: 'Un site bien référencé localement',
@@ -22,7 +24,7 @@ export default function LocalVisibility() {
       <div className="container-wide">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           {/* Texte */}
-          <div>
+          <AnimateIn>
             <span className="mb-4 inline-block font-body text-sm font-semibold uppercase tracking-widest text-primary-soft">
               Visibilité locale
             </span>
@@ -35,19 +37,21 @@ export default function LocalVisibility() {
               chez eux. Un site bien construit vous permet d&apos;apparaître là où vos clients vous
               cherchent.
             </p>
-          </div>
+          </AnimateIn>
 
           {/* Points */}
-          <div className="space-y-4">
-            {points.map((item) => (
-              <div key={item.title} className="rounded-md bg-white/10 p-5">
-                <h3 className="mb-2 font-heading text-base font-bold text-white">{item.title}</h3>
-                <p className="font-body text-sm leading-relaxed text-primary-soft">
-                  {item.description}
-                </p>
-              </div>
-            ))}
-          </div>
+          <AnimateIn delay={150}>
+            <div className="space-y-4">
+              {points.map((item) => (
+                <div key={item.title} className="rounded-md bg-white/10 p-5">
+                  <h3 className="mb-2 font-heading text-base font-bold text-white">{item.title}</h3>
+                  <p className="font-body text-sm leading-relaxed text-primary-soft">
+                    {item.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </AnimateIn>
         </div>
       </div>
     </section>

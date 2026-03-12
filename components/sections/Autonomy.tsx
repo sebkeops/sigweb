@@ -1,3 +1,5 @@
+import AnimateIn from '@/components/ui/AnimateIn'
+
 const editableItems = [
   "Vos horaires d'ouverture",
   "Vos photos de produits ou de vitrine",
@@ -12,7 +14,7 @@ export default function Autonomy() {
       <div className="container-wide">
         <div className="grid items-center gap-12 lg:grid-cols-2">
           {/* Illustration espace de gestion */}
-          <div className="order-2 lg:order-1">
+          <AnimateIn delay={100} className="order-2 lg:order-1">
             <div className="rounded-lg border border-border bg-bg p-8 shadow-sm">
               <p className="mb-6 font-body text-xs font-semibold uppercase tracking-widest text-primary">
                 Votre espace de gestion
@@ -34,10 +36,10 @@ export default function Autonomy() {
                 Modifiable à tout moment, depuis votre téléphone ou ordinateur.
               </p>
             </div>
-          </div>
+          </AnimateIn>
 
           {/* Texte */}
-          <div className="order-1 lg:order-2">
+          <AnimateIn className="order-1 lg:order-2">
             <span className="mb-4 inline-block font-body text-sm font-semibold uppercase tracking-widest text-accent">
               Votre autonomie
             </span>
@@ -51,10 +53,10 @@ export default function Autonomy() {
             </p>
             <p className="font-body text-base leading-relaxed text-muted">
               Vous changez vos horaires, publiez une photo, mettez à jour vos services. Pas
-              besoin de nous appeler pour chaque petit changement. La plupart de nos clients
+              besoin de m&apos;appeler pour chaque petit changement. La plupart de mes clients
               sont autonomes en moins d&apos;une heure.
             </p>
-          </div>
+          </AnimateIn>
         </div>
       </div>
     </section>
