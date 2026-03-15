@@ -22,7 +22,17 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project }: ProjectCardProps) {
-  return (
+  const href =
+    project.project_kind === 'simulation'
+      ? `/simulations/${project.slug}`
+      : project.external_url ?? null
+
+  const linkProps =
+    project.project_kind === 'realisation' && project.external_url
+      ? { target: '_blank', rel: 'noopener noreferrer' }
+      : {}
+
+  const card = (
     <article className="group flex h-full flex-col overflow-hidden rounded-md border border-border bg-surface shadow-sm transition-shadow hover:shadow-card">
       {/* Image */}
       <div className="relative aspect-video bg-surface-strong">
@@ -62,26 +72,22 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </p>
         )}
 
-        <div className="mt-auto pt-4">
-          {project.project_kind === 'simulation' ? (
-            <Link
-              href={`/simulations/${project.slug}`}
-              className="font-body text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
-            >
-              Voir la simulation →
-            </Link>
-          ) : project.external_url ? (
-            <Link
-              href={project.external_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-body text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
-            >
-              Voir le site →
-            </Link>
-          ) : null}
-        </div>
+        {href && (
+          <div className="mt-auto pt-4">
+            <span className="font-body text-sm font-semibold text-primary underline underline-offset-4 group-hover:text-primary-dark">
+              {project.project_kind === 'simulation' ? 'Voir la simulation →' : 'Voir le site →'}
+            </span>
+          </div>
+        )}
       </div>
     </article>
+  )
+
+  if (!href) return card
+
+  return (
+    <Link href={href} {...linkProps} className="block h-full">
+      {card}
+    </Link>
   )
 }
