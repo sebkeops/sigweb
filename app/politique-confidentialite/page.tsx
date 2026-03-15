@@ -23,8 +23,8 @@ export default function PolitiqueConfidentialitePage() {
             </h2>
             <p className="font-body text-sm leading-relaxed text-text">
               {/* TODO: Remplacer par vos vraies informations */}
-              [Votre nom et prénom] — SIGWEB<br />
-              Email : [contact@sigweb.fr — à compléter]
+              Sébastien SIGUENZA — SIGWEB<br />
+              Email : contact@sigweb.fr 
             </p>
           </section>
 
@@ -92,7 +92,6 @@ export default function PolitiqueConfidentialitePage() {
             </ul>
             <p className="mt-3 font-body text-sm leading-relaxed text-text">
               Pour exercer ces droits, contactez-nous à :{' '}
-              {/* TODO: Remplacer par votre vraie adresse email */}
               <a href="mailto:contact@sigweb.fr" className="text-primary hover:underline">
                 contact@sigweb.fr
               </a>
