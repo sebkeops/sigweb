@@ -47,7 +47,7 @@ async function sendContactNotification(data: {
     await resend.emails.send({
       from: 'SIGWEB <contact@updates.sigweb.fr>',
       to: toEmail,
-      subject: `Nouveau message de contact — ${data.name}`,
+      subject: `SIGWEB — Nouveau message de contact (${data.name})`,
       text: [
         `Nom : ${data.name}`,
         data.business_name ? `Commerce : ${data.business_name}` : '',
