@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import LogoutButton from './LogoutButton'
+import InactivityLogout from './InactivityLogout'
 
 export const metadata: Metadata = {
   robots: {
@@ -60,6 +61,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
       {/* Contenu */}
       <main className="mx-auto max-w-7xl px-6 py-10">{children}</main>
+      <InactivityLogout />
     </div>
   )
 }
