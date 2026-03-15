@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin/', '/admin/login'],
       },
     ],
-    sitemap: 'https://sigweb.fr/sitemap.xml',
+    sitemap: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sigweb.fr'}/sitemap.xml`,
   }
 }

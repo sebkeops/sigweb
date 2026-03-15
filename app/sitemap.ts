@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next'
 import { getAllSimulationSlugs } from '@/lib/data/simulations'
 
-const BASE_URL = 'https://sigweb.fr'
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sigweb.fr'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const simulationRoutes = getAllSimulationSlugs().map((slug) => ({

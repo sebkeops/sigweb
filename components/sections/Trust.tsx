@@ -21,9 +21,9 @@ const reasons = [
   },
   {
     icon: '⚡',
-    title: 'Mise en ligne rapide',
+    title: 'Mise en ligne en 2 à 4 semaines',
     description:
-      "De la simulation au site en ligne en quelques semaines. Vous obtenez un résultat concret rapidement, sans attendre des mois.",
+      "De la simulation au site en ligne en 2 à 4 semaines. Vous obtenez un résultat concret rapidement, sans attendre des mois.",
   },
 ]
 
@@ -41,6 +41,7 @@ export default function Trust() {
             </h2>
             <p className="mt-4 font-body text-base text-muted">
               Je travaille avec des commerçants locaux. Je sais ce qui compte vraiment pour eux.
+              Réponse sous 24h · Mise en ligne en 2 à 4 semaines · Accompagnement inclus.
             </p>
           </div>
         </AnimateIn>

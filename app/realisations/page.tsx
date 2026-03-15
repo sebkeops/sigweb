@@ -3,6 +3,7 @@ import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import ProjectCard from '@/components/sections/ProjectCard'
 import PageHero from '@/components/ui/PageHero'
+import { LinkButton } from '@/components/ui/Button'
 import { createClient } from '@/lib/supabase/server'
 import type { Project } from '@/types'
 
@@ -54,6 +55,22 @@ export default async function RealisationsPage() {
                 </p>
               </div>
             )}
+          </div>
+        </section>
+
+        {/* CTA conversion */}
+        <section className="section-pad bg-primary">
+          <div className="container-narrow text-center">
+            <h2 className="mb-4 font-heading text-2xl font-extrabold text-white md:text-3xl">
+              Vous avez un projet de site internet ?
+            </h2>
+            <p className="mb-8 font-body text-base text-white/80">
+              Je crée des sites simples et efficaces pour les artisans et commerçants locaux.
+              Contactez-moi pour en discuter, sans engagement.
+            </p>
+            <LinkButton href="/contact" variant="cta" size="lg">
+              Me contacter
+            </LinkButton>
           </div>
         </section>
       </main>

@@ -54,11 +54,13 @@ export default function ContactForm() {
             autoComplete="name"
             required
             maxLength={100}
+            aria-invalid={!!state.fieldErrors?.name}
+            aria-describedby={state.fieldErrors?.name ? 'name-error' : undefined}
             className="w-full rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             placeholder="Jean Dupont"
           />
           {state.fieldErrors?.name && (
-            <p className="mt-1 font-body text-xs text-red-600">{state.fieldErrors.name[0]}</p>
+            <p id="name-error" className="mt-1 font-body text-xs text-red-600">{state.fieldErrors.name[0]}</p>
           )}
         </div>
 
@@ -95,11 +97,13 @@ export default function ContactForm() {
             autoComplete="email"
             required
             maxLength={255}
+            aria-invalid={!!state.fieldErrors?.email}
+            aria-describedby={state.fieldErrors?.email ? 'email-error' : undefined}
             className="w-full rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             placeholder="jean@example.com"
           />
           {state.fieldErrors?.email && (
-            <p className="mt-1 font-body text-xs text-red-600">{state.fieldErrors.email[0]}</p>
+            <p id="email-error" className="mt-1 font-body text-xs text-red-600">{state.fieldErrors.email[0]}</p>
           )}
         </div>
 
@@ -158,11 +162,13 @@ export default function ContactForm() {
           required
           rows={5}
           maxLength={2000}
+          aria-invalid={!!state.fieldErrors?.message}
+          aria-describedby={state.fieldErrors?.message ? 'message-error' : undefined}
           className="w-full resize-none rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           placeholder="Décrivez votre projet en quelques mots : votre activité, ce que vous cherchez pour votre site, ou vos questions."
         />
         {state.fieldErrors?.message && (
-          <p className="mt-1 font-body text-xs text-red-600">{state.fieldErrors.message[0]}</p>
+          <p id="message-error" className="mt-1 font-body text-xs text-red-600">{state.fieldErrors.message[0]}</p>
         )}
       </div>
 
@@ -177,6 +183,15 @@ export default function ContactForm() {
           autoComplete="off"
         />
       </div>
+
+      {/* Consentement RGPD */}
+      <p className="font-body text-xs leading-relaxed text-muted">
+        En soumettant ce formulaire, vous acceptez que vos données soient utilisées pour traiter
+        votre demande. Elles ne seront jamais cédées à des tiers.{' '}
+        <a href="/politique-confidentialite" className="underline hover:text-primary">
+          En savoir plus
+        </a>.
+      </p>
 
       <Button type="submit" variant="cta" size="lg" loading={pending} className="w-full sm:w-auto">
         Envoyer le message

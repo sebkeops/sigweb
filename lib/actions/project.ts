@@ -135,25 +135,6 @@ export async function toggleProjectPublished(
   return {}
 }
 
-export async function markContactRead(id: string): Promise<{ error?: string }> {
-  const supabase = await assertAuthenticated().catch(() => null)
-  if (!supabase) return { error: 'Non autorisé.' }
-
-  const { error } = await supabase
-    .from('contacts')
-    .update({ is_read: true })
-    .eq('id', id)
-
-  if (error) {
-    console.error('[markContactRead]', error)
-    return { error: 'Erreur lors de la mise à jour.' }
-  }
-
-  revalidatePath('/admin/contacts')
-
-  return {}
-}
-
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function extractProjectFields(formData: FormData) {

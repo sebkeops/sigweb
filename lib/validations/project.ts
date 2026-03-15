@@ -21,9 +21,10 @@ export const projectSchema = z.object({
   external_url: z
     .string()
     .trim()
-    .refine((v) => v === '' || z.string().url().safeParse(v).success, {
-      message: 'URL invalide.',
-    })
+    .refine(
+      (v) => v === '' || (z.string().url().safeParse(v).success && /^https?:\/\//i.test(v)),
+      { message: "L'URL doit commencer par https:// ou http://" }
+    )
     .optional(),
   project_kind: z.enum(['simulation', 'realisation']),
   published: z.boolean(),

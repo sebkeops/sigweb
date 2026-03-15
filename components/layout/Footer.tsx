@@ -36,6 +36,20 @@ export default function Footer() {
             <p className="mt-1 font-body text-xs text-muted">
               Création de sites internet pour artisans et commerces locaux
             </p>
+            <div className="mt-2 flex flex-wrap justify-end gap-3">
+              <Link
+                href="/mentions-legales"
+                className="font-body text-xs text-muted hover:text-primary"
+              >
+                Mentions légales
+              </Link>
+              <Link
+                href="/politique-confidentialite"
+                className="font-body text-xs text-muted hover:text-primary"
+              >
+                Confidentialité
+              </Link>
+            </div>
           </div>
         </div>
       </div>

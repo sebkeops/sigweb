@@ -1,11 +1,11 @@
 import AnimateIn from '@/components/ui/AnimateIn'
 
 const editableItems = [
-  "Vos horaires d'ouverture",
-  "Vos photos de produits ou de vitrine",
-  "Vos services et prestations",
-  "Vos actualités et promotions",
-  "Vos informations pratiques",
+  { label: "Vos horaires d'ouverture", example: "Modifiable en 30 secondes" },
+  { label: "Vos photos de produits ou de vitrine", example: "Depuis votre téléphone" },
+  { label: "Vos services et prestations", example: "Carte, tarifs, nouveautés" },
+  { label: "Vos actualités et promotions", example: "Une offre publiée en 1 clic" },
+  { label: "Vos informations pratiques", example: "Numéro, adresse, fermeture exceptionnelle" },
 ]
 
 export default function Autonomy() {
@@ -22,13 +22,16 @@ export default function Autonomy() {
               <div className="space-y-3">
                 {editableItems.map((item) => (
                   <div
-                    key={item}
-                    className="flex items-center gap-3 rounded-md border border-border bg-surface px-4 py-3"
+                    key={item.label}
+                    className="flex items-start gap-3 rounded-md border border-border bg-surface px-4 py-3"
                   >
-                    <span className="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary-soft font-body text-xs font-bold text-primary">
+                    <span className="mt-0.5 flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary-soft font-body text-xs font-bold text-primary">
                       ✓
                     </span>
-                    <span className="font-body text-sm text-ink">{item}</span>
+                    <div>
+                      <span className="font-body text-sm text-ink">{item.label}</span>
+                      <span className="ml-2 font-body text-xs text-muted">— {item.example}</span>
+                    </div>
                   </div>
                 ))}
               </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Nunito, Inter } from 'next/font/google'
+import StickyContactBar from '@/components/ui/StickyContactBar'
 import './globals.css'
 
 const nunito = Nunito({
@@ -14,8 +15,11 @@ const inter = Inter({
   display: 'swap',
 })
 
+// TODO: Renseigner NEXT_PUBLIC_SITE_URL=https://votre-domaine.fr sur Vercel avant mise en ligne
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sigweb.fr'
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://sigweb.fr'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'SIGWEB | Création de sites internet pour commerces locaux, artisans et indépendants',
     template: '%s | SIGWEB',
@@ -36,11 +40,15 @@ export const metadata: Metadata = {
     'site web commerçant',
     'site web indépendant',
   ],
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
     type: 'website',
     locale: 'fr_FR',
     siteName: 'SIGWEB',
-    url: 'https://sigweb.fr',
+    url: SITE_URL,
     images: [
       {
         url: '/images/hero-home.webp',
@@ -62,7 +70,7 @@ const jsonLd = {
   name: 'SIGWEB',
   description:
     'Création de sites internet pour artisans, commerçants et indépendants entre Toulouse et le Gers, en Occitanie.',
-  url: 'https://sigweb.fr',
+  url: SITE_URL,
   areaServed: [
     { '@type': 'City', name: 'Toulouse' },
     { '@type': 'AdministrativeArea', name: 'Gers' },
@@ -86,12 +94,30 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr" className={`${nunito.variable} ${inter.variable}`}>
+      <head>
+        <meta name="theme-color" content="#2f6f4f" />
+      </head>
       <body>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-sm focus:bg-primary focus:px-4 focus:py-2 focus:font-heading focus:text-sm focus:font-bold focus:text-white"
+        >
+          Aller au contenu
+        </a>
         {children}
+        <StickyContactBar />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {process.env.NODE_ENV === 'production' &&
+          process.env.NEXT_PUBLIC_ANALYTICS_SCRIPT && (
+            <script
+              defer
+              data-domain={process.env.NEXT_PUBLIC_ANALYTICS_DOMAIN}
+              src={process.env.NEXT_PUBLIC_ANALYTICS_SCRIPT}
+            />
+          )}
       </body>
     </html>
   )

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
 const navLinks = [
@@ -11,9 +11,19 @@ const navLinks = [
 
 export default function MobileMenu() {
   const [open, setOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [open])
 
   return (
-    <div className="md:hidden">
+    <div className="md:hidden" ref={menuRef}>
       {/* Burger button */}
       <button
         onClick={() => setOpen((v) => !v)}

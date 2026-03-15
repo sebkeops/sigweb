@@ -8,106 +8,64 @@
 
 ---
 
-## ⚖️ Conformité légale / RGPD
+## 🛡️ Sécurité — Actions manuelles restantes
 
 | Statut | Priorité | Tâche | Fichier(s) |
 |--------|----------|-------|------------|
-| 🔴 | 🔥 P1 | Créer page `/mentions-legales` (nom, statut, hébergeur) + lien footer | `app/mentions-legales/page.tsx` · `Footer.tsx` |
-| 🔴 | 🔥 P1 | Créer page `/politique-confidentialite` (finalité, durée, droits) + lien footer | `app/politique-confidentialite/page.tsx` · `Footer.tsx` |
-| 🔴 | 🔥 P1 | Ajouter mention consentement RGPD dans le formulaire contact (juste avant le bouton submit) | `components/sections/ContactForm.tsx` |
+| 🔴 | ⚠️ P2 | Exécuter `rls_admin_uuid.sql` dans Supabase après avoir remplacé l'UUID placeholder | `supabase/migrations/rls_admin_uuid.sql` |
 
 ---
 
-## 🛡️ Sécurité
+## 📱 Mobile — Actions manuelles restantes
 
 | Statut | Priorité | Tâche | Fichier(s) |
 |--------|----------|-------|------------|
-| 🔴 | 🔥 P1 | Valider les magic bytes du fichier uploadé (pas juste le MIME client) | `lib/actions/upload.ts` |
-| 🔴 | 🔥 P1 | Ajouter security headers HTTP (`X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`) | `next.config.ts` |
-| 🔴 | ⚠️ P2 | Restreindre les RLS Supabase à l'UUID admin précis (pas `authenticated` générique) | `supabase/schema.sql` |
-| 🔴 | ⚠️ P2 | Rate limiting serverside sur le formulaire contact (anti-flood) | `lib/actions/contact.ts` |
-| 🔴 | ⚠️ P2 | Whitelist protocole `external_url` — n'accepter que `https://` et `http://` | `lib/validations/project.ts` |
-| 🔴 | ⚠️ P2 | Supprimer le log email en production dans AdminLayout | `app/admin/(protected)/layout.tsx` |
+| 🔴 | ⚠️ P2 | Renseigner `NEXT_PUBLIC_PHONE` et `NEXT_PUBLIC_PHONE_DISPLAY` sur Vercel | `.env.example` · Vercel dashboard |
 
 ---
 
-## 📬 Notifications
+## 📊 Analytics — Actions manuelles restantes
 
 | Statut | Priorité | Tâche | Fichier(s) |
 |--------|----------|-------|------------|
-| 🔴 | ⚠️ P2 | Intégrer Resend pour envoyer un email de notification à chaque nouveau message de contact | `lib/actions/contact.ts` · `.env.local` |
+| 🔴 | 💡 P3 | Créer un compte Plausible/Umami et renseigner `NEXT_PUBLIC_ANALYTICS_DOMAIN` + `NEXT_PUBLIC_ANALYTICS_SCRIPT` sur Vercel | `.env.example` · Vercel dashboard |
 
 ---
 
-## 🔄 Robustesse fonctionnelle
+## 📬 Notifications — Actions manuelles restantes
 
 | Statut | Priorité | Tâche | Fichier(s) |
 |--------|----------|-------|------------|
-| 🔴 | ⚠️ P2 | Bloquer double soumission ContactForm — ajouter `disabled={pending}` sur le bouton submit | `components/sections/ContactForm.tsx` |
-| 🔴 | ⚠️ P2 | Ajouter fallbacks `?? []` sur `reviews`, `highlights`, `featuredCards` dans SimulationPage | `components/simulations/SimulationPage.tsx` |
-| 🔴 | 💡 P3 | Déplacer `markContactRead` de `project.ts` vers `contact.ts` | `lib/actions/project.ts` → `contact.ts` |
-| 🔴 | 💡 P3 | Reset `e.target.value = ''` même en cas d'erreur upload (pas seulement en succès) | `components/admin/ProjectForm.tsx` |
+| 🔴 | ⚠️ P2 | Créer compte Resend, vérifier domaine, remplacer `from:` dans contact.ts, renseigner `RESEND_API_KEY` + `RESEND_TO_EMAIL` sur Vercel | `lib/actions/contact.ts` · Vercel dashboard |
 
 ---
 
-## 📈 Conversion commerciale
+## 🔍 SEO — Actions manuelles restantes
 
 | Statut | Priorité | Tâche | Fichier(s) |
 |--------|----------|-------|------------|
-| 🔴 | ⚠️ P2 | Ajouter CTA de conversion en fin de page `/simulations` et `/realisations` | `app/simulations/page.tsx` · `app/realisations/page.tsx` |
-| 🔴 | ⚠️ P2 | Ajouter CTA contact à la fin de chaque page simulation ("Ce site vous plaît ?") | `components/simulations/SimulationPage.tsx` |
-| 🔴 | 💡 P3 | Rendre la section Autonomy concrète avec des exemples d'actions réelles ("Changer horaires en 30 sec") | `components/sections/Autonomy.tsx` |
-| 🔴 | 💡 P3 | Enrichir la section Trust avec des chiffres concrets (sites créés, délai de réponse) | `components/sections/Trust.tsx` |
-
----
-
-## 🔧 Maintenabilité
-
-| Statut | Priorité | Tâche | Fichier(s) |
-|--------|----------|-------|------------|
-| 🔴 | ⚠️ P2 | Extraire `themes` et `businessConfigs` de SimulationPage vers `lib/simulations/config.ts` | `components/simulations/SimulationPage.tsx` |
-| 🔴 | ⚠️ P2 | Créer schéma Zod pour les JSON simulations — validation à l'import, typage auto | `lib/data/simulations/index.ts` · `lib/validations/simulation.ts` |
-| 🔴 | 💡 P3 | Factoriser les sections home répétitives (Constat, Benefits, LocalVisibility…) en composant `<SectionBlock>` | `components/sections/` |
-| 🔴 | 💡 P3 | Créer `.env.example` avec les variables d'environnement nécessaires | racine |
-
----
-
-## ♿ Accessibilité
-
-| Statut | Priorité | Tâche | Fichier(s) |
-|--------|----------|-------|------------|
-| 🔴 | ⚠️ P2 | Ajouter `aria-invalid` + `aria-describedby` sur les champs avec erreurs | `ContactForm.tsx` · `ProjectForm.tsx` |
-| 🔴 | ⚠️ P2 | Fermeture menu mobile à la touche Escape | `components/layout/MobileMenu.tsx` |
-| 🔴 | 💡 P3 | Ajouter un "skip to content" link pour navigation clavier | `app/layout.tsx` |
-| 🔴 | 💡 P3 | Alt fallback sur `PageHero` si `imageAlt` non fourni | `components/ui/PageHero.tsx` |
-| 🔴 | 💡 P3 | Respecter `prefers-reduced-motion` pour les animations | `app/globals.css` |
-
----
-
-## 🔍 SEO
-
-| Statut | Priorité | Tâche | Fichier(s) |
-|--------|----------|-------|------------|
-| 🔴 | 🔥 P1 | Remplacer `https://sigweb.fr` par le vrai domaine en prod | `layout.tsx` · `page.tsx` · `sitemap.ts` · `robots.ts` |
+| 🔴 | 🔥 P1 | Renseigner `NEXT_PUBLIC_SITE_URL=https://votre-domaine.fr` sur Vercel avant mise en ligne | Vercel dashboard |
+| 🔴 | ⚠️ P2 | Ajouter `favicon.ico` (32×32 px) et `apple-touch-icon.png` (180×180 px) dans `public/` | `public/` |
 | 🔴 | ⚠️ P2 | Redimensionner `hero-home.webp` à 1200×630 px pour l'Open Graph | `public/images/` |
-| 🔴 | 💡 P3 | Ajouter `canonical` explicite sur les pages simulations dynamiques | `app/simulations/[slug]/page.tsx` |
 
 ---
 
-## 🗄️ Base de données
+## 🗄️ Base de données — Actions manuelles restantes
 
 | Statut | Priorité | Tâche | Fichier(s) |
 |--------|----------|-------|------------|
-| 🔴 | 🔥 P1 | Exécuter la migration `add_featured_home.sql` dans l'éditeur SQL Supabase | `supabase/migrations/` |
+| 🔴 | 🔥 P1 | Exécuter `add_featured_home.sql` dans l'éditeur SQL Supabase | `supabase/migrations/` |
 | 🔴 | ⚠️ P2 | Vider `external_url` des simulations existantes + cocher `featured_home` sur les projets à mettre en avant | Admin Supabase |
 
 ---
 
-## ⚡ Performance
+## ⚖️ Légal — Contenu à compléter manuellement
 
 | Statut | Priorité | Tâche | Fichier(s) |
 |--------|----------|-------|------------|
-| 🔴 | 💡 P3 | Migrer les images simulations vers `next/image` (actuellement `<img>` brut) | `components/simulations/SimulationPage.tsx` |
+| 🔴 | 🔥 P1 | Remplacer les placeholders dans mentions légales (nom, statut, SIRET, adresse, email, téléphone) | `app/mentions-legales/page.tsx` |
+| 🔴 | 🔥 P1 | Remplacer les placeholders dans politique de confidentialité (nom, email contact) | `app/politique-confidentialite/page.tsx` |
+| 🔴 | ⚠️ P2 | Remplacer l'adresse `from:` Resend par votre domaine vérifié | `lib/actions/contact.ts` |
 
 ---
 
@@ -145,3 +103,36 @@
 | Champ `external_url` masqué pour les projets de type simulation |
 | Audit cybersécurité / SEO / performance / accessibilité — 2026-03-15 |
 | Audit conversion / RGPD / robustesse / maintenabilité — 2026-03-15 |
+| Page 404 personnalisée (`app/not-found.tsx`) |
+| Gestion d'erreur globale (`app/error.tsx`) |
+| Barre sticky contact mobile (`StickyContactBar`) — téléphone via env var |
+| Script analytics conditionnel (production uniquement) dans layout |
+| Favicon + apple-touch-icon + theme-color dans metadata |
+| `robots: noindex` sur les pages admin (login + protected layout) |
+| Security headers HTTP (X-Frame-Options, X-Content-Type-Options, Referrer-Policy) |
+| Magic bytes validation sur l'upload d'image |
+| Whitelist protocole `external_url` (https/http uniquement) |
+| Suppression du log email en production dans AdminLayout |
+| Pages `/mentions-legales` et `/politique-confidentialite` créées (placeholders à compléter) |
+| Liens footer vers pages légales |
+| Mention consentement RGPD dans le formulaire contact |
+| `aria-invalid` + `aria-describedby` sur les champs en erreur du formulaire contact |
+| Rate limiting serverside sur le formulaire contact (3 req / 10 min par IP) |
+| Intégration Resend pour notifications email (actif si RESEND_API_KEY défini) |
+| Migration RLS UUID-spécifique préparée (à exécuter manuellement dans Supabase) |
+| `markContactRead` déplacé de `project.ts` vers `contact.ts` |
+| CTA conversion en fin de page `/simulations` et `/realisations` |
+| CTA Sigweb "Ce site vous plaît ?" en fin de chaque page simulation |
+| Fallbacks `?? []` sur `reviews`, `highlights`, `featuredCards` dans SimulationPage |
+| Extraction `themes` + `businessConfigs` de SimulationPage vers `lib/simulations/config.ts` |
+| Schéma Zod pour les JSON simulations — validation à l'import |
+| Fermeture menu mobile à la touche Escape |
+| Skip-to-content link pour navigation clavier |
+| `prefers-reduced-motion` respecté pour les animations |
+| `canonical` explicite sur les pages simulations dynamiques |
+| Alt fallback sur `PageHero` (utilise `title` si `imageAlt` absent) |
+| Section Autonomy enrichie avec exemples concrets |
+| Section Trust enrichie avec délais concrets (réponse 24h, mise en ligne 2–4 semaines) |
+| `NEXT_PUBLIC_SITE_URL` env var pour le domaine (sitemap, robots, OG, JSON-LD) |
+| `.env.example` créé avec toutes les variables nécessaires |
+| `resend` installé dans les dépendances |

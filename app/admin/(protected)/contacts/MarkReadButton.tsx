@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { markContactRead } from '@/lib/actions/project'
+import { markContactRead } from '@/lib/actions/contact'
 
 export default function MarkReadButton({ id }: { id: string }) {
   const [loading, setLoading] = useState(false)

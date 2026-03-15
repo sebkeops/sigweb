@@ -1,110 +1,5 @@
 import type { SimulationData } from '@/types'
-
-// ── Thème par famille ─────────────────────────────────────────────────────────
-interface ThemeVars {
-  primary: string
-  primaryDark: string
-  primaryLight: string
-  bg: string
-  heroBgColor: string
-}
-
-const themes: Record<string, ThemeVars> = {
-  'artisan-boulangerie': {
-    primary: '#b85c2a',
-    primaryDark: '#8f4520',
-    primaryLight: '#f5e8db',
-    bg: '#f8f4ee',
-    heroBgColor: '#7a4020',
-  },
-  'artisan-pizzeria': {
-    primary: '#c0392b',
-    primaryDark: '#922b21',
-    primaryLight: '#fdecea',
-    bg: '#fdf6f0',
-    heroBgColor: '#5a1a10',
-  },
-  'artisan-boucherie': {
-    primary: '#8b2635',
-    primaryDark: '#6b1c28',
-    primaryLight: '#fce8ec',
-    bg: '#fdf4f5',
-    heroBgColor: '#4a1020',
-  },
-  'artisan-coiffure': {
-    primary: '#2d6a4f',
-    primaryDark: '#1b4332',
-    primaryLight: '#e8f5ee',
-    bg: '#f0f7f4',
-    heroBgColor: '#1a3a2a',
-  },
-}
-
-// ── Config textuelle par type ─────────────────────────────────────────────────
-interface BusinessConfig {
-  cardsLabel: string
-  cardsTitle: string
-  cardsSectionId: string
-  galleryLabel: string
-  heroCta1: string
-  heroCta2: string
-  ctaTitle: string
-  ctaSubtitle: string
-}
-
-const businessConfigs: Record<string, BusinessConfig> = {
-  boulangerie: {
-    cardsLabel: 'Nos produits',
-    cardsTitle: 'Ce qui fait notre réputation',
-    cardsSectionId: 'produits',
-    galleryLabel: 'Notre boulangerie',
-    heroCta1: 'Découvrir nos produits',
-    heroCta2: '📞 Nous appeler',
-    ctaTitle: 'Une question ? Passez nous voir.',
-    ctaSubtitle: 'Ouvert du mardi au dimanche.',
-  },
-  pizzeria: {
-    cardsLabel: 'Nos pizzas',
-    cardsTitle: 'Les incontournables de la carte',
-    cardsSectionId: 'carte',
-    galleryLabel: 'Notre pizzeria',
-    heroCta1: 'Voir la carte',
-    heroCta2: '📞 Commander',
-    ctaTitle: "Envie d'une pizza ? Appelez-nous.",
-    ctaSubtitle: 'Sur place ou à emporter, du mardi au dimanche.',
-  },
-  boucherie: {
-    cardsLabel: 'Nos produits',
-    cardsTitle: 'Ce qui fait notre réputation',
-    cardsSectionId: 'produits',
-    galleryLabel: 'Notre boucherie',
-    heroCta1: 'Découvrir nos produits',
-    heroCta2: '📞 Nous appeler',
-    ctaTitle: 'Une question ? Passez nous voir.',
-    ctaSubtitle: 'Ouvert du mardi au dimanche.',
-  },
-  'salon-coiffure': {
-    cardsLabel: 'Nos prestations',
-    cardsTitle: 'Ce que nous vous proposons',
-    cardsSectionId: 'prestations',
-    galleryLabel: 'Notre salon',
-    heroCta1: 'Nos prestations',
-    heroCta2: '📞 Prendre rendez-vous',
-    ctaTitle: 'Envie de changer de tête ?',
-    ctaSubtitle: 'Prenez rendez-vous du mardi au samedi.',
-  },
-}
-
-const fallbackConfig: BusinessConfig = {
-  cardsLabel: 'Nos produits',
-  cardsTitle: 'Ce qui fait notre réputation',
-  cardsSectionId: 'produits',
-  galleryLabel: 'Notre boutique',
-  heroCta1: 'Découvrir',
-  heroCta2: '📞 Nous appeler',
-  ctaTitle: 'Une question ? Contactez-nous.',
-  ctaSubtitle: '',
-}
+import { themes, businessConfigs, fallbackConfig } from '@/lib/simulations/config'
 
 // ── Composant ─────────────────────────────────────────────────────────────────
 interface Props {
@@ -219,7 +114,7 @@ export default function SimulationPage({ data }: Props) {
             <h2 className="sim-section-title">{data.name}</h2>
             <p className="sim-about-desc">{data.description}</p>
             <div className="sim-highlights-row">
-              {data.highlights.map((h) => (
+              {(data.highlights ?? []).map((h) => (
                 <span key={h} className="sim-highlight-pill">{h}</span>
               ))}
             </div>
@@ -235,7 +130,7 @@ export default function SimulationPage({ data }: Props) {
             <h2 className="sim-section-title">{config.cardsTitle}</h2>
           </div>
           <div className="sim-cards-grid">
-            {data.featuredCards.map((card) => (
+            {(data.featuredCards ?? []).map((card) => (
               <div key={card.title} className="sim-card">
                 <div className="sim-card-img-wrap">
                   <img
@@ -285,7 +180,7 @@ export default function SimulationPage({ data }: Props) {
             <h2 className="sim-section-title">Ce que disent nos clients</h2>
           </div>
           <div className="sim-reviews-grid">
-            {data.reviews.map((review, i) => (
+            {(data.reviews ?? []).map((review, i) => (
               <div key={i} className="sim-review-card">
                 <span className="sim-review-quote">&ldquo;</span>
                 <p className="sim-review-text">{review}</p>
@@ -359,6 +254,28 @@ export default function SimulationPage({ data }: Props) {
           &copy; {data.name} — {data.contact.address}, {data.contact.city}
         </p>
       </footer>
+    </div>
+
+    {/* CTA SIGWEB — hors simulation */}
+    <div className="border-t border-border bg-surface">
+      <div className="container-narrow px-4 py-12 text-center">
+        <p className="mb-2 font-body text-xs font-semibold uppercase tracking-widest text-accent">
+          Simulation réalisée par SIGWEB
+        </p>
+        <h2 className="mb-3 font-heading text-2xl font-extrabold text-ink">
+          Ce site vous plaît ?
+        </h2>
+        <p className="mb-7 font-body text-base text-muted">
+          Je peux créer quelque chose de similaire pour votre commerce, entre Toulouse et le Gers.
+          Contactez-moi pour en parler, sans engagement.
+        </p>
+        <a
+          href="/contact"
+          className="inline-flex items-center justify-center rounded-sm bg-cta px-7 py-3.5 font-heading text-base font-bold text-white transition-opacity hover:opacity-90"
+        >
+          Demander un devis gratuit
+        </a>
+      </div>
     </div>
     </>
   )

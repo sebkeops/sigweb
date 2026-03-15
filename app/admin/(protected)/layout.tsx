@@ -1,7 +1,15 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import LogoutButton from './LogoutButton'
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+    follow: false,
+  },
+}
 
 const navLinks = [
   { href: '/admin/projets', label: 'Projets' },
@@ -13,9 +21,6 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const {
     data: { user },
   } = await supabase.auth.getUser()
-
-  // LOG TEMPORAIRE — à supprimer une fois le comportement confirmé
-  console.log('[AdminLayout] user:', user?.email ?? 'null → redirect to /admin/login')
 
   if (!user) {
     redirect('/admin/login')

@@ -19,9 +19,13 @@ export async function generateMetadata({
   const description =
     data.seoDescription ??
     `Découvrez un exemple de site internet pour ${data.name}. Réalisable pour votre commerce entre Toulouse et le Gers, en Occitanie.`
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sigweb.fr'
   return {
     title,
     description,
+    alternates: {
+      canonical: `${siteUrl}/simulations/${slug}`,
+    },
     openGraph: {
       title,
       description,

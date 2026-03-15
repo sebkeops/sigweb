@@ -8,14 +8,14 @@ interface PageHeroProps {
   imageAlt?: string
 }
 
-export default function PageHero({ label, title, description, imageUrl, imageAlt = '' }: PageHeroProps) {
+export default function PageHero({ label, title, description, imageUrl, imageAlt }: PageHeroProps) {
   return (
     <section className="relative overflow-hidden">
       {/* Image de fond */}
       <div className="absolute inset-0 z-0">
         <Image
           src={imageUrl}
-          alt={imageAlt}
+          alt={imageAlt ?? title}
           fill
           className="object-cover object-center"
           priority
