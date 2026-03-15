@@ -4,7 +4,7 @@ import Logo from '@/components/ui/Logo'
 export default function Footer() {
   return (
     <footer className="border-t border-border bg-surface">
-      <div className="container-wide section-pad py-10">
+      <div className="container-wide section-pad pb-24 pt-10 sm:pb-10">
         <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
           <div className="flex items-center gap-3">
             <Logo size={70} uid="footer" />
@@ -31,12 +31,12 @@ export default function Footer() {
             </Link>
           </nav>
 
-          <div className="text-right">
+          <div className="text-center md:text-right">
             <p className="font-body text-xs text-muted">© {new Date().getFullYear()} SIGWEB</p>
             <p className="mt-1 font-body text-xs text-muted">
               Création de sites internet pour artisans et commerces locaux
             </p>
-            <div className="mt-2 flex flex-wrap justify-end gap-3">
+            <div className="mt-2 flex flex-wrap justify-center gap-3 md:justify-end">
               <Link
                 href="/mentions-legales"
                 className="font-body text-xs text-muted hover:text-primary"
