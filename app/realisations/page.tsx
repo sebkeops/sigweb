@@ -7,9 +7,9 @@ import { createClient } from '@/lib/supabase/server'
 import type { Project } from '@/types'
 
 export const metadata: Metadata = {
-  title: 'Nos réalisations',
+  title: 'Sites internet réalisés pour artisans et commerces locaux',
   description:
-    'Découvrez les sites web que nous avons créés pour des commerces et artisans locaux. Des réalisations concrètes, simples et efficaces.',
+    "Découvrez les sites internet que j'ai créés pour des artisans, indépendants et commerces locaux entre Toulouse et le Gers. Des réalisations concrètes, simples et efficaces.",
 }
 
 async function getRealisations(): Promise<Project[]> {
@@ -31,10 +31,10 @@ export default async function RealisationsPage() {
       <Header />
       <main>
         <PageHero
-          label="Ce qu'on a déjà fait"
+          label="Ce que j’ai déjà réalisé"
           title="Réalisations"
-          description="Des sites livrés, utilisés chaque jour par des commerçants et artisans. Chaque réalisation est unique, adaptée à l'activité et aux besoins du client."
-          imageUrl="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1600&q=80"
+          description="Voici quelques sites que j’ai créés pour des artisans et des indépendants. Chaque projet est différent, mais l’objectif reste le même : un site clair, simple et utile pour leurs clients."
+          imageUrl="/images/hero-realisations.webp"
           imageAlt="Intérieur d'un commerce local"
         />
 

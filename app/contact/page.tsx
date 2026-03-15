@@ -6,7 +6,7 @@ import ContactForm from '@/components/sections/ContactForm'
 export const metadata: Metadata = {
   title: 'Contact',
   description:
-    'Parlez-nous de votre projet de site web. Réponse sous 48h. Basés à Toulouse, on travaille dans toute la région.',
+    'Parlez-moi de votre projet de site internet. Je vous réponds rapidement et vous prépare une simulation gratuite. J\'accompagne les artisans et commerçants entre Toulouse et le Gers.',
 }
 
 export default function ContactPage() {
@@ -23,8 +23,8 @@ export default function ContactPage() {
                   Parlons de votre projet
                 </h1>
                 <p className="mb-8 font-body text-lg leading-relaxed text-muted">
-                  Remplissez ce formulaire et on vous répond sous 48h. Pas de pression, pas de
-                  devis agressif. Juste un échange pour voir si on peut vous aider.
+                  Remplissez ce formulaire et on je vous réponds sous 48h. Pas de pression, pas de
+                  devis agressif. Juste un échange simple pour voir si je peux vous aider.
                 </p>
 
                 <div className="space-y-5">
@@ -33,9 +33,9 @@ export default function ContactPage() {
                       📍
                     </div>
                     <div>
-                      <p className="font-body text-sm font-semibold text-ink">Basés à Toulouse</p>
+                      <p className="font-body text-sm font-semibold text-ink">Basé près de Toulouse</p>
                       <p className="font-body text-sm text-muted">
-                        On intervient dans toute la région Occitanie.
+                        Je travaille avec des commerces et artisans de toute la région Occitanie.
                       </p>
                     </div>
                   </div>
@@ -47,7 +47,7 @@ export default function ContactPage() {
                     <div>
                       <p className="font-body text-sm font-semibold text-ink">Réponse sous 48h</p>
                       <p className="font-body text-sm text-muted">
-                        On lit tous les messages et on répond à chacun.
+                        Je prends le temps de lire chaque message et de répondre personnellement.
                       </p>
                     </div>
                   </div>
@@ -59,7 +59,7 @@ export default function ContactPage() {
                     <div>
                       <p className="font-body text-sm font-semibold text-ink">Sans engagement</p>
                       <p className="font-body text-sm text-muted">
-                        Le premier échange est gratuit et vous ne nous devez rien.
+                        Notre premier échange est gratuit. Vous pourrez ensuite décider tranquillement si vous souhaitez aller plus loin.
                       </p>
                     </div>
                   </div>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { Project } from '@/types'
 import { Button } from '@/components/ui/Button'
 import type { ProjectActionState } from '@/lib/actions/project'
+import { uploadProjectImage } from '@/lib/actions/upload'
 
 interface ProjectFormProps {
   project?: Project
@@ -13,16 +14,6 @@ interface ProjectFormProps {
 
 const initialState: ProjectActionState = { success: false }
 
-const businessTypes = [
-  { value: '', label: 'Sélectionner…' },
-  { value: 'boulangerie', label: 'Boulangerie' },
-  { value: 'patisserie', label: 'Pâtisserie' },
-  { value: 'boucherie', label: 'Boucherie' },
-  { value: 'coiffeur', label: 'Salon de coiffure' },
-  { value: 'artisan', label: 'Artisan' },
-  { value: 'commerce', label: 'Commerce de proximité' },
-  { value: 'autre', label: 'Autre' },
-]
 
 function slugify(str: string) {
   return str
@@ -40,7 +31,13 @@ export default function ProjectForm({ project, action }: ProjectFormProps) {
 
   const [slug, setSlug] = useState(project?.slug ?? '')
   const [slugManual, setSlugManual] = useState(!!project)
+  const [projectKind, setProjectKind] = useState(project?.project_kind ?? 'simulation')
   const [published, setPublished] = useState(project?.published ?? false)
+  const [featuredHome, setFeaturedHome] = useState(project?.featured_home ?? false)
+
+  const [coverImageUrl, setCoverImageUrl] = useState(project?.cover_image_url ?? '')
+  const [uploading, setUploading] = useState(false)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
   useEffect(() => {
     if (state.success) {
@@ -57,6 +54,26 @@ export default function ProjectForm({ project, action }: ProjectFormProps) {
   function handleSlugChange(e: React.ChangeEvent<HTMLInputElement>) {
     setSlug(e.target.value)
     setSlugManual(true)
+  }
+
+  async function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setUploading(true)
+    setUploadError(null)
+
+    const fd = new FormData()
+    fd.append('file', file)
+    const result = await uploadProjectImage(fd)
+
+    if (result.error) {
+      setUploadError(result.error)
+    } else if (result.url) {
+      setCoverImageUrl(result.url)
+    }
+    setUploading(false)
+    e.target.value = ''
   }
 
   const fieldClass =
@@ -122,18 +139,15 @@ export default function ProjectForm({ project, action }: ProjectFormProps) {
           <label htmlFor="business_type" className={labelClass}>
             Type de commerce
           </label>
-          <select
+          <input
             id="business_type"
             name="business_type"
+            type="text"
+            maxLength={100}
             defaultValue={project?.business_type ?? ''}
             className={fieldClass}
-          >
-            {businessTypes.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+            placeholder="Boulangerie, Coiffeur, Artisan…"
+          />
         </div>
 
         {/* Type de projet */}
@@ -145,7 +159,8 @@ export default function ProjectForm({ project, action }: ProjectFormProps) {
             id="project_kind"
             name="project_kind"
             required
-            defaultValue={project?.project_kind ?? 'simulation'}
+            value={projectKind}
+            onChange={(e) => setProjectKind(e.target.value as 'simulation' | 'realisation')}
             className={fieldClass}
           >
             <option value="simulation">Simulation</option>
@@ -170,81 +185,139 @@ export default function ProjectForm({ project, action }: ProjectFormProps) {
         />
       </div>
 
-      {/* Contenu */}
-      <div>
-        <label htmlFor="content" className={labelClass}>
-          Contenu
-        </label>
-        <textarea
-          id="content"
-          name="content"
-          rows={6}
-          maxLength={10000}
-          defaultValue={project?.content ?? ''}
-          className={`${fieldClass} resize-y`}
-          placeholder="Description détaillée du projet…"
-        />
-      </div>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        {/* URL image */}
+        {/* Image de couverture — upload fichier */}
         <div>
-          <label htmlFor="cover_image_url" className={labelClass}>
-            URL de l&apos;image de couverture
-          </label>
-          <input
-            id="cover_image_url"
-            name="cover_image_url"
-            type="url"
-            maxLength={500}
-            defaultValue={project?.cover_image_url ?? ''}
-            className={fieldClass}
-            placeholder="https://…"
-          />
-          {state.fieldErrors?.cover_image_url && (
-            <p className={errorClass}>{state.fieldErrors.cover_image_url[0]}</p>
+          <label className={labelClass}>Image de couverture</label>
+
+          {/* L'URL est transmise au server action via ce champ caché */}
+          <input type="hidden" name="cover_image_url" value={coverImageUrl} />
+
+          {coverImageUrl ? (
+            <div className="relative overflow-hidden rounded-md border border-border">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={coverImageUrl}
+                alt="Aperçu image de couverture"
+                className="h-40 w-full object-cover"
+              />
+              <label className="absolute right-2 top-2 cursor-pointer rounded-sm bg-ink/70 px-2 py-1 font-body text-xs text-white transition-colors hover:bg-ink">
+                {uploading ? 'Upload…' : 'Changer'}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  disabled={uploading}
+                  className="sr-only"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => setCoverImageUrl('')}
+                className="absolute left-2 top-2 rounded-sm bg-red-600/80 px-2 py-1 font-body text-xs text-white transition-colors hover:bg-red-600"
+              >
+                Supprimer
+              </button>
+            </div>
+          ) : (
+            <label
+              className={`flex cursor-pointer flex-col items-center gap-2 rounded-md border border-dashed px-4 py-8 text-center transition-colors ${
+                uploading
+                  ? 'cursor-default border-border bg-surface-soft opacity-60'
+                  : 'border-border bg-surface-soft hover:border-primary hover:bg-surface'
+              }`}
+            >
+              <span className="text-2xl">{uploading ? '⏳' : '📷'}</span>
+              <span className="font-body text-sm font-semibold text-ink">
+                {uploading ? 'Upload en cours…' : 'Cliquez pour choisir une image'}
+              </span>
+              <span className="font-body text-xs text-muted">
+                JPG, PNG, WebP — max 5 Mo — converti automatiquement en WebP
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                disabled={uploading}
+                className="sr-only"
+              />
+            </label>
           )}
+
+          {uploadError && <p className={errorClass}>{uploadError}</p>}
         </div>
 
-        {/* URL externe */}
-        <div>
-          <label htmlFor="external_url" className={labelClass}>
-            URL du site (lien externe)
-          </label>
-          <input
-            id="external_url"
-            name="external_url"
-            type="url"
-            maxLength={500}
-            defaultValue={project?.external_url ?? ''}
-            className={fieldClass}
-            placeholder="https://…"
-          />
-          {state.fieldErrors?.external_url && (
-            <p className={errorClass}>{state.fieldErrors.external_url[0]}</p>
-          )}
-        </div>
+        {/* URL externe — uniquement pour les réalisations */}
+        {projectKind === 'realisation' ? (
+          <div>
+            <label htmlFor="external_url" className={labelClass}>
+              URL du site (lien externe)
+            </label>
+            <input
+              id="external_url"
+              name="external_url"
+              type="url"
+              maxLength={500}
+              defaultValue={project?.external_url ?? ''}
+              className={fieldClass}
+              placeholder="https://…"
+            />
+            {state.fieldErrors?.external_url && (
+              <p className={errorClass}>{state.fieldErrors.external_url[0]}</p>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center rounded-md border border-dashed border-border bg-surface-soft px-4 py-6">
+            <p className="font-body text-sm text-muted">
+              Les simulations ont un lien automatique vers{' '}
+              <code className="rounded bg-surface px-1 py-0.5 font-mono text-xs text-ink">
+                /simulations/{slug || '…'}
+              </code>
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Publié */}
-      <div className="flex items-center gap-3">
-        {/* Hidden input : transmet toujours la valeur, quelle que soit l'état de la checkbox */}
-        <input name="published" type="hidden" value={published ? 'true' : 'false'} />
-        <input
-          id="published"
-          type="checkbox"
-          checked={published}
-          onChange={(e) => setPublished(e.target.checked)}
-          className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
-        />
-        <label htmlFor="published" className="font-body text-sm font-semibold text-ink">
-          Publié (visible sur le site)
-        </label>
+      {/* Publié + Mis en avant */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-3">
+          <input name="published" type="hidden" value={published ? 'true' : 'false'} />
+          <input
+            id="published"
+            type="checkbox"
+            checked={published}
+            onChange={(e) => setPublished(e.target.checked)}
+            className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+          />
+          <label htmlFor="published" className="font-body text-sm font-semibold text-ink">
+            Publié (visible sur le site)
+          </label>
+        </div>
+
+        <div className="flex items-start gap-3">
+          <input name="featured_home" type="hidden" value={featuredHome ? 'true' : 'false'} />
+          <input
+            id="featured_home"
+            type="checkbox"
+            checked={featuredHome}
+            onChange={(e) => setFeaturedHome(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-border text-primary focus:ring-primary"
+          />
+          <div>
+            <label htmlFor="featured_home" className="font-body text-sm font-semibold text-ink">
+              ⭐ Mettre en avant sur la page d&apos;accueil
+            </label>
+            <p className="font-body text-xs text-muted">
+              Apparaîtra dans la section Réalisations ou Simulations de la home page.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Actions */}
       <div className="flex items-center gap-4 border-t border-border pt-6">
-        <Button type="submit" variant="primary" size="md" loading={pending}>
+        <Button type="submit" variant="primary" size="md" loading={pending || uploading}>
           {project ? 'Enregistrer les modifications' : 'Créer le projet'}
         </Button>
         <Button

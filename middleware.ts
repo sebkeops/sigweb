@@ -1,48 +1,26 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
-export async function middleware(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
-
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
-        },
-      },
-    }
-  )
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  const isAdminPath = request.nextUrl.pathname.startsWith('/admin')
+export function middleware(request: NextRequest) {
   const isLoginPath = request.nextUrl.pathname === '/admin/login'
 
-  if (!user && isAdminPath && !isLoginPath) {
+  // Vérifie la présence du cookie de session Supabase (format sb-[ref]-auth-token)
+  const hasAuthCookie = request.cookies.getAll().some(
+    (c) => c.name.startsWith('sb-') && c.name.includes('auth-token')
+  )
+
+  if (!hasAuthCookie && !isLoginPath) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/login'
     return NextResponse.redirect(url)
   }
 
-  if (user && isLoginPath) {
+  if (hasAuthCookie && isLoginPath) {
     const url = request.nextUrl.clone()
     url.pathname = '/admin/projets'
     return NextResponse.redirect(url)
   }
 
-  return supabaseResponse
+  return NextResponse.next()
 }
 
 export const config = {

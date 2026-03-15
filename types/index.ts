@@ -1,5 +1,33 @@
 export type ProjectKind = 'simulation' | 'realisation'
 
+export interface SimulationFeaturedCard {
+  title: string
+  text: string
+  image: string
+}
+
+export interface SimulationData {
+  businessType: string
+  theme: string
+  name: string
+  tagline: string
+  description: string
+  heroImage: string
+  gallery: string[]
+  contact: {
+    address: string
+    city: string
+    phone: string
+  }
+  hours: string[]
+  highlights: string[]
+  featuredCards: SimulationFeaturedCard[]
+  reviews: string[]
+  seoTitle?: string
+  seoDescription?: string
+  intro?: string
+}
+
 export interface Project {
   id: string
   title: string
@@ -11,6 +39,7 @@ export interface Project {
   external_url: string | null
   project_kind: ProjectKind
   published: boolean
+  featured_home: boolean
   created_at: string
   updated_at: string
 }

@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sigweb — Création de sites web · Toulouse</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:         #080808;
+    --bg-2:       #0e0c07;
+    --cream:      #f0ead8;
+    --cream-2:    #e8dfc8;
+    --gold-light: #f5e49a;
+    --gold:       #c8a96e;
+    --gold-mid:   #a07838;
+    --gold-deep:  #7a5820;
+    --gold-dark:  #6a4610;
+    --text:       #e8dfc8;
+    --text-dim:   #b8aa90;
+    --text-sub:   #4a3e28;
+    --border:     rgba(200,169,110,0.18);
+    --font-d:     'Cormorant Garamond', serif;
+    --font-m:     'DM Mono', monospace;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-m);
+    font-weight: 300;
+    overflow-x: hidden;
+  }
+
+  /* ── GRAIN OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 60px;
+    background: linear-gradient(180deg, rgba(8,8,8,0.95) 0%, transparent 100%);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+  }
+
+  .nav-logo-icon {
+    width: 32px; height: 32px;
+    background: rgba(200,169,110,0.08);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .nav-wordmark {
+    font-family: var(--font-d);
+    font-size: 20px;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+    align-items: center;
+  }
+
+  .nav-links a {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-cta {
+    padding: 10px 22px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--gold) !important;
+    transition: background 0.3s, border-color 0.3s !important;
+  }
+
+  .nav-cta:hover {
+    background: rgba(200,169,110,0.08) !important;
+    border-color: var(--gold) !important;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 160px 60px 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+
+  /* Radial glow top-right */
+  .hero-bg::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -100px;
+    width: 600px; height: 600px;
+    background: radial-gradient(ellipse, rgba(200,169,110,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  /* Radial glow bottom-left */
+  .hero-bg::after {
+    content: '';
+    position: absolute;
+    bottom: -200px; left: -100px;
+    width: 500px; height: 500px;
+    background: radial-gradient(ellipse, rgba(200,169,110,0.04) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  /* Watermark logo */
+  .hero-watermark {
+    position: absolute;
+    right: 60px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.03;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    animation: fadeUp 0.8s ease forwards;
+    opacity: 0;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 40px; height: 1px;
+    background: var(--gold);
+  }
+
+  .hero-title {
+    font-family: var(--font-d);
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 300;
+    line-height: 1.05;
+    color: var(--text);
+    max-width: 780px;
+    margin-bottom: 32px;
+    animation: fadeUp 0.8s ease 0.15s forwards;
+    opacity: 0;
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .hero-sub {
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    max-width: 440px;
+    line-height: 1.9;
+    margin-bottom: 52px;
+    animation: fadeUp 0.8s ease 0.3s forwards;
+    opacity: 0;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    animation: fadeUp 0.8s ease 0.45s forwards;
+    opacity: 0;
+  }
+
+  .btn-primary {
+    padding: 16px 36px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: var(--bg);
+    font-family: var(--font-m);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.3s, transform 0.3s;
+    display: inline-block;
+  }
+
+  .btn-primary:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  .btn-ghost {
+    padding: 15px 36px;
+    background: transparent;
+    color: var(--gold);
+    font-family: var(--font-m);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.3s, background 0.3s;
+    display: inline-block;
+  }
+
+  .btn-ghost:hover { border-color: var(--gold); background: rgba(200,169,110,0.05); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 48px;
+    left: 60px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 7px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--text-sub);
+    animation: fadeUp 0.8s ease 0.7s forwards;
+    opacity: 0;
+  }
+
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(180deg, var(--gold), transparent);
+    animation: scrollDrop 2s ease 1.5s infinite;
+  }
+
+  /* ── SECTION BASE ── */
+  section {
+    padding: 120px 60px;
+    position: relative;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 64px;
+  }
+
+  .section-num {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .section-rule {
+    flex: 1;
+    max-width: 60px;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold), transparent);
+  }
+
+  .section-title {
+    font-family: var(--font-d);
+    font-size: 42px;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+
+  /* ── SERVICES ── */
+  #services { background: var(--bg-2); }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .service-card {
+    padding: 48px 40px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    transition: border-color 0.4s, background 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .service-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .service-card:hover { border-color: rgba(200,169,110,0.4); background: rgba(200,169,110,0.02); }
+  .service-card:hover::before { opacity: 1; }
+
+  .service-icon {
+    width: 44px; height: 44px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 28px;
+    background: rgba(200,169,110,0.05);
+  }
+
+  .service-name {
+    font-family: var(--font-d);
+    font-size: 24px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+  }
+
+  .service-price {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .service-desc {
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--text-dim);
+  }
+
+  .service-features {
+    margin-top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .service-feature {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.03em;
+  }
+
+  .service-feature::before {
+    content: '';
+    width: 16px; height: 1px;
+    background: var(--gold);
+    flex-shrink: 0;
+  }
+
+  /* ── RÉALISATIONS ── */
+  #realisations { background: var(--bg); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .project-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.4s, transform 0.4s;
+    background: var(--bg-2);
+  }
+
+  .project-card:hover { border-color: rgba(200,169,110,0.4); transform: translateY(-4px); }
+
+  .project-preview {
+    height: 220px;
+    background: linear-gradient(135deg, #1a1408 0%, #0e0c07 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .project-preview::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(200,169,110,0.08) 0%, transparent 70%);
+  }
+
+  .project-url-display {
+    font-family: var(--font-m);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--gold);
+    opacity: 0.6;
+    position: relative;
+    z-index: 1;
+  }
+
+  .project-preview-logo {
+    position: absolute;
+    opacity: 0.04;
+  }
+
+  .project-body { padding: 32px; }
+
+  .project-tag {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 16px;
+  }
+
+  .project-name {
+    font-family: var(--font-d);
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  .project-desc {
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+  }
+
+  .project-link {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: gap 0.3s;
+  }
+
+  .project-link::after { content: '→'; }
+  .project-link:hover { gap: 16px; }
+
+  /* ── À PROPOS ── */
+  #apropos { background: var(--bg-2); }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .about-left { position: sticky; top: 120px; }
+
+  .about-portrait {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: linear-gradient(135deg, #1a1408 0%, #0e0c07 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .about-portrait::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 30%, rgba(200,169,110,0.08) 0%, transparent 60%);
+  }
+
+  .about-portrait-placeholder {
+    font-family: var(--font-d);
+    font-size: 64px;
+    font-weight: 300;
+    color: var(--gold);
+    opacity: 0.2;
+    position: relative;
+    z-index: 1;
+  }
+
+  .about-name {
+    font-family: var(--font-d);
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+  }
+
+  .about-role {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .about-right { padding-top: 8px; }
+
+  .about-quote {
+    font-family: var(--font-d);
+    font-size: 28px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 40px;
+    padding-left: 24px;
+    border-left: 1px solid var(--gold);
+  }
+
+  .about-text {
+    font-size: 14px;
+    line-height: 2;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+
+  .about-text strong {
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  .about-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    margin-top: 48px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .stat {
+    padding: 28px 24px;
+    background: rgba(200,169,110,0.02);
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: var(--font-d);
+    font-size: 36px;
+    font-weight: 300;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    line-height: 1.5;
+  }
+
+  .about-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 32px;
+  }
+
+  .skill-tag {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text-dim);
+  }
+
+  /* ── CONTACT ── */
+  #contact { background: var(--bg); }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .contact-left {}
+
+  .contact-headline {
+    font-family: var(--font-d);
+    font-size: 40px;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1.3;
+    margin-bottom: 32px;
+    letter-spacing: 0.03em;
+  }
+
+  .contact-headline em { font-style: italic; color: var(--gold-light); }
+
+  .contact-infos {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+  }
+
+  .contact-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-dim);
+    letter-spacing: 0.03em;
+  }
+
+  .contact-info-icon {
+    width: 36px; height: 36px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    background: rgba(200,169,110,0.04);
+  }
+
+  .contact-promise {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 14px 20px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: rgba(200,169,110,0.03);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .contact-promise::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* Formulaire */
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .form-input, .form-textarea {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px 18px;
+    color: var(--text);
+    font-family: var(--font-m);
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    outline: none;
+    transition: border-color 0.3s;
+    width: 100%;
+  }
+
+  .form-input:focus, .form-textarea:focus { border-color: rgba(200,169,110,0.5); }
+  .form-input::placeholder, .form-textarea::placeholder { color: var(--text-sub); }
+  .form-textarea { resize: vertical; min-height: 140px; }
+
+  .form-submit {
+    padding: 16px 36px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-deep));
+    color: var(--bg);
+    font-family: var(--font-m);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: opacity 0.3s, transform 0.3s;
+    align-self: flex-start;
+  }
+
+  .form-submit:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 48px 60px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .footer-logo {
+    font-family: var(--font-d);
+    font-size: 18px;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text);
+  }
+
+  .footer-sep { width: 1px; height: 20px; background: var(--border); }
+
+  .footer-tagline {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+
+  .footer-right {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--text-sub);
+    text-transform: uppercase;
+  }
+
+  /* ── LOGO SVG inline ── */
+  .logo-svg { display: block; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scrollDrop {
+    0%, 100% { opacity: 0.3; transform: scaleY(1); transform-origin: top; }
+    50%       { opacity: 1; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    section { padding: 80px 24px; }
+    .hero { padding: 120px 24px 80px; }
+    .services-grid { grid-template-columns: 1fr; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .about-grid { grid-template-columns: 1fr; }
+    .about-left { position: static; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .hero-watermark { display: none; }
+    .hero-scroll { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 200 200" fill="none" width="20" height="20">
+        <defs>
+          <linearGradient id="nav-g" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f5e49a"/>
+            <stop offset="100%" stop-color="#6a4610"/>
+          </linearGradient>
+        </defs>
+        <path d="M 100 100 C 88 80,68 55,48 50 C 28 45,14 58,14 75 C 14 92,28 108,52 113 C 74 118,94 112,100 100" stroke="url(#nav-g)" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.9"/>
+        <path d="M 100 100 C 106 80,126 55,152 50 C 172 45,186 58,186 75 C 186 92,172 108,148 113 C 126 118,106 112,100 100" stroke="url(#nav-g)" stroke-width="6" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <span class="nav-wordmark">Sigweb</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#realisations">Réalisations</a></li>
+    <li><a href="#apropos">À propos</a></li>
+    <li><a href="#contact" class="nav-cta">Devis gratuit</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+
+  <!-- Watermark -->
+  <div class="hero-watermark">
+    <svg viewBox="0 0 200 200" fill="none" width="420" height="420">
+      <path d="M 100 100 C 88 80,68 55,48 50 C 28 45,14 58,14 75 C 14 92,28 108,52 113 C 74 118,94 112,100 100" stroke="#c8a96e" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M 100 100 C 106 80,126 55,152 50 C 172 45,186 58,186 75 C 186 92,172 108,148 113 C 126 118,106 112,100 100" stroke="#c8a96e" stroke-width="3" stroke-linecap="round" fill="none"/>
+    </svg>
+  </div>
+
+  <div class="hero-eyebrow">Création de sites web · Toulouse & Gers</div>
+
+  <h1 class="hero-title">
+    Votre commerce mérite<br>
+    une <em>vraie présence</em><br>
+    en ligne.
+  </h1>
+
+  <p class="hero-sub">
+    Sites web sur mesure pour artisans et commerces locaux.<br>
+    Simple, rapide, soigné — sans jargon, sans mauvaise surprise.
+  </p>
+
+  <div class="hero-actions">
+    <a href="#contact" class="btn-primary">Demander un devis gratuit</a>
+    <a href="#realisations" class="btn-ghost">Voir les réalisations</a>
+  </div>
+
+  <div class="hero-scroll">
+    <div class="scroll-line"></div>
+    Découvrir
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-header">
+    <span class="section-num">01 — Services</span>
+    <div class="section-rule"></div>
+  </div>
+  <h2 class="section-title" style="margin-bottom:52px;">Ce que je propose</h2>
+
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8a96e" stroke-width="1.5" stroke-linecap="round">
+          <rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+        </svg>
+      </div>
+      <div class="service-name">Site vitrine</div>
+      <div class="service-price">À partir de 600 €</div>
+      <div class="service-desc">Votre première impression en ligne. Un site professionnel qui présente votre activité, inspire confiance et génère des contacts.</div>
+      <div class="service-features">
+        <div class="service-feature">Design sur mesure</div>
+        <div class="service-feature">Compatible mobile & tablette</div>
+        <div class="service-feature">Formulaire de contact</div>
+        <div class="service-feature">Mise en ligne incluse</div>
+        <div class="service-feature">Référencement de base (SEO)</div>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8a96e" stroke-width="1.5" stroke-linecap="round">
+          <path d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/>
+        </svg>
+      </div>
+      <div class="service-name">Refonte</div>
+      <div class="service-price">À partir de 700 €</div>
+      <div class="service-desc">Votre site est vieillissant ou ne vous ressemble plus ? On le modernise sans tout repartir de zéro — efficace et économique.</div>
+      <div class="service-features">
+        <div class="service-feature">Audit de l'existant</div>
+        <div class="service-feature">Nouveau design & navigation</div>
+        <div class="service-feature">Conservation du contenu</div>
+        <div class="service-feature">Amélioration des performances</div>
+      </div>
+    </div>
+
+    <div class="service-card">
+      <div class="service-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c8a96e" stroke-width="1.5" stroke-linecap="round">
+          <path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/>
+        </svg>
+      </div>
+      <div class="service-name">Maintenance</div>
+      <div class="service-price">Sur devis</div>
+      <div class="service-desc">Je reste disponible après la livraison. Mises à jour, évolutions, corrections — vous n'êtes jamais seul face à votre site.</div>
+      <div class="service-features">
+        <div class="service-feature">Mises à jour du contenu</div>
+        <div class="service-feature">Corrections & évolutions</div>
+        <div class="service-feature">Interlocuteur unique et joignable</div>
+        <div class="service-feature">Suivi des performances</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RÉALISATIONS -->
+<section id="realisations">
+  <div class="section-header">
+    <span class="section-num">02 — Réalisations</span>
+    <div class="section-rule"></div>
+  </div>
+  <h2 class="section-title" style="margin-bottom:52px;">Sites en production</h2>
+
+  <div class="projects-grid">
+    <div class="project-card">
+      <div class="project-preview">
+        <svg viewBox="0 0 200 200" fill="none" width="200" height="200" class="project-preview-logo">
+          <path d="M 100 100 C 88 80,68 55,48 50 C 28 45,14 58,14 75 C 14 92,28 108,52 113 C 74 118,94 112,100 100" stroke="#c8a96e" stroke-width="3" fill="none"/>
+          <path d="M 100 100 C 106 80,126 55,152 50 C 172 45,186 58,186 75 C 186 92,172 108,148 113 C 126 118,106 112,100 100" stroke="#c8a96e" stroke-width="3" fill="none"/>
+        </svg>
+        <span class="project-url-display">marenov34.fr</span>
+      </div>
+      <div class="project-body">
+        <span class="project-tag">Artisan · Portail & Menuiserie</span>
+        <div class="project-name">Marenov</div>
+        <p class="project-desc">Site vitrine pour un artisan spécialisé dans la pose de portails et la menuiserie. Présentation des réalisations, formulaire de devis en ligne.</p>
+        <a href="https://www.marenov34.fr" target="_blank" class="project-link">Voir le site</a>
+      </div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-preview">
+        <svg viewBox="0 0 200 200" fill="none" width="200" height="200" class="project-preview-logo">
+          <path d="M 100 100 C 88 80,68 55,48 50 C 28 45,14 58,14 75 C 14 92,28 108,52 113 C 74 118,94 112,100 100" stroke="#c8a96e" stroke-width="3" fill="none"/>
+          <path d="M 100 100 C 106 80,126 55,152 50 C 172 45,186 58,186 75 C 186 92,172 108,148 113 C 126 118,106 112,100 100" stroke="#c8a96e" stroke-width="3" fill="none"/>
+        </svg>
+        <span class="project-url-display">crealalieart.fr</span>
+      </div>
+      <div class="project-body">
+        <span class="project-tag">Artiste · Collage & Art visuel</span>
+        <div class="project-name">Créa Lalie Art</div>
+        <p class="project-desc">Portfolio en ligne pour une artiste collagiste. Galerie d'œuvres, présentation de la démarche artistique et prise de contact.</p>
+        <a href="https://www.crealalieart.fr" target="_blank" class="project-link">Voir le site</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- À PROPOS -->
+<section id="apropos">
+  <div class="section-header">
+    <span class="section-num">03 — À propos</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-left">
+      <div class="about-portrait">
+        <span class="about-portrait-placeholder">SS</span>
+      </div>
+      <div class="about-name">Sébastien Siguenza</div>
+      <div class="about-role">Créateur de sites web · Toulouse</div>
+    </div>
+
+    <div class="about-right">
+      <p class="about-quote">Derrière chaque commerce, il y a une histoire. Mon travail, c'est de la raconter en ligne.</p>
+
+      <p class="about-text">Je m'appelle Sébastien, j'ai grandi dans le digital. Depuis <strong>plus de 14 ans</strong>, j'accompagne des entreprises — des agences parisiennes aux grandes structures bancaires — dans leur présence sur le web.</p>
+
+      <p class="about-text">Aujourd'hui, fort de cette expérience, j'ai envie de mettre ces compétences au service de ceux qui en ont vraiment besoin : les <strong>artisans, les commerçants, les créateurs locaux</strong> qui n'ont ni le temps ni l'envie de se noyer dans la technique.</p>
+
+      <p class="about-text">Mon engagement : <strong>un site livré dans les temps, sans jargon, sans mauvaise surprise</strong> — et quelqu'un de joignable si vous avez une question après la livraison.</p>
+
+      <p class="about-text">Pas une agence anonyme. Une personne réelle, basée près de <strong>Toulouse</strong>, qui prend soin de votre projet comme si c'était le sien.</p>
+
+      <div class="about-stats">
+        <div class="stat">
+          <div class="stat-num">14</div>
+          <div class="stat-label">Ans d'expérience web</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">2</div>
+          <div class="stat-label">Sites en production</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">24h</div>
+          <div class="stat-label">Délai de réponse</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-header">
+    <span class="section-num">04 — Contact</span>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="contact-grid">
+    <div class="contact-left">
+      <h2 class="contact-headline">
+        Parlons de votre<br>
+        <em>projet ensemble.</em>
+      </h2>
+
+      <div class="contact-infos">
+        <div class="contact-info">
+          <div class="contact-info-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8a96e" stroke-width="1.5" stroke-linecap="round">
+              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 14.92z"/>
+            </svg>
+          </div>
+          06 51 92 73 81
+        </div>
+        <div class="contact-info">
+          <div class="contact-info-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8a96e" stroke-width="1.5" stroke-linecap="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </div>
+          <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d0a3b9b7a5b5beaab1fea3b5b2b1a3a4b9b5be90b7bdb1b9bcfeb3bfbd">[email&#160;protected]</a>
+        </div>
+        <div class="contact-info">
+          <div class="contact-info-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#c8a96e" stroke-width="1.5" stroke-linecap="round">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          Ségoufielle (32) · Toulouse & Gers
+        </div>
+      </div>
+
+      <div class="contact-promise">Je réponds sous 24h</div>
+    </div>
+
+    <div class="contact-right">
+      <form class="contact-form" onsubmit="return false;">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Prénom & Nom</label>
+            <input type="text" class="form-input" placeholder="Jean Dupont">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Téléphone</label>
+            <input type="tel" class="form-input" placeholder="06 00 00 00 00">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-input" placeholder="votre@email.fr">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Votre activité</label>
+          <input type="text" class="form-input" placeholder="Boulangerie, bijouterie, artisan...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Votre projet</label>
+          <textarea class="form-textarea" placeholder="Décrivez votre projet en quelques mots — pas besoin d'être technique !"></textarea>
+        </div>
+        <button type="submit" class="form-submit">Envoyer ma demande →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <span class="footer-logo">Sigweb</span>
+    <div class="footer-sep"></div>
+    <span class="footer-tagline">Sites

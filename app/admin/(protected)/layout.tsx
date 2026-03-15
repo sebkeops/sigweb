@@ -14,6 +14,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     data: { user },
   } = await supabase.auth.getUser()
 
+  // LOG TEMPORAIRE — à supprimer une fois le comportement confirmé
+  console.log('[AdminLayout] user:', user?.email ?? 'null → redirect to /admin/login')
+
   if (!user) {
     redirect('/admin/login')
   }

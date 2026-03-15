@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charte Graphique — Sigweb</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark:      #080808;
+    --bg-dark-2:    #111008;
+    --bg-cream:     #f0ead8;
+    --bg-cream-2:   #e8dfc8;
+    --gold-light:   #f5e49a;
+    --gold-main:    #c8a96e;
+    --gold-mid:     #a07838;
+    --gold-deep:    #7a5820;
+    --gold-darkest: #6a4610;
+    --text-on-dark:   #e8dfc8;
+    --text-sub-dark:  #4a3e28;
+    --text-on-cream:  #1a1208;
+    --text-sub-cream: #9a8060;
+    --text-dim:       #7a7060;
+    --border-gold:  rgba(200,169,110,0.27);
+    --font-display: 'Cormorant Garamond', serif;
+    --font-mono:    'DM Mono', monospace;
+    --radius-sm: 8px;
+    --radius-md: 14px;
+    --radius-lg: 20px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-dark);
+    color: var(--text-on-dark);
+    font-family: var(--font-mono);
+    padding: 60px 40px;
+    max-width: 900px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  .charter-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 60px 0 80px;
+    border-bottom: 1px solid var(--border-gold);
+    margin-bottom: 80px;
+  }
+
+  .charter-eyebrow {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    color: var(--gold-main);
+    text-transform: uppercase;
+  }
+
+  .charter-title {
+    font-family: var(--font-display);
+    font-size: 64px;
+    font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-on-dark);
+  }
+
+  .charter-sub {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    color: var(--text-sub-dark);
+    text-transform: uppercase;
+  }
+
+  .gold-rule {
+    width: 60px; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-main), transparent);
+    margin: 0 auto;
+  }
+
+  .section { margin-bottom: 80px; }
+
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    color: var(--gold-main);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-gold), transparent);
+  }
+
+  /* LOGO */
+  .logo-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+
+  .logo-cell {
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .logo-cell-dark  { background: var(--bg-dark-2); border-radius: var(--radius-lg) 0 0 0; }
+  .logo-cell-cream { background: var(--bg-cream); border-radius: 0 var(--radius-lg) 0 0; }
+  .logo-cell-icon1 { background: var(--bg-dark-2); border-radius: 0 0 0 var(--radius-lg); }
+  .logo-cell-icon2 { background: var(--bg-cream); border-radius: 0 0 var(--radius-lg) 0; }
+
+  .logo-caption { font-size: 8px; letter-spacing: 0.3em; color: var(--text-dim); text-transform: uppercase; text-align: center; }
+  .logo-caption-cream { color: var(--text-sub-cream); }
+
+  .icons-row { display: flex; gap: 20px; align-items: center; justify-content: center; }
+  .ico { width: 72px; height: 72px; display: flex; align-items: center; justify-content: center; }
+  .ico-dark-sq { background: var(--bg-dark); border: 1px solid var(--border-gold); border-radius: var(--radius-md); }
+  .ico-gold-sq { background: linear-gradient(135deg, var(--gold-main), var(--gold-darkest)); border-radius: var(--radius-md); }
+  .ico-circle  { border: 1.5px solid var(--gold-main); border-radius: 50%; }
+
+  /* COULEURS */
+  .colors-grid { display: grid; gap: 12px; margin-bottom: 40px; }
+  .color-swatch { display: flex; flex-direction: column; gap: 10px; }
+  .swatch-block { height: 80px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.04); }
+  .swatch-name { font-size: 8px; letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase; }
+  .swatch-hex { font-size: 9px; color: var(--gold-main); letter-spacing: 0.1em; }
+
+  /* TYPO */
+  .type-samples { display: flex; flex-direction: column; gap: 32px; }
+  .type-row {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 32px;
+    align-items: baseline;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border-gold);
+  }
+  .type-row:last-child { border-bottom: none; }
+  .type-meta { font-size: 8px; letter-spacing: 0.2em; color: var(--text-dim); text-transform: uppercase; line-height: 1.8; }
+  .type-meta span { display: block; color: var(--gold-main); }
+
+  /* COMPOSANTS */
+  .components-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .component-cell { background: var(--bg-dark-2); border-radius: var(--radius-md); padding: 32px; display: flex; flex-direction: column; gap: 16px; }
+  .component-label { font-size: 8px; letter-spacing: 0.3em; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, var(--gold-main), var(--gold-deep));
+    color: var(--bg-dark);
+    font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.3em; text-transform: uppercase;
+    border: none; border-radius: var(--radius-sm); cursor: pointer; width: fit-content;
+  }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 11px 28px;
+    background: transparent; color: var(--gold-main);
+    font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.3em; text-transform: uppercase;
+    border: 1px solid var(--border-gold); border-radius: var(--radius-sm); cursor: pointer; width: fit-content;
+  }
+
+  .card-sample {
+    background: var(--bg-dark); border: 1px solid var(--border-gold);
+    border-radius: var(--radius-md); padding: 24px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+
+  /* ESPACEMENTS */
+  .spacing-row { display: flex; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  .spacing-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .spacing-block { background: var(--border-gold); width: 40px; }
+  .spacing-label { font-size: 8px; color: var(--text-dim); letter-spacing: 0.2em; }
+
+  .charter-footer {
+    border-top: 1px solid var(--border-gold);
+    padding-top: 40px; margin-top: 40px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+
+  .footer-text { font-size: 8px; letter-spacing: 0.3em; color: var(--text-dim); text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="charter-header">
+  <div class="charter-eyebrow">Document de référence</div>
+  <div class="charter-title">Sigweb</div>
+  <div class="gold-rule"></div>
+  <div class="charter-sub">Charte graphique · v1.0 · 2025</div>
+</div>
+
+<!-- 01 LOGO -->
+<div class="section">
+  <div class="section-label">01 — Logo & déclinaisons</div>
+  <div class="logo-grid">
+
+    <div class="logo-cell logo-cell-dark">
+      <svg viewBox="0 0 200 200" fill="none" width="140" height="140">
+        <defs>
+          <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f5e49a"/><stop offset="30%" stop-color="#d4a860"/>
+            <stop offset="65%" stop-color="#a07838"/><stop offset="100%" stop-color="#6a4610"/>
+          </linearGradient>
+          <linearGradient id="g2" x1="100%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#e8d080"/><stop offset="100%" stop-color="#8a6028"/>
+          </linearGradient>
+        </defs>
+        <path d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100" stroke="#c8a96e" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.05"/>
+        <path d="M 100 100 C 106 80, 126 55, 152 50 C 172 45, 186 58, 186 75 C 186 92, 172 108, 148 113 C 126 118, 106 112, 100 100" stroke="#c8a96e" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.05"/>
+        <path d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100" stroke="url(#g1)" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.9"/>
+        <path d="M 100 100 C 106 80, 126 55, 152 50 C 172 45, 186 58, 186 75 C 186 92, 172 108, 148 113 C 126 118, 106 112, 100 100" stroke="url(#g2)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+      </svg>
+      <div class="gold-rule"></div>
+      <div style="text-align:center;">
+        <div style="font-family:var(--font-display);font-size:32px;font-weight:300;letter-spacing:0.5em;text-transform:uppercase;color:var(--text-on-dark);padding-left:0.5em;">Sigweb</div>
+        <div style="font-family:var(--font-mono);font-size:7px;letter-spacing:0.28em;text-transform:uppercase;color:var(--text-sub-dark);margin-top:6px;">Sites web & Digital · Toulouse</div>
+      </div>
+      <div class="logo-caption">Version fond sombre</div>
+    </div>
+
+    <div class="logo-cell logo-cell-cream">
+      <svg viewBox="0 0 200 200" fill="none" width="140" height="140">
+        <defs>
+          <linearGradient id="gc1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2a1806"/><stop offset="100%" stop-color="#7a5020"/></linearGradient>
+          <linearGradient id="gc2" x1="100%" y1="0%" x2="0%" y2="100%"><stop offset="0%" stop-color="#4a3010"/><stop offset="100%" stop-color="#9a7030"/></linearGradient>
+        </defs>
+        <path d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100" stroke="url(#gc1)" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.9"/>
+        <path d="M 100 100 C 106 80, 126 55, 152 50 C 172 45, 186 58, 186 75 C 186 92, 172 108, 148 113 C 126 118, 106 112, 100 100" stroke="url(#gc2)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+      </svg>
+      <div style="width:60px;height:1px;background:linear-gradient(90deg,transparent,#7a5820,transparent);margin:0 auto;"></div>
+      <div style="text-align:center;">
+        <div style="font-family:var(--font-display);font-size:32px;font-weight:300;letter-spacing:0.5em;text-transform:uppercase;color:#1a1208;padding-left:0.5em;">Sigweb</div>
+        <div style="font-family:var(--font-mono);font-size:7px;letter-spacing:0.28em;text-transform:uppercase;color:#9a8060;margin-top:6px;">Sites web & Digital · Toulouse</div>
+      </div>
+      <div class="logo-caption logo-caption-cream">Version fond crème</div>
+    </div>
+
+    <div class="logo-cell logo-cell-icon1">
+      <div class="icons-row">
+        <div class="ico ico-dark-sq">
+          <svg viewBox="0 0 200 200" fill="none" width="44" height="44">
+            <defs><linearGradient id="gi1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5e49a"/><stop offset="100%" stop-color="#6a4610"/></linearGradient></defs>
+            <path d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100" stroke="url(#gi1)" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.9"/>
+            <path d="M 100 100 C 106 80, 126 55, 152 50 C 172 45, 186 58, 186 75 C 186 92, 172 108, 148 113 C 126 118, 106 112, 100 100" stroke="url(#gi1)" stroke-width="5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="ico ico-gold-sq">
+          <svg viewBox="0 0 200 200" fill="none" width="44" height="44">
+            <path d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100" stroke="#0a0500" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.9"/>
+            <path d="M 100 100 C 106 80, 126 55, 152 50 C 172 45, 186 58, 186 75 C 186 92, 172 108, 148 113 C 126 118, 106 112, 100 100" stroke="#0a0500" stroke-width="5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="ico ico-circle">
+          <svg viewBox="0 0 200 200" fill="none" width="44" height="44">
+            <defs><linearGradient id="gi2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#f5e49a"/><stop offset="100%" stop-color="#8a6028"/></linearGradient></defs>
+            <path d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100" stroke="url(#gi2)" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.9"/>
+            <path d="M 100 100 C 106 80, 126 55, 152 50 C 172 45, 186 58, 186 75 C 186 92, 172 108, 148 113 C 126 118, 106 112, 100 100" stroke="url(#gi2)" stroke-width="5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+      </div>
+      <div class="logo-caption">Icônes — carré sombre / carré or / cercle</div>
+    </div>
+
+    <div class="logo-cell logo-cell-icon2" style="justify-content:center;">
+      <div class="icons-row">
+        <div class="ico" style="border:1px solid rgba(122,80,32,0.3);border-radius:var(--radius-md);background:var(--bg-cream);">
+          <svg viewBox="0 0 200 200" fill="none" width="44" height="44">
+            <path d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100" stroke="#4a3010" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.9"/>
+            <path d="M 100 100 C 106 80, 126 55, 152 50 C 172 45, 186 58, 186 75 C 186 92, 172 108, 148 113 C 126 118, 106 112, 100 100" stroke="#7a5020" stroke-width="5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="ico" style="border:1.5px solid #7a5020;background:var(--bg-cream);border-radius:50%;">
+          <svg viewBox="0 0 200 200" fill="none" width="44" height="44">
+            <path d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100" stroke="#4a3010" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.9"/>
+            <path d="M 100 100 C 106 80, 126 55, 152 50 C 172 45, 186 58, 186 75 C 186 92, 172 108, 148 113 C 126 118, 106 112, 100 100" stroke="#7a5020" stroke-width="5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+      </div>
+      <div class="logo-caption logo-caption-cream">Icônes — version claire</div>
+    </div>
+  </div>
+</div>
+
+<!-- 02 COULEURS -->
+<div class="section">
+  <div class="section-label">02 — Palette de couleurs</div>
+
+  <div style="margin-bottom:12px;font-size:8px;letter-spacing:0.3em;color:var(--text-dim);text-transform:uppercase;">Fonds</div>
+  <div class="colors-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:40px;">
+    <div class="color-swatch"><div class="swatch-block" style="background:#080808;border:1px solid #222;"></div><div class="swatch-name">Fond principal</div><div class="swatch-hex">#080808</div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#111008;border:1px solid #222;"></div><div class="swatch-name">Fond secondaire</div><div class="swatch-hex">#111008</div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#f0ead8;"></div><div class="swatch-name">Crème principal</div><div class="swatch-hex">#f0ead8</div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#e8dfc8;"></div><div class="swatch-name">Crème secondaire</div><div class="swatch-hex">#e8dfc8</div></div>
+  </div>
+
+  <div style="margin-bottom:12px;font-size:8px;letter-spacing:0.3em;color:var(--text-dim);text-transform:uppercase;">Or / Accent</div>
+  <div class="colors-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:40px;">
+    <div class="color-swatch"><div class="swatch-block" style="background:#f5e49a;"></div><div class="swatch-name">Or clair</div><div class="swatch-hex">#f5e49a</div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#c8a96e;"></div><div class="swatch-name">Or principal</div><div class="swatch-hex">#c8a96e</div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#a07838;"></div><div class="swatch-name">Or médium</div><div class="swatch-hex">#a07838</div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#7a5820;"></div><div class="swatch-name">Or profond</div><div class="swatch-hex">#7a5820</div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#6a4610;"></div><div class="swatch-name">Or sombre</div><div class="swatch-hex">#6a4610</div></div>
+  </div>
+
+  <div style="margin-bottom:12px;font-size:8px;letter-spacing:0.3em;color:var(--text-dim);text-transform:uppercase;">Texte</div>
+  <div class="colors-grid" style="grid-template-columns:repeat(4,1fr);">
+    <div class="color-swatch"><div class="swatch-block" style="background:#e8dfc8;"></div><div class="swatch-name">Texte sur sombre</div><div class="swatch-hex">#e8dfc8</div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#4a3e28;border:1px solid #222;"></div><div class="swatch-name">Sous-titre sombre</div><div class="swatch-hex">#4a3e28</div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#1a1208;"></div><div class="swatch-name">Texte sur crème</div><div class="swatch-hex">#1a1208</div></div>
+    <div class="color-swatch"><div class="swatch-block" style="background:#9a8060;"></div><div class="swatch-name">Sous-titre crème</div><div class="swatch-hex">#9a8060</div></div>
+  </div>
+</div>
+
+<!-- 03 TYPOGRAPHIE -->
+<div class="section">
+  <div class="section-label">03 — Typographie</div>
+  <div class="type-samples">
+    <div class="type-row">
+      <div class="type-meta">Titre principal<br><span>Cormorant Garamond</span>Weight 300 · 52px<br>ls 0.3em · Uppercase</div>
+      <div style="font-family:var(--font-display);font-size:52px;font-weight:300;letter-spacing:0.3em;text-transform:uppercase;color:var(--text-on-dark);line-height:1;">Sigweb</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">Titre secondaire<br><span>Cormorant Garamond</span>Weight 300 · 28px<br>ls 0.2em</div>
+      <div style="font-family:var(--font-display);font-size:28px;font-weight:300;letter-spacing:0.2em;color:var(--text-on-dark);">Sébastien Siguenza</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">Titre tertiaire<br><span>Cormorant Garamond</span>Weight 400 · 18px<br>ls 0.1em</div>
+      <div style="font-family:var(--font-display);font-size:18px;font-weight:400;letter-spacing:0.1em;color:var(--text-on-dark);">Création de sites web sur mesure</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">Corps de texte<br><span>DM Mono</span>Weight 300 · 11px<br>ls 0.05em</div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text-on-dark);line-height:1.8;">Sites vitrines, refonte complète, optimisation UX.<br>Accompagnement de A à Z pour les commerces locaux.</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">Caption / Label<br><span>DM Mono</span>Weight 300 · 8px<br>ls 0.3em · Uppercase</div>
+      <div style="font-family:var(--font-mono);font-size:8px;letter-spacing:0.3em;text-transform:uppercase;color:var(--text-sub-dark);">Sites web & Digital · Toulouse</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">Accent / Tag<br><span>DM Mono</span>Weight 400 · 9px<br>ls 0.25em · Or principal</div>
+      <div style="font-family:var(--font-mono);font-size:9px;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold-main);">06 51 92 73 81</div>
+    </div>
+  </div>
+</div>
+
+<!-- 04 COMPOSANTS -->
+<div class="section">
+  <div class="section-label">04 — Composants UI</div>
+  <div class="components-grid">
+
+    <div class="component-cell">
+      <div class="component-label">Boutons</div>
+      <div class="btn-primary">Nous contacter</div>
+      <div style="height:8px;"></div>
+      <div class="btn-secondary">Voir les projets</div>
+    </div>
+
+    <div class="component-cell">
+      <div class="component-label">Carte projet</div>
+      <div class="card-sample">
+        <span style="font-family:var(--font-mono);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border-gold);border-radius:4px;color:var(--gold-main);width:fit-content;">Site vitrine</span>
+        <div style="font-family:var(--font-display);font-size:18px;font-weight:300;color:var(--text-on-dark);letter-spacing:0.1em;">Galerie d'art</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--text-dim);line-height:1.8;">Création complète — design, développement et mise en ligne.</div>
+      </div>
+    </div>
+
+    <div class="component-cell">
+      <div class="component-label">Carte de visite</div>
+      <div style="background:#4a3728;border-radius:8px;padding:16px 20px;display:flex;flex-direction:column;gap:6px;border:1px solid rgba(200,169,110,0.2);">
+        <div style="font-family:var(--font-display);font-size:16px;color:#fff;letter-spacing:0.06em;">Sébastien Siguenza</div>
+        <div style="font-family:var(--font-mono);font-size:7px;color:var(--gold-main);letter-spacing:0.25em;text-transform:uppercase;">Sites web & Digital</div>
+        <div style="font-family:var(--font-mono);font-size:7px;color:var(--gold-main);letter-spacing:0.1em;margin-top:4px;">06 51 92 73 81</div>
+        <div style="font-family:var(--font-mono);font-size:7px;color:var(--gold-main);letter-spacing:0.1em;">siguenza.sebastien@gmail.com</div>
+      </div>
+    </div>
+
+    <div class="component-cell">
+      <div class="component-label">Tags & badges</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">
+        <span style="font-family:var(--font-mono);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;padding:5px 12px;border:1px solid var(--border-gold);border-radius:4px;color:var(--gold-main);">HTML / CSS</span>
+        <span style="font-family:var(--font-mono);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;padding:5px 12px;border:1px solid var(--border-gold);border-radius:4px;color:var(--gold-main);">JavaScript</span>
+        <span style="font-family:var(--font-mono);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;padding:5px 12px;border:1px solid var(--border-gold);border-radius:4px;color:var(--gold-main);">Supabase</span>
+        <span style="font-family:var(--font-mono);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;padding:5px 12px;border:1px solid var(--border-gold);border-radius:4px;color:var(--gold-main);">Vercel</span>
+        <span style="font-family:var(--font-mono);font-size:7px;letter-spacing:0.2em;text-transform:uppercase;padding:5px 12px;background:linear-gradient(135deg,var(--gold-main),var(--gold-deep));border-radius:4px;color:var(--bg-dark);">Figma</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 05 ESPACEMENTS -->
+<div class="section">
+  <div class="section-label">05 — Espacements</div>
+  <div class="spacing-row">
+    <div class="spacing-item"><div class="spacing-block" style="height:8px;"></div><div class="spacing-label">8px</div></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:12px;"></div><div class="spacing-label">12px</div></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:16px;"></div><div class="spacing-label">16px</div></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:24px;"></div><div class="spacing-label">24px</div></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:32px;"></div><div class="spacing-label">32px</div></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:40px;"></div><div class="spacing-label">40px</div></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:60px;"></div><div class="spacing-label">60px</div></div>
+    <div class="spacing-item"><div class="spacing-block" style="height:80px;"></div><div class="spacing-label">80px</div></div>
+  </div>
+</div>
+
+<div class="charter-footer">
+  <div class="footer-text">© Sigweb — Sébastien Siguenza · Toulouse</div>
+  <div class="footer-text">Charte graphique v1.0 · 2025</div>
+</div>
+
+</body>
+</html>

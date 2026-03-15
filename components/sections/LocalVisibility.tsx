@@ -30,7 +30,7 @@ export default function LocalVisibility() {
             </span>
             <h2 className="mb-6 font-heading text-3xl font-extrabold text-white md:text-4xl">
               Vos clients vous cherchent sur Google.{' '}
-              <span className="text-accent-soft">Soyez là quand ils cherchent.</span>
+              <span className="text-accent-soft">Soyez présent au moment où ils en ont besoin.</span>
             </h2>
             <p className="font-body text-base leading-relaxed text-primary-soft">
               Chaque jour, des gens cherchent une boulangerie, un coiffeur ou un artisan près de

@@ -46,6 +46,7 @@ export async function createProject(
     return { success: false, error: 'Erreur lors de la création.' }
   }
 
+  revalidatePath('/')
   revalidatePath('/admin/projets')
   revalidatePath('/simulations')
   revalidatePath('/realisations')
@@ -84,6 +85,7 @@ export async function updateProject(
     return { success: false, error: 'Erreur lors de la mise à jour.' }
   }
 
+  revalidatePath('/')
   revalidatePath('/admin/projets')
   revalidatePath('/simulations')
   revalidatePath('/realisations')
@@ -165,6 +167,7 @@ function extractProjectFields(formData: FormData) {
     external_url: formData.get('external_url') ?? undefined,
     project_kind: formData.get('project_kind'),
     published: formData.get('published') === 'true',
+    featured_home: formData.get('featured_home') === 'true',
   }
 }
 
@@ -179,5 +182,6 @@ function toDbPayload(data: ProjectFormData) {
     external_url: data.external_url ?? null,
     project_kind: data.project_kind,
     published: data.published,
+    featured_home: data.featured_home,
   }
 }

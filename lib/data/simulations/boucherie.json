@@ -1,0 +1,56 @@
+{
+  "businessType": "boucherie",
+  "theme": "artisan-boucherie",
+  "name": "Boucherie du Terroir",
+  "tagline": "Viandes de qualité et préparations maison",
+  "description": "La Boucherie du Terroir sélectionne des viandes de qualité et propose des préparations maison pour le quotidien et les repas de famille.",
+  "heroImage": "/images/simulations/boucherie/hero.webp",
+  "gallery": [
+    "/images/simulations/boucherie/gallery1.webp",
+    "/images/simulations/boucherie/gallery2.webp",
+    "/images/simulations/boucherie/gallery3.webp"
+  ],
+  "contact": {
+    "address": "8 rue de la République",
+    "city": "32600 L'Isle-Jourdain",
+    "phone": "05 62 11 22 33"
+  },
+  "hours": [
+    "Lundi : fermé",
+    "Mardi - Vendredi : 8h00 - 19h00",
+    "Samedi : 8h00 - 18h00",
+    "Dimanche : 8h00 - 12h30"
+  ],
+  "highlights": [
+    "Préparations maison",
+    "Conseils cuisson",
+    "Produits pour barbecue",
+    "Commande simple"
+  ],
+  "featuredCards": [
+    {
+      "title": "Entrecôte de bœuf",
+      "text": "Une viande tendre et savoureuse.",
+      "image": "/images/simulations/boucherie/featuredCards1.webp"
+    },
+    {
+      "title": "Saucisses maison",
+      "text": "Préparées sur place avec des ingrédients de qualité.",
+      "image": "/images/simulations/boucherie/featuredCards2.webp"
+    },
+    {
+      "title": "Brochettes marinées",
+      "text": "Parfaites pour les grillades.",
+      "image": "/images/simulations/boucherie/featuredCards3.webp"
+    }
+  ],
+  "reviews": [
+    "Viande excellente et toujours de très bons conseils.",
+    "Produits frais et préparations maison très appréciées.",
+    "Parfait pour les grillades et les repas en famille."
+  ],
+
+  "seoTitle": "Exemple de site internet pour boucherie artisanale | SIGWEB",
+  "seoDescription": "Découvrez un exemple de site internet pour boucherie artisanale : produits, préparations maison et informations pratiques. Réalisable pour votre boucherie entre Toulouse et le Gers, en Occitanie.",
+  "intro": "Voici un exemple de site pour une boucherie artisanale. Mise en avant des produits, des spécialités maison et des informations pratiques pour vos clients. Ce type de site est réalisable pour votre commerce entre Toulouse et le Gers, en Occitanie."
+}

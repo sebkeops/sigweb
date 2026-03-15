@@ -1,0 +1,63 @@
+{
+  "businessType": "pizzeria",
+  "theme": "artisan-pizzeria",
+  "name": "Pizza Napoli",
+  "tagline": "Des pizzas généreuses à pâte artisanale",
+  "description": "Pizza Napoli prépare des pizzas à pâte maison avec des ingrédients soigneusement sélectionnés, sur place ou à emporter.",
+
+  "heroImage": "/images/simulations/pizzeria/hero.webp",
+
+  "gallery": [
+    "/images/simulations/pizzeria/gallery1.webp",
+    "/images/simulations/pizzeria/gallery2.webp",
+    "/images/simulations/pizzeria/gallery3.webp"
+  ],
+
+  "contact": {
+    "address": "5 avenue de Toulouse",
+    "city": "32600 L'Isle-Jourdain",
+    "phone": "05 62 44 55 66"
+  },
+
+  "hours": [
+    "Lundi : fermé",
+    "Mardi - Jeudi : 11h30 - 14h00 / 18h00 - 22h00",
+    "Vendredi - Samedi : 11h30 - 14h00 / 18h00 - 23h00",
+    "Dimanche : 18h00 - 22h00"
+  ],
+
+  "highlights": [
+    "Pâte faite maison",
+    "Sur place ou à emporter",
+    "Commande simple",
+    "Carte claire et efficace"
+  ],
+
+  "featuredCards": [
+    {
+      "title": "Pizza Margherita",
+      "text": "La recette classique, simple et savoureuse.",
+      "image": "/images/simulations/pizzeria/featuredCards1.webp"
+    },
+    {
+      "title": "Pizza Reine",
+      "text": "Tomate, jambon, champignons et mozzarella.",
+      "image": "/images/simulations/pizzeria/featuredCards2.webp"
+    },
+    {
+      "title": "Pizza 4 fromages",
+      "text": "Une pizza gourmande pour les amateurs de fromage.",
+      "image": "/images/simulations/pizzeria/featuredCards3.webp"
+    }
+  ],
+
+  "reviews": [
+    "Pizzas très bonnes, bien garnies et service rapide.",
+    "La pâte est excellente et les recettes plaisent à toute la famille.",
+    "Très pratique pour commander rapidement."
+  ],
+
+  "seoTitle": "Exemple de site internet pour pizzeria artisanale | SIGWEB",
+  "seoDescription": "Découvrez un exemple de site internet pour pizzeria artisanale : carte des pizzas, commande à emporter et informations pratiques. Réalisable pour votre pizzeria entre Toulouse et le Gers, en Occitanie.",
+  "intro": "Voici un exemple de site pour une pizzeria artisanale. Carte des pizzas, commande à emporter, horaires et coordonnées : tout ce qu'un client cherche avant de passer commande. Ce type de site est réalisable pour votre établissement entre Toulouse et le Gers."
+}

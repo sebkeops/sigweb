@@ -23,7 +23,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
   return (
-    <article className="group overflow-hidden rounded-md border border-border bg-surface shadow-sm transition-shadow hover:shadow-card">
+    <article className="group flex h-full flex-col overflow-hidden rounded-md border border-border bg-surface shadow-sm transition-shadow hover:shadow-card">
       {/* Image */}
       <div className="relative aspect-video bg-surface-strong">
         {project.cover_image_url ? (
@@ -42,7 +42,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       </div>
 
       {/* Contenu */}
-      <div className="p-6">
+      <div className="flex flex-1 flex-col p-6">
         <div className="mb-3 flex flex-wrap gap-2">
           <Badge variant={project.project_kind === 'simulation' ? 'orange' : 'green'}>
             {kindLabels[project.project_kind] ?? project.project_kind}
@@ -62,16 +62,25 @@ export default function ProjectCard({ project }: ProjectCardProps) {
           </p>
         )}
 
-        {project.external_url && (
-          <Link
-            href={project.external_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-body text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
-          >
-            Voir le site →
-          </Link>
-        )}
+        <div className="mt-auto pt-4">
+          {project.project_kind === 'simulation' ? (
+            <Link
+              href={`/simulations/${project.slug}`}
+              className="font-body text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
+            >
+              Voir la simulation →
+            </Link>
+          ) : project.external_url ? (
+            <Link
+              href={project.external_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-body text-sm font-semibold text-primary underline underline-offset-4 hover:text-primary-dark"
+            >
+              Voir le site →
+            </Link>
+          ) : null}
+        </div>
       </div>
     </article>
   )

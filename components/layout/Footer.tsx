@@ -11,7 +11,7 @@ export default function Footer() {
             <div>
               <span className="font-heading text-lg font-bold text-primary">SIGWEB</span>
               <p className="font-body text-sm text-muted">
-                Sites web pour commerces et artisans · Toulouse
+                Entre Toulouse et le Gers, en Occitanie
               </p>
             </div>
           </div>
@@ -31,7 +31,12 @@ export default function Footer() {
             </Link>
           </nav>
 
-          <p className="font-body text-xs text-muted">© {new Date().getFullYear()} Sigweb</p>
+          <div className="text-right">
+            <p className="font-body text-xs text-muted">© {new Date().getFullYear()} SIGWEB</p>
+            <p className="mt-1 font-body text-xs text-muted">
+              Création de sites internet pour artisans et commerces locaux
+            </p>
+          </div>
         </div>
       </div>
     </footer>

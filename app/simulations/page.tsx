@@ -7,9 +7,9 @@ import { createClient } from '@/lib/supabase/server'
 import type { Project } from '@/types'
 
 export const metadata: Metadata = {
-  title: 'Simulations de sites web',
+  title: 'Exemples de sites internet pour commerces locaux et artisans',
   description:
-    'Découvrez nos simulations de sites web pour boulangeries, artisans et commerces de proximité. Visualisez ce que votre site pourrait ressembler.',
+    'Découvrez des exemples concrets de sites internet pour boulangeries, boucheries, pizzerias, coiffeurs et artisans. Visualisez ce que je peux créer pour votre commerce, entre Toulouse et le Gers.',
 }
 
 async function getSimulations(): Promise<Project[]> {
@@ -33,8 +33,8 @@ export default async function SimulationsPage() {
         <PageHero
           label="Avant de vous décider"
           title="Simulations"
-          description="Pas encore prêt à vous lancer ? Voici des exemples concrets de ce que votre site pourrait ressembler, avant tout engagement."
-          imageUrl="https://images.unsplash.com/photo-1467232004584-a241de8bcf5d?auto=format&fit=crop&w=1600&q=80"
+          description="Pas encore prêt à vous lancer ? Voici quelques exemples de sites que je pourrais créer pour un commerce comme le vôtre. Ces simulations permettent simplement de se projeter, sans engagement."
+          imageUrl="/images/hero-simulations.webp"
           imageAlt="Création de site web sur ordinateur"
         />
 

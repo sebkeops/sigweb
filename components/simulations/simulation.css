@@ -1,0 +1,603 @@
+/* ── Reset scoped ────────────────────────────────────────────────────────── */
+#sim *,
+#sim *::before,
+#sim *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+#sim {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+/* Force la police sur les headings (Tailwind globals injecte Nunito) */
+#sim h1,
+#sim h2,
+#sim h3,
+#sim h4 {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Container ───────────────────────────────────────────────────────────── */
+#sim .sim-container {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ── Badge Sigweb ────────────────────────────────────────────────────────── */
+#sim .sim-badge {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: rgba(20, 20, 20, 0.85);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.7rem;
+  font-weight: 500;
+  padding: 6px 13px;
+  border-radius: 99px;
+  backdrop-filter: blur(6px);
+  z-index: 999;
+  pointer-events: none;
+  letter-spacing: 0.02em;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+#sim .sim-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.97);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 0;
+}
+
+#sim .sim-header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+#sim .sim-site-name {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.3px;
+}
+
+#sim .sim-header-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 7px 16px;
+  border-radius: 99px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+
+#sim .sim-header-phone:hover {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* ── Hero ────────────────────────────────────────────────────────────────── */
+#sim .sim-hero {
+  position: relative;
+  min-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  color: #fff;
+}
+
+#sim .sim-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--hero-bg-color);
+}
+
+#sim .sim-hero-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 0, 0, 0.08) 0%,
+    rgba(0, 0, 0, 0.25) 45%,
+    rgba(0, 0, 0, 0.68) 100%
+  );
+}
+
+#sim .sim-hero-body {
+  position: relative;
+  z-index: 2;
+  padding: 80px 0 48px;
+}
+
+#sim .sim-hero-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--primary-light);
+  margin-bottom: 14px;
+  opacity: 0.95;
+}
+
+#sim .sim-hero h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 800;
+  line-height: 1.12;
+  max-width: 700px;
+  margin-bottom: 18px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+#sim .sim-hero-desc {
+  font-size: 1.05rem;
+  opacity: 0.9;
+  max-width: 540px;
+  margin-bottom: 36px;
+  line-height: 1.65;
+}
+
+#sim .sim-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+#sim .sim-btn-primary {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 13px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+#sim .sim-btn-primary:hover {
+  background: var(--primary-dark);
+}
+
+#sim .sim-btn-ghost {
+  display: inline-block;
+  background: transparent;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding: 12px 28px;
+  border-radius: 8px;
+  text-decoration: none;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+#sim .sim-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #fff;
+}
+
+#sim .sim-hero-strip {
+  position: relative;
+  z-index: 2;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 14px 0;
+}
+
+#sim .sim-hero-strip-inner {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+#sim .sim-hero-strip-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+#sim .sim-hero-strip-item a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+#sim .sim-hero-strip-item a:hover {
+  text-decoration: underline;
+}
+
+/* ── About ───────────────────────────────────────────────────────────────── */
+#sim .sim-about {
+  padding: 80px 0;
+  background: var(--surface);
+}
+
+#sim .sim-about-inner {
+  max-width: 760px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+#sim .sim-section-label {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--primary);
+  margin-bottom: 14px;
+}
+
+#sim .sim-section-title {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 16px;
+  line-height: 1.2;
+}
+
+#sim .sim-about-desc {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.8;
+  margin-bottom: 36px;
+}
+
+#sim .sim-highlights-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+#sim .sim-highlight-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 99px;
+}
+
+#sim .sim-highlight-pill::before {
+  content: '✓';
+  font-weight: 800;
+}
+
+/* ── Featured Cards ──────────────────────────────────────────────────────── */
+#sim .sim-cards {
+  padding: 80px 0;
+  background: var(--bg);
+}
+
+#sim .sim-section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+#sim .sim-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+#sim .sim-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s, box-shadow 0.25s;
+  display: flex;
+  flex-direction: column;
+}
+
+#sim .sim-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow);
+}
+
+#sim .sim-card-img-wrap {
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+
+#sim .sim-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s;
+  background-color: var(--primary-light);
+}
+
+#sim .sim-card:hover .sim-card-img {
+  transform: scale(1.05);
+}
+
+#sim .sim-card-body {
+  padding: 22px 20px 24px;
+  flex: 1;
+}
+
+#sim .sim-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+#sim .sim-card-text {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ── Gallery ─────────────────────────────────────────────────────────────── */
+#sim .sim-gallery {
+  padding: 80px 0;
+  background: var(--surface);
+}
+
+#sim .sim-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+#sim .sim-gallery-item {
+  overflow: hidden;
+}
+
+#sim .sim-gallery-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+  background-color: var(--border);
+  transition: transform 0.35s;
+}
+
+#sim .sim-gallery-img:hover {
+  transform: scale(1.03);
+}
+
+/* ── Reviews ─────────────────────────────────────────────────────────────── */
+#sim .sim-reviews {
+  padding: 80px 0;
+  background: var(--bg);
+}
+
+#sim .sim-reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+#sim .sim-review-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 32px 24px 26px;
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+#sim .sim-review-quote {
+  font-size: 4.5rem;
+  color: var(--primary-light);
+  position: absolute;
+  top: 10px;
+  left: 18px;
+  line-height: 1;
+  font-family: Georgia, serif;
+  font-style: italic;
+}
+
+#sim .sim-review-text {
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1.75;
+  padding-top: 32px;
+  font-style: italic;
+}
+
+#sim .sim-review-stars {
+  color: #e0a020;
+  font-size: 0.9rem;
+  margin-top: 16px;
+  letter-spacing: 3px;
+}
+
+/* ── Infos pratiques ─────────────────────────────────────────────────────── */
+#sim .sim-info {
+  padding: 80px 0;
+  background: var(--surface);
+}
+
+#sim .sim-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: start;
+}
+
+#sim .sim-info-box-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--primary);
+  display: inline-block;
+}
+
+#sim .sim-hours-list {
+  list-style: none;
+}
+
+#sim .sim-hours-list li {
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+#sim .sim-hours-list li:last-child {
+  border-bottom: none;
+}
+
+#sim .sim-contact-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+#sim .sim-contact-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+#sim .sim-contact-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--primary-light);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+#sim .sim-contact-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+#sim .sim-contact-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#sim .sim-contact-value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+#sim .sim-contact-value a {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 1.05rem;
+}
+
+#sim .sim-contact-value a:hover {
+  text-decoration: underline;
+}
+
+/* ── CTA final ───────────────────────────────────────────────────────────── */
+#sim .sim-cta {
+  padding: 80px 0;
+  background: var(--primary);
+  text-align: center;
+  color: #fff;
+}
+
+#sim .sim-cta h2 {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  font-weight: 800;
+  margin-bottom: 12px;
+  color: #fff;
+}
+
+#sim .sim-cta p {
+  font-size: 1.05rem;
+  opacity: 0.88;
+  margin-bottom: 36px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#sim .sim-btn-white {
+  display: inline-block;
+  background: #fff;
+  color: var(--primary);
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 14px 32px;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.2s;
+}
+
+#sim .sim-btn-white:hover {
+  background: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+#sim .sim-footer {
+  background: #1a1a1a;
+  color: rgba(255, 255, 255, 0.45);
+  text-align: center;
+  padding: 24px 20px;
+  font-size: 0.82rem;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  #sim .sim-cards-grid { grid-template-columns: 1fr; gap: 16px; }
+  #sim .sim-reviews-grid { grid-template-columns: 1fr; gap: 16px; }
+  #sim .sim-info-grid { grid-template-columns: 1fr; gap: 40px; }
+  #sim .sim-gallery-grid { grid-template-columns: 1fr 1fr; }
+  #sim .sim-hero { min-height: 75vh; }
+  #sim .sim-hero-body { padding: 60px 0 40px; }
+}
+
+@media (max-width: 540px) {
+  #sim .sim-cards,
+  #sim .sim-gallery,
+  #sim .sim-reviews,
+  #sim .sim-about,
+  #sim .sim-info,
+  #sim .sim-cta { padding: 56px 0; }
+  #sim .sim-gallery-grid { grid-template-columns: 1fr; }
+  #sim .sim-hero { min-height: 70vh; }
+}

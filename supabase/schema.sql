@@ -19,6 +19,7 @@ create table projects (
   external_url      text,
   project_kind      project_kind not null,
   published         boolean     not null default false,
+  featured_home     boolean     not null default false,
   created_at        timestamptz not null default now(),
   updated_at        timestamptz not null default now()
 );
@@ -93,5 +94,6 @@ create index projects_slug_idx        on projects (slug);
 create index projects_published_idx   on projects (published);
 create index projects_kind_idx        on projects (project_kind);
 create index projects_created_at_idx  on projects (created_at desc);
+create index projects_featured_home_idx on projects (featured_home) where featured_home = true;
 create index contacts_is_read_idx     on contacts (is_read);
 create index contacts_created_at_idx  on contacts (created_at desc);

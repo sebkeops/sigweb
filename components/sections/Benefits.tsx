@@ -61,8 +61,8 @@ export default function Benefits() {
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
             <AnimateIn key={f.title} delay={i * 80}>
-              <div className="h-full rounded-md border border-border bg-surface p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-card">
-                <div className="mb-4 text-center text-3xl">{f.icon}</div>
+              <div className="h-full rounded-md border border-border bg-surface p-7 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-card">
+                <div className="mb-4 text-3xl">{f.icon}</div>
                 <h3 className="mb-2 font-heading text-lg font-bold text-ink">{f.title}</h3>
                 <p className="font-body text-sm leading-relaxed text-muted">{f.description}</p>
               </div>

@@ -27,6 +27,7 @@ export const projectSchema = z.object({
     .optional(),
   project_kind: z.enum(['simulation', 'realisation']),
   published: z.boolean(),
+  featured_home: z.boolean(),
 })
 
 export type ProjectFormData = z.infer<typeof projectSchema>

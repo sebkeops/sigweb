@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charte Graphique — Sigweb</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f3eb;
+    --surface: #ffffff;
+    --surface-soft: #fbf8f2;
+    --surface-strong: #efe7d8;
+    --primary: #2f6f4f;
+    --primary-dark: #215139;
+    --primary-soft: #dceade;
+    --accent: #d98a3d;
+    --accent-soft: #f7e4cf;
+    --ink: #243129;
+    --text: #2f3a34;
+    --muted: #6d776f;
+    --border: #ddd4c4;
+    --shadow: 0 10px 30px rgba(36, 49, 41, 0.08);
+    --radius-sm: 10px;
+    --radius-md: 18px;
+    --radius-lg: 28px;
+    --font-heading: 'Nunito', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background:
+      radial-gradient(circle at top right, rgba(217,138,61,0.10), transparent 24%),
+      radial-gradient(circle at top left, rgba(47,111,79,0.10), transparent 30%),
+      var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    padding: 40px 20px 80px;
+    line-height: 1.6;
+  }
+
+  .page {
+    max-width: 1060px;
+    margin: 0 auto;
+  }
+
+  .hero {
+    background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(251,248,242,0.96));
+    border: 1px solid rgba(221,212,196,0.9);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 34px;
+    margin-bottom: 36px;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 28px;
+    align-items: center;
+  }
+
+  .hero h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(38px, 6vw, 64px);
+    line-height: 1.02;
+    color: var(--ink);
+    margin-bottom: 14px;
+  }
+
+  .hero p {
+    max-width: 620px;
+    font-size: 18px;
+    color: var(--muted);
+    margin-bottom: 18px;
+  }
+
+  .pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .pill {
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: var(--surface-soft);
+    border: 1px solid var(--border);
+    font-size: 14px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .hero-card {
+    background: linear-gradient(180deg, #fff, #f8f4ec);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 24px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+
+  .hero-card .card-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 14px;
+  }
+
+  .mini-site {
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid #e8dece;
+    background: #fff;
+  }
+
+  .mini-site-top {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    padding: 18px;
+  }
+
+  .mini-site-top strong {
+    display: block;
+    font-family: var(--font-heading);
+    font-size: 22px;
+    margin-bottom: 4px;
+  }
+
+  .mini-site-top span {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  .mini-site-body {
+    padding: 18px;
+    display: grid;
+    gap: 12px;
+  }
+
+  .line {
+    height: 10px;
+    border-radius: 999px;
+    background: #ece5d9;
+  }
+
+  .line.short { width: 42%; }
+  .line.mid { width: 68%; }
+
+  .btn-preview {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 12px 18px;
+    border-radius: 12px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    margin-top: 4px;
+  }
+
+  .section {
+    margin-bottom: 28px;
+    background: rgba(255,255,255,0.72);
+    border: 1px solid rgba(221,212,196,0.82);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+    padding: 30px;
+    backdrop-filter: blur(8px);
+  }
+
+  .section-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: end;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-kicker {
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-family: var(--font-heading);
+    color: var(--ink);
+    font-size: clamp(24px, 4vw, 36px);
+    line-height: 1.1;
+  }
+
+  .section-note {
+    color: var(--muted);
+    max-width: 420px;
+    font-size: 15px;
+  }
+
+  .logo-grid,
+  .colors-grid,
+  .components-grid,
+  .usage-grid,
+  .voice-grid,
+  .cards-grid {
+    display: grid;
+    gap: 18px;
+  }
+
+  .logo-grid,
+  .components-grid,
+  .usage-grid,
+  .voice-grid,
+  .cards-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  .logo-box,
+  .component,
+  .usage-box,
+  .voice-box,
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    padding: 22px;
+  }
+
+  .logo-stage {
+    min-height: 220px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    margin-bottom: 14px;
+  }
+
+  .logo-stage.dark { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+  .logo-stage.light { background: #fcf9f3; }
+  .logo-stage.warm { background: linear-gradient(135deg, #fff4e7, #f2e2ca); }
+  .logo-stage.soft { background: linear-gradient(135deg, #eef5ef, #ddeade); }
+
+  .brand-lockup {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .mark {
+    width: 70px;
+    height: 70px;
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    flex: none;
+    background: rgba(255,255,255,0.16);
+    border: 1px solid rgba(255,255,255,0.22);
+  }
+
+  .mark.lightmark {
+    background: white;
+    border-color: #e4dac9;
+  }
+
+  .brand-name {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 36px;
+    line-height: 1;
+  }
+
+  .brand-sub {
+    display: block;
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    opacity: 0.9;
+  }
+
+  .darktxt { color: #fff; }
+  .lighttxt { color: var(--ink); }
+
+  .logo-caption,
+  .small-label {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .colors-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  .swatch {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .swatch-top {
+    height: 110px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .swatch-body {
+    padding: 16px;
+  }
+
+  .swatch-name {
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+
+  .swatch-role,
+  .swatch-code {
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .type-samples {
+    display: grid;
+    gap: 18px;
+  }
+
+  .type-row {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px;
+  }
+
+  .type-meta {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .type-meta strong {
+    display: block;
+    color: var(--ink);
+    font-weight: 800;
+    font-size: 16px;
+  }
+
+  .sample-display {
+    font-family: var(--font-heading);
+    font-size: clamp(34px, 5vw, 52px);
+    color: var(--ink);
+    font-weight: 800;
+    line-height: 1.05;
+  }
+
+  .sample-h2 {
+    font-family: var(--font-heading);
+    font-size: 30px;
+    color: var(--ink);
+    font-weight: 800;
+  }
+
+  .sample-h3 {
+    font-family: var(--font-heading);
+    font-size: 22px;
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .sample-body {
+    font-size: 16px;
+    color: var(--text);
+    max-width: 650px;
+  }
+
+  .sample-small {
+    font-size: 14px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .component-label {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 800;
+    color: var(--primary);
+    margin-bottom: 14px;
+  }
+
+  .btn-row { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-tertiary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 18px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+    border: 1px solid var(--primary);
+  }
+
+  .btn-secondary {
+    background: var(--accent);
+    color: white;
+    border: 1px solid var(--accent);
+  }
+
+  .btn-tertiary {
+    background: var(--surface-soft);
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+
+  .service-card {
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px;
+    background: linear-gradient(180deg, #fff, #fbf8f2);
+  }
+
+  .tag-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+
+  .tag {
+    padding: 7px 11px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--primary-soft);
+    color: var(--primary-dark);
+  }
+
+  .service-card h3 {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .service-card p {
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .biz-card {
+    border-radius: 18px;
+    background: linear-gradient(135deg, #ffffff, #f5efe5);
+    border: 1px solid #e3d8c8;
+    padding: 20px;
+  }
+
+  .biz-card h4 {
+    font-family: var(--font-heading);
+    color: var(--ink);
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+
+  .biz-card p { color: var(--muted); font-size: 15px; }
+
+  .biz-meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 14px;
+  }
+
+  .biz-badge {
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  .spacing-row {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .space-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 18px 14px;
+    text-align: center;
+  }
+
+  .space-bar {
+    width: 42px;
+    margin: 0 auto 12px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--accent), var(--primary));
+  }
+
+  .space-size {
+    color: var(--ink);
+    font-weight: 800;
+    font-size: 16px;
+  }
+
+  .space-use {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 3px;
+  }
+
+  .usage-box h3,
+  .voice-box h3,
+  .card h3 {
+    font-family: var(--font-heading);
+    color: var(--ink);
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .usage-box p,
+  .voice-box p,
+  .card p,
+  .card li,
+  .usage-box li,
+  .voice-box li {
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  ul { padding-left: 18px; }
+  li + li { margin-top: 6px; }
+
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    padding: 22px 8px 0;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  @media (max-width: 900px) {
+    .hero-grid,
+    .logo-grid,
+    .components-grid,
+    .usage-grid,
+    .voice-grid,
+    .cards-grid,
+    .colors-grid,
+    .spacing-row,
+    .type-row {
+      grid-template-columns: 1fr;
+    }
+
+    .section-head {
+      align-items: start;
+    }
+
+    .hero,
+    .section {
+      padding: 24px;
+    }
+
+    .brand-lockup { flex-direction: column; text-align: center; }
+    .mark { width: 78px; height: 78px; }
+  }
+</style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <div class="eyebrow">Charte graphique · Sigweb</div>
+      <div class="hero-grid">
+        <div>
+          <h1>Une image plus simple, locale et rassurante.</h1>
+          <p>
+            Cette version repositionne Sigweb pour une cible de petits professionnels ruraux : artisans,
+            commerces de proximité, indépendants et activités locales qui veulent un site clair, sérieux
+            et facile à comprendre.
+          </p>
+          <div class="pill-row">
+            <span class="pill">Accessible</span>
+            <span class="pill">Humain</span>
+            <span class="pill">Local</span>
+            <span class="pill">Pratique</span>
+            <span class="pill">Professionnel sans être luxe</span>
+          </div>
+        </div>
+        <aside class="hero-card">
+          <div class="card-label">Direction retenue</div>
+          <div class="mini-site">
+            <div class="mini-site-top">
+              <strong>Sigweb</strong>
+              <span>Des sites web simples pour les pros de proximité</span>
+            </div>
+            <div class="mini-site-body">
+              <div class="line"></div>
+              <div class="line mid"></div>
+              <div class="line short"></div>
+              <div class="btn-preview">Demander un devis</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">01 · Positionnement</div>
+          <h2 class="section-title">L’identité à transmettre</h2>
+        </div>
+        <div class="section-note">
+          On remplace les codes du luxe par des codes plus proches du terrain : confiance, clarté, disponibilité et efficacité.
+        </div>
+      </div>
+
+      <div class="cards-grid">
+        <div class="card">
+          <h3>Ce que la marque doit dire</h3>
+          <ul>
+            <li>Je crée des sites utiles pour des professionnels concrets.</li>
+            <li>Je comprends les besoins simples : horaires, contact, services, visibilité locale.</li>
+            <li>Je rends le web accessible sans jargon inutile.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Ce qu’elle ne doit plus évoquer</h3>
+          <ul>
+            <li>Agence très haut de gamme ou studio de luxe.</li>
+            <li>Image trop distante, froide ou élitiste.</li>
+            <li>Univers trop mode, galerie ou marque premium.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">02 · Logo & déclinaisons</div>
+          <h2 class="section-title">Un logo simple, lisible et chaleureux</h2>
+        </div>
+        <div class="section-note">
+          Le nom doit rester immédiatement compréhensible, avec un symbole discret qui rappelle à la fois le digital et le lien de proximité.
+        </div>
+      </div>
+
+      <div class="logo-grid">
+        <div class="logo-box">
+          <div class="logo-stage dark">
+            <div class="brand-lockup">
+              <div class="mark">
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+                  <rect x="5" y="7" width="34" height="26" rx="7" stroke="white" stroke-width="2.8"/>
+                  <path d="M14 24L19 19L24 24L30 17" stroke="#ffd8b2" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="31" cy="31" r="4" fill="#d98a3d"/>
+                </svg>
+              </div>
+              <div class="darktxt">
+                <div class="brand-name">Sigweb</div>
+                <span class="brand-sub">Sites web simples pour pros locaux</span>
+              </div>
+            </div>
+          </div>
+          <div class="logo-caption">Version principale sur fond vert profond</div>
+        </div>
+
+        <div class="logo-box">
+          <div class="logo-stage light">
+            <div class="brand-lockup">
+              <div class="mark lightmark">
+                <svg width="44" height="44" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+                  <rect x="5" y="7" width="34" height="26" rx="7" stroke="#2f6f4f" stroke-width="2.8"/>
+                  <path d="M14 24L19 19L24 24L30 17" stroke="#d98a3d" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="31" cy="31" r="4" fill="#2f6f4f"/>
+                </svg>
+              </div>
+              <div class="lighttxt">
+                <div class="brand-name">Sigweb</div>
+                <span class="brand-sub">Création de sites pour commerces & artisans</span>
+              </div>
+            </div>
+          </div>
+          <div class="logo-caption">Version claire pour documents, devis et supports imprimés</div>
+        </div>
+
+        <div class="logo-box">
+          <div class="logo-stage warm">
+            <div class="brand-lockup">
+              <div class="mark lightmark" style="border-radius:999px;">
+                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" aria-hidden="true">
+                  <path d="M8 30V12.5C8 11.1 9.1 10 10.5 10H31.5C32.9 10 34 11.1 34 12.5V25" stroke="#2f6f4f" stroke-width="2.7" stroke-linecap="round"/>
+                  <path d="M13 19H29" stroke="#d98a3d" stroke-width="2.7" stroke-linecap="round"/>
+                  <path d="M13 25H23" stroke="#d98a3d" stroke-width="2.7" stroke-linecap="round"/>
+                  <circle cx="30" cy="29" r="5" fill="#2f6f4f"/>
+                </svg>
+              </div>
+              <div class="lighttxt">
+                <div class="brand-name">Sigweb</div>
+                <span class="brand-sub">Pictogramme utilisable seul</span>
+              </div>
+            </div>
+          </div>
+          <div class="logo-caption">Icône seule pour favicon, réseaux, carte de visite</div>
+        </div>
+
+        <div class="logo-box">
+          <div class="logo-stage soft">
+            <div class="brand-lockup">
+              <div class="mark lightmark" style="width:64px;height:64px;border-radius:16px;">
+                <svg width="36" height="36" viewBox="0 0 44 44" fill="none" aria-hidden="true">
+                  <rect x="5" y="7" width="34" height="26" rx="7" stroke="#2f6f4f" stroke-width="2.8"/>
+                  <path d="M14 24L19 19L24 24L30 17" stroke="#d98a3d" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="31" cy="31" r="4" fill="#2f6f4f"/>
+                </svg>
+              </div>
+              <div class="lighttxt">
+                <div class="brand-name" style="font-size:30px;">SIGWEB</div>
+                <span class="brand-sub">Version compacte pour enseignes digitales</span>
+              </div>
+            </div>
+          </div>
+          <div class="logo-caption">Version compacte plus robuste pour petits formats</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">03 · Palette de couleurs</div>
+          <h2 class="section-title">Des couleurs rassurantes et proches du terrain</h2>
+        </div>
+        <div class="section-note">
+          Le vert crée la confiance, le beige apporte la chaleur, l’orange donne un accent vivant sans effet luxe.
+        </div>
+      </div>
+
+      <div class="colors-grid">
+        <div class="swatch">
+          <div class="swatch-top" style="background:#2f6f4f;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Vert proximité</div>
+            <div class="swatch-role">Couleur principale, boutons, repères, titres secondaires</div>
+            <div class="swatch-code">#2F6F4F</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-top" style="background:#d98a3d;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Orange accueil</div>
+            <div class="swatch-role">Accent, appels à l’action, touches conviviales</div>
+            <div class="swatch-code">#D98A3D</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-top" style="background:#f6f3eb;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Beige fond</div>
+            <div class="swatch-role">Fond général, ambiance douce et naturelle</div>
+            <div class="swatch-code">#F6F3EB</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-top" style="background:#243129;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Vert encre</div>
+            <div class="swatch-role">Titres forts, texte sur fonds clairs</div>
+            <div class="swatch-code">#243129</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-top" style="background:#dceade;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Vert doux</div>
+            <div class="swatch-role">Badges, fonds de zones, éléments de soutien</div>
+            <div class="swatch-code">#DCEADE</div>
+          </div>
+        </div>
+        <div class="swatch">
+          <div class="swatch-top" style="background:#efe7d8;"></div>
+          <div class="swatch-body">
+            <div class="swatch-name">Sable doux</div>
+            <div class="swatch-role">Cartes, séparations, zones secondaires</div>
+            <div class="swatch-code">#EFE7D8</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">04 · Typographie</div>
+          <h2 class="section-title">Lisibilité avant tout</h2>
+        </div>
+        <div class="section-note">
+          On abandonne la typo luxe au profit d’un duo plus simple, moderne et sympathique : Nunito + Inter.
+        </div>
+      </div>
+
+      <div class="type-samples">
+        <div class="type-row">
+          <div class="type-meta"><strong>Titre principal</strong>Nunito ExtraBold · 48 à 56 px<br>Pour le hero, les grands messages et les pages d’accueil</div>
+          <div class="sample-display">Un site clair pour faire venir vos clients</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>Titre de section</strong>Nunito Bold · 30 px<br>Pour rythmer les pages et garder une lecture facile</div>
+          <div class="sample-h2">Des sites web simples, utiles et rassurants</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>Sous-titre</strong>Nunito Bold · 22 px<br>Pour cartes, offres et blocs de services</div>
+          <div class="sample-h3">Site vitrine, refonte, prise de contact</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>Texte courant</strong>Inter Regular · 16 px<br>Pour contenus, descriptions et informations pratiques</div>
+          <div class="sample-body">Je crée des sites web pour les artisans, commerces de proximité et petites activités locales qui veulent être trouvés plus facilement et présenter leur travail avec clarté.</div>
+        </div>
+        <div class="type-row">
+          <div class="type-meta"><strong>Petits repères</strong>Inter SemiBold · 14 px<br>Pour badges, infos courtes et navigation</div>
+          <div class="sample-small">Devis rapide · Accompagnement local · Mise en ligne</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">05 · Composants UI</div>
+          <h2 class="section-title">Des éléments pratiques et concrets</h2>
+        </div>
+        <div class="section-note">
+          Chaque composant doit inspirer la simplicité d’usage, pas la sophistication inutile.
+        </div>
+      </div>
+
+      <div class="components-grid">
+        <div class="component">
+          <div class="component-label">Boutons</div>
+          <div class="btn-row">
+            <span class="btn-primary">Demander un devis</span>
+            <span class="btn-secondary">Voir des exemples</span>
+            <span class="btn-tertiary">Être rappelé</span>
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="component-label">Carte service</div>
+          <div class="service-card">
+            <div class="tag-row">
+              <span class="tag">Site vitrine</span>
+              <span class="tag">Visibilité locale</span>
+            </div>
+            <h3>Présenter votre activité clairement</h3>
+            <p>Horaires, coordonnées, services, photos, formulaire de contact et mise en confiance en quelques sections bien pensées.</p>
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="component-label">Carte métier</div>
+          <div class="biz-card">
+            <h4>Boulangerie de village</h4>
+            <p>Page d’accueil simple, horaires, produits phares, plan d’accès et prise de contact rapide.</p>
+            <div class="biz-meta">
+              <span class="biz-badge">Horaires</span>
+              <span class="biz-badge">Photos</span>
+              <span class="biz-badge">Google Maps</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="component">
+          <div class="component-label">Badges & infos</div>
+          <div class="tag-row" style="margin-bottom:0;">
+            <span class="tag">Coiffeur</span>
+            <span class="tag">Boucherie</span>
+            <span class="tag">Pâtisserie</span>
+            <span class="tag">Papeterie</span>
+            <span class="tag">Artisan local</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">06 · Ton de marque</div>
+          <h2 class="section-title">Comment Sigweb doit parler</h2>
+        </div>
+        <div class="section-note">
+          Le discours doit rester clair, direct et rassurant, avec des mots compréhensibles pour quelqu’un qui n’est pas du web.
+        </div>
+      </div>
+
+      <div class="voice-grid">
+        <div class="voice-box">
+          <h3>Ton recommandé</h3>
+          <ul>
+            <li>Simple et concret.</li>
+            <li>Professionnel mais accessible.</li>
+            <li>Pédagogue sans jargon technique.</li>
+            <li>Ancré dans l’idée d’accompagnement local.</li>
+          </ul>
+        </div>
+        <div class="voice-box">
+          <h3>Exemples de formulations</h3>
+          <ul>
+            <li>Un site clair pour présenter votre activité.</li>
+            <li>Vos horaires, vos services, vos coordonnées, au bon endroit.</li>
+            <li>Une présence en ligne simple et sérieuse.</li>
+            <li>Un accompagnement humain, de la création à la mise en ligne.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">07 · Usages recommandés</div>
+          <h2 class="section-title">Où cette charte fonctionnera bien</h2>
+        </div>
+        <div class="section-note">
+          Cette direction visuelle est pensée pour une activité de proximité, avec une clientèle qui cherche d’abord la confiance et la simplicité.
+        </div>
+      </div>
+
+      <div class="usage-grid">
+        <div class="usage-box">
+          <h3>Très adapté pour</h3>
+          <ul>
+            <li>Salon de coiffure</li>
+            <li>Boulangerie / pâtisserie</li>
+            <li>Boucherie / charcuterie</li>
+            <li>Papeterie / librairie locale</li>
+            <li>Auto-entrepreneurs de services</li>
+          </ul>
+        </div>
+        <div class="usage-box">
+          <h3>Bénéfices perçus</h3>
+          <ul>
+            <li>Image plus proche des gens.</li>
+            <li>Moins intimidante pour les petits pros.</li>
+            <li>Plus crédible pour une offre simple et efficace.</li>
+            <li>Facile à décliner sur site, carte de visite et devis.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <div>
+          <div class="section-kicker">08 · Espacements</div>
+          <h2 class="section-title">Un rythme visuel souple et respirant</h2>
+        </div>
+        <div class="section-note">
+          Des espacements généreux, mais pas trop “luxe”. Il faut de l’air, tout en restant pratique et lisible.
+        </div>
+      </div>
+
+      <div class="spacing-row">
+        <div class="space-item"><div class="space-bar" style="height:8px;"></div><div class="space-size">8 px</div><div class="space-use">micro-écarts</div></div>
+        <div class="space-item"><div class="space-bar" style="height:12px;"></div><div class="space-size">12 px</div><div class="space-use">icônes / tags</div></div>
+        <div class="space-item"><div class="space-bar" style="height:16px;"></div><div class="space-size">16 px</div><div class="space-use">petits blocs</div></div>
+        <div class="space-item"><div class="space-bar" style="height:24px;"></div><div class="space-size">24 px</div><div class="space-use">cartes</div></div>
+        <div class="space-item"><div class="space-bar" style="height:32px;"></div><div class="space-size">32 px</div><div class="space-use">sections</div></div>
+        <div class="space-item"><div class="space-bar" style="height:48px;"></div><div class="space-size">48 px</div><div class="space-use">grands respirations</div></div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div>Sigweb · Charte graphique repositionnée pour une cible de petits professionnels ruraux</div>
+      <div>Version HTML retravaillée · Mars 2026</div>
+    </footer>
+  </main>
+</body>
+</html>

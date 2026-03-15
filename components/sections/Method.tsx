@@ -43,11 +43,11 @@ export default function Method() {
         <div className="grid gap-6 sm:grid-cols-3">
           {steps.map((step, i) => (
             <AnimateIn key={step.num} delay={i * 100}>
-              <div className="h-full rounded-md border border-border bg-surface p-7 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-card">
-                <span className="mb-4 block text-center font-heading text-4xl font-extrabold text-primary-soft">
+              <div className="h-full rounded-md border border-border bg-surface p-7 text-center shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-card">
+                <span className="mb-4 block font-heading text-4xl font-extrabold text-primary-soft">
                   {step.num}
                 </span>
-                <h3 className="mb-2 font-heading text-lg font-bold text-ink">{step.title}</h3>
+                <h3 className="mb-2 min-h-[3.5rem] font-heading text-lg font-bold text-ink">{step.title}</h3>
                 <p className="font-body text-sm leading-relaxed text-muted">{step.description}</p>
               </div>
             </AnimateIn>

@@ -1,0 +1,63 @@
+{
+  "businessType": "boulangerie",
+  "theme": "artisan-boulangerie",
+  "name": "Boulangerie du Marché",
+  "tagline": "Pain artisanal, viennoiseries et gourmandises du quotidien",
+  "description": "La Boulangerie du Marché propose chaque jour des pains artisanaux, des viennoiseries pur beurre, des pâtisseries maison et une offre snacking simple pour le déjeuner.",
+
+  "heroImage": "/images/simulations/boulangerie/hero.webp",
+
+  "gallery": [
+    "/images/simulations/boulangerie/gallery1.webp",
+    "/images/simulations/boulangerie/gallery2.webp",
+    "/images/simulations/boulangerie/gallery3.webp"
+  ],
+
+  "contact": {
+    "address": "12 place du Marché",
+    "city": "32600 L'Isle-Jourdain",
+    "phone": "05 62 00 00 00"
+  },
+
+  "hours": [
+    "Lundi : fermé",
+    "Mardi - Vendredi : 6h30 - 19h30",
+    "Samedi : 6h30 - 19h00",
+    "Dimanche : 7h00 - 13h00"
+  ],
+
+  "highlights": [
+    "Fabrication artisanale",
+    "Viennoiseries chaque matin",
+    "Snacking du midi",
+    "Commande de gâteaux"
+  ],
+
+  "featuredCards": [
+    {
+      "title": "Baguette tradition",
+      "text": "Cuite chaque jour dans notre fournil.",
+      "image": "/images/simulations/boulangerie/featuredCards1.webp"
+    },
+    {
+      "title": "Croissant pur beurre",
+      "text": "Une viennoiserie dorée et fondante.",
+      "image": "/images/simulations/boulangerie/featuredCards2.webp"
+    },
+    {
+      "title": "Pain aux céréales",
+      "text": "Un pain généreux et riche en saveurs.",
+      "image": "/images/simulations/boulangerie/featuredCards3.webp"
+    }
+  ],
+
+  "reviews": [
+    "Très bon pain et accueil toujours chaleureux.",
+    "Les viennoiseries sont excellentes, on se régale à chaque fois.",
+    "Pratique, bon et simple : tout ce qu'on attend d'une vraie boulangerie."
+  ],
+
+  "seoTitle": "Exemple de site internet pour boulangerie artisanale | SIGWEB",
+  "seoDescription": "Découvrez un exemple de site internet pour boulangerie artisanale : produits du jour, horaires, galerie et informations pratiques. Réalisable pour votre boulangerie entre Toulouse et le Gers, en Occitanie.",
+  "intro": "Voici un exemple de site que je peux créer pour une boulangerie artisanale. Produits du jour, horaires, galerie et coordonnées : tout ce que vos clients cherchent avant de pousser la porte. Ce type de site convient à toute boulangerie souhaitant être visible en ligne simplement, entre Toulouse et le Gers."
+}

@@ -5,42 +5,42 @@ import PageHero from '@/components/ui/PageHero'
 import { LinkButton } from '@/components/ui/Button'
 
 export const metadata: Metadata = {
-  title: 'Notre méthode',
+  title: 'Ma méthode',
   description:
-    "Comment Sigweb crée votre site web : de l'écoute à la mise en ligne, en passant par la formation. Simple, transparent et adapté aux commerçants.",
+    "Comment je crée votre site internet : écoute, simulation, création et accompagnement. Une méthode simple et transparente pour artisans, commerçants et indépendants entre Toulouse et le Gers.",
 }
 
 const steps = [
   {
     num: '01',
-    title: 'On écoute votre projet',
+    title: "J'écoute votre projet",
     description: [
-      "Tout commence par un échange simple — en personne, par téléphone ou en visio. On vous écoute parler de votre commerce, de vos clients, de ce que vous voulez que les gens trouvent sur votre site.",
-      "Pas de jargon, pas de présentation commerciale. Juste une conversation pour comprendre ce dont vous avez besoin.",
+      "On prend le temps d’échanger sur votre commerce : ce que vous faites, vos clients, et ce que vous voulez montrer sur votre site.",
+      "Pas de jargon, pas de discours commercial. Juste une discussion simple pour comprendre votre besoin.",
     ],
   },
   {
     num: '02',
-    title: 'On crée votre site',
+    title: 'Je crée votre site',
     description: [
-      "On s'occupe de tout : le design, les textes, la structure, les photos. On vous présente des maquettes avant de commencer à coder.",
-      "Vous validez à chaque étape. Si quelque chose ne vous convient pas, on ajuste. C'est votre site, pas le nôtre.",
+      "Je m’occupe de tout : design, structure du site, textes et mise en page.",
+      "Je vous présente des maquettes avant la mise en ligne pour que vous puissiez valider chaque étape.",
     ],
   },
   {
     num: '03',
-    title: 'On vous forme',
+    title: 'Je vous montre comment l’utiliser',
     description: [
-      "Avant la mise en ligne, on passe du temps à vous expliquer comment fonctionne votre espace d'administration. Comment mettre à jour vos horaires, publier une actualité, changer une photo.",
-      "C'est fait pour être simple. La plupart de nos clients sont autonomes en moins d'une heure.",
+      "Avant la mise en ligne, je vous explique comment gérer votre site.",
+      "Modifier un horaire, ajouter une photo ou publier une actualité devient très simple.",
     ],
   },
   {
     num: '04',
     title: 'Votre site est en ligne',
     description: [
-      "Votre site est mis en ligne, référencé, et prêt à accueillir vos clients. Vous avez la main sur vos contenus.",
-      "On reste disponibles pour vous accompagner si besoin, faire des évolutions ou ajouter de nouvelles fonctionnalités.",
+      "Votre site est prêt à accueillir vos clients.",
+      "Vous restez libre de modifier vos contenus, et je reste disponible si vous avez besoin d’aide ou d’évolutions.",
     ],
   },
 ]
@@ -48,19 +48,19 @@ const steps = [
 const faq = [
   {
     q: 'Combien de temps ça prend ?',
-    a: "Entre deux semaines et un mois selon la complexité du projet. On s'adapte à votre rythme.",
+    a: "La plupart des sites sont réalisés en 2 à 4 semaines selon le projet.",
   },
   {
-    q: 'Est-ce que je peux vraiment modifier moi-même ?',
-    a: "Oui. C'est même l'un de nos engagements. Vous pouvez modifier vos horaires, vos actualités et vos photos sans faire appel à nous.",
+    q: 'Est-ce que je peux modifier mon site moi-même ?',
+    a: "Oui. Vous pouvez modifier vos horaires, vos photos ou vos actualités facilement.",
   },
   {
-    q: "Et si j'ai besoin d'aide après ?",
-    a: "On reste disponibles. Pour des petites questions, par email ou téléphone. Pour des évolutions plus importantes, on établit un devis.",
+    q: "Et si j’ai besoin d’aide après ?",
+    a: "Je reste disponible. Pour de petites questions, un simple message suffit.",
   },
   {
     q: 'Mon commerce est-il trop petit ?',
-    a: "Non. Nos sites sont justement pensés pour les petits commerces et artisans. Pas besoin d'une grande structure pour avoir un beau site.",
+    a: "Non. Je travaille principalement avec des petits commerces et des artisans.",
   },
 ]
 
@@ -72,8 +72,8 @@ export default function MethodePage() {
         <PageHero
           label="Comment ça se passe"
           title="Ma méthode"
-          description="Je crois qu'un bon site ça commence par une bonne écoute. Voici comment je travaille, de a à z."
-          imageUrl="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1600&q=80"
+          description="Je travaille simplement. On échange sur votre commerce, je crée votre site, puis je vous montre comment le gérer facilement."
+          imageUrl="/images/hero-methode.webp"
           imageAlt="Échange avec un commerçant"
         />
 
@@ -133,10 +133,10 @@ export default function MethodePage() {
               Prêt à lancer votre projet ?
             </h2>
             <p className="mb-8 font-body text-base text-primary-soft">
-              Parlez-nous de votre commerce. L&apos;échange est gratuit et sans engagement.
+              Parlez-moi de votre commerce. L&apos;échange est gratuit et sans engagement.
             </p>
             <LinkButton href="/contact" variant="cta" size="lg">
-              Prendre contact
+              Me contacter
             </LinkButton>
           </div>
         </section>

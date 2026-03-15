@@ -159,7 +159,7 @@ export default function ContactForm() {
           rows={5}
           maxLength={2000}
           className="w-full resize-none rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          placeholder="Décrivez votre projet en quelques mots : votre activité, ce que vous recherchez, vos questions…"
+          placeholder="Décrivez votre projet en quelques mots : votre activité, ce que vous cherchez pour votre site, ou vos questions."
         />
         {state.fieldErrors?.message && (
           <p className="mt-1 font-body text-xs text-red-600">{state.fieldErrors.message[0]}</p>

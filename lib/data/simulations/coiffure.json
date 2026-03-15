@@ -1,0 +1,63 @@
+{
+  "businessType": "salon-coiffure",
+  "theme": "artisan-coiffure",
+  "name": "Coiffure Élégance",
+  "tagline": "Coupe, couleur et conseils pour toute la famille",
+  "description": "Coiffure Élégance accueille femmes, hommes et enfants pour des coupes, colorations et coiffures du quotidien dans une ambiance simple et professionnelle.",
+
+  "heroImage": "/images/simulations/coiffure/hero.webp",
+
+  "gallery": [
+    "/images/simulations/coiffure/gallery1.webp",
+    "/images/simulations/coiffure/gallery2.webp",
+    "/images/simulations/coiffure/gallery3.webp"
+  ],
+
+  "contact": {
+    "address": "14 rue Nationale",
+    "city": "32600 L'Isle-Jourdain",
+    "phone": "05 62 77 88 99"
+  },
+
+  "hours": [
+    "Lundi : fermé",
+    "Mardi - Vendredi : 9h00 - 19h00",
+    "Samedi : 9h00 - 18h00",
+    "Dimanche : fermé"
+  ],
+
+  "highlights": [
+    "Coupe femme, homme, enfant",
+    "Coloration et balayage",
+    "Conseil personnalisé",
+    "Prise de rendez-vous simple"
+  ],
+
+  "featuredCards": [
+    {
+      "title": "Coupe femme",
+      "text": "Une coupe adaptée à votre style.",
+      "image": "/images/simulations/coiffure/featuredCards1.webp"
+    },
+    {
+      "title": "Coloration",
+      "text": "Des couleurs lumineuses et naturelles.",
+      "image": "/images/simulations/coiffure/featuredCards2.webp"
+    },
+    {
+      "title": "Brushing",
+      "text": "Une coiffure soignée pour toutes les occasions.",
+      "image": "/images/simulations/coiffure/featuredCards3.webp"
+    }
+  ],
+
+  "reviews": [
+    "Très bon accueil et résultat toujours soigné.",
+    "Salon agréable et équipe professionnelle à l'écoute.",
+    "Pratique pour prendre rendez-vous et prestations de qualité."
+  ],
+
+  "seoTitle": "Exemple de site internet pour salon de coiffure | SIGWEB",
+  "seoDescription": "Découvrez un exemple de site internet pour salon de coiffure : prestations, tarifs, horaires et prise de rendez-vous. Réalisable pour votre salon entre Toulouse et le Gers, en Occitanie.",
+  "intro": "Voici un exemple de site pour un salon de coiffure. Prestations, tarifs, horaires et prise de rendez-vous en ligne : tout ce qu'un client attend avant de choisir son coiffeur. Ce type de site est réalisable pour votre salon entre Toulouse et le Gers."
+}
