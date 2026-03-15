@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     'site web indépendant',
   ],
   icons: {
-    icon: '/favicon.ico',
+    icon: '/icon.svg',
     apple: '/apple-touch-icon.png',
   },
   openGraph: {
