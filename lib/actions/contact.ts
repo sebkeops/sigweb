@@ -45,7 +45,7 @@ async function sendContactNotification(data: {
     const { Resend } = await import('resend')
     const resend = new Resend(apiKey)
     await resend.emails.send({
-      from: 'SIGWEB <contact@sigweb.fr>',
+      from: 'SIGWEB <contact@updates.sigweb.fr>',
       to: toEmail,
       subject: `Nouveau message de contact — ${data.name}`,
       text: [
