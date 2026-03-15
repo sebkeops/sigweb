@@ -19,12 +19,12 @@ export default function MentionsLegalesPage() {
             <h2 className="mb-3 font-heading text-xl font-bold text-ink">Éditeur du site</h2>
             <p className="font-body text-sm leading-relaxed text-text">
               {/* TODO: Remplacer par vos vraies informations */}
-              <strong>Nom :</strong>Sébastien SIGUENZA<br />
-              <strong>Statut :</strong> Auto-entrepreneur<br />
+              <strong>Nom : </strong>Sébastien SIGUENZA<br />
+              <strong>Statut : </strong>Auto-entrepreneur<br />
               {/* <strong>SIRET :</strong> TODO<br /> */}
-              <strong>Adresse :</strong>33 impasse de l'autan 32600 SEGOUFIELLE<br />
-              <strong>Email :</strong>contact@sigweb.fr <br />
-              <strong>Téléphone :</strong>06.51.92.73.81
+              <strong>Adresse : </strong>33 impasse de l'autan 32600 SEGOUFIELLE<br />
+              <strong>Email : </strong>contact@sigweb.fr <br />
+              <strong>Téléphone : </strong>06.51.92.73.81
             </p>
           </section>
 
