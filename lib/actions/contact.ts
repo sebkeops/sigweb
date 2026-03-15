@@ -175,3 +175,18 @@ export async function markContactRead(id: string): Promise<{ error?: string }> {
   revalidatePath('/admin/contacts')
   return {}
 }
+
+export async function deleteContact(id: string): Promise<{ error?: string }> {
+  const supabase = await assertAuthenticated().catch(() => null)
+  if (!supabase) return { error: 'Non autorisé.' }
+
+  const { error } = await supabase.from('contacts').delete().eq('id', id)
+
+  if (error) {
+    console.error('[deleteContact]', error)
+    return { error: 'Erreur lors de la suppression.' }
+  }
+
+  revalidatePath('/admin/contacts')
+  return {}
+}

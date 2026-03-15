@@ -5,6 +5,7 @@ import type { Project } from '@/types'
 import { Badge } from '@/components/ui/Badge'
 import { LinkButton } from '@/components/ui/Button'
 import TogglePublishedButton from './TogglePublishedButton'
+import ToggleFeaturedButton from './ToggleFeaturedButton'
 import DeleteProjectButton from './DeleteProjectButton'
 
 export const metadata: Metadata = { title: 'Projets | Admin Sigweb' }
@@ -56,6 +57,9 @@ export default async function AdminProjetsPage() {
                 <th className="px-5 py-4 font-body text-xs font-semibold uppercase tracking-wider text-muted">
                   Statut
                 </th>
+                <th className="hidden px-5 py-4 font-body text-xs font-semibold uppercase tracking-wider text-muted sm:table-cell">
+                  Accueil
+                </th>
                 <th className="px-5 py-4 font-body text-xs font-semibold uppercase tracking-wider text-muted">
                   Actions
                 </th>
@@ -80,6 +84,13 @@ export default async function AdminProjetsPage() {
                   </td>
                   <td className="px-5 py-4">
                     <TogglePublishedButton id={project.id} published={project.published} />
+                  </td>
+                  <td className="hidden px-5 py-4 sm:table-cell">
+                    <ToggleFeaturedButton
+                      id={project.id}
+                      featuredHome={project.featured_home}
+                      projectKind={project.project_kind}
+                    />
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex items-center gap-3">

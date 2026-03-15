@@ -135,6 +135,46 @@ export async function toggleProjectPublished(
   return {}
 }
 
+export async function toggleFeaturedHome(
+  id: string,
+  featuredHome: boolean,
+  projectKind: string
+): Promise<{ error?: string }> {
+  const supabase = await assertAuthenticated().catch(() => null)
+  if (!supabase) return { error: 'Non autorisé.' }
+
+  if (featuredHome) {
+    const { count } = await supabase
+      .from('projects')
+      .select('*', { count: 'exact', head: true })
+      .eq('featured_home', true)
+      .eq('project_kind', projectKind)
+      .neq('id', id)
+
+    if ((count ?? 0) >= 3) {
+      const label = projectKind === 'simulation' ? 'simulations' : 'réalisations'
+      return { error: `Maximum 3 ${label} en page d'accueil. Désactivez-en une d'abord.` }
+    }
+  }
+
+  const { error } = await supabase
+    .from('projects')
+    .update({ featured_home: featuredHome })
+    .eq('id', id)
+
+  if (error) {
+    console.error('[toggleFeaturedHome]', error)
+    return { error: 'Erreur lors de la mise à jour.' }
+  }
+
+  revalidatePath('/')
+  revalidatePath('/admin/projets')
+  revalidatePath('/simulations')
+  revalidatePath('/realisations')
+
+  return {}
+}
+
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function extractProjectFields(formData: FormData) {

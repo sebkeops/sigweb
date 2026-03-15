@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { Contact } from '@/types'
 import { Badge } from '@/components/ui/Badge'
 import MarkReadButton from './MarkReadButton'
+import DeleteContactButton from './DeleteContactButton'
 
 export const metadata: Metadata = { title: 'Messages | Admin Sigweb' }
 
@@ -81,9 +82,10 @@ export default async function AdminContactsPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center gap-3">
                   <span className="font-body text-xs text-muted">{formatDate(contact.created_at)}</span>
                   {!contact.is_read && <MarkReadButton id={contact.id} />}
+                  <DeleteContactButton id={contact.id} />
                 </div>
               </div>
 

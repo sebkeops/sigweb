@@ -11,11 +11,6 @@ export const metadata: Metadata = {
   },
 }
 
-const navLinks = [
-  { href: '/admin/projets', label: 'Projets' },
-  { href: '/admin/contacts', label: 'Messages' },
-]
-
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const {
@@ -25,6 +20,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!user) {
     redirect('/admin/login')
   }
+
+  const { count: unreadCount } = await supabase
+    .from('contacts')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_read', false)
+  const unread = unreadCount ?? 0
 
   return (
     <div className="min-h-screen bg-surface-soft">
@@ -36,15 +37,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               Sigweb Admin
             </Link>
             <nav className="flex items-center gap-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="font-body text-sm font-medium text-muted hover:text-primary"
-                >
-                  {link.label}
-                </Link>
-              ))}
+              <Link href="/admin/projets" className="font-body text-sm font-medium text-muted hover:text-primary">
+                Projets
+              </Link>
+              <Link href="/admin/contacts" className="relative font-body text-sm font-medium text-muted hover:text-primary">
+                Messages
+                {unread > 0 && (
+                  <span className="absolute -right-4 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-cta px-1 font-body text-[10px] font-bold text-white">
+                    {unread}
+                  </span>
+                )}
+              </Link>
             </nav>
           </div>
 
