@@ -8,64 +8,19 @@
 
 ---
 
-## 🛡️ Sécurité — Actions manuelles restantes
+## ⚖️ Légal — À compléter
 
 | Statut | Priorité | Tâche | Fichier(s) |
 |--------|----------|-------|------------|
-| 🔴 | ⚠️ P2 | Exécuter `rls_admin_uuid.sql` dans Supabase après avoir remplacé l'UUID placeholder | `supabase/migrations/rls_admin_uuid.sql` |
+| 🔴 | ⚠️ P2 | Ajouter le SIRET dès obtention | `app/mentions-legales/page.tsx` ligne 24 |
 
 ---
 
-## 📱 Mobile — Actions manuelles restantes
-
-| Statut | Priorité | Tâche | Fichier(s) |
-|--------|----------|-------|------------|
-| 🔴 | ⚠️ P2 | Renseigner `NEXT_PUBLIC_PHONE` et `NEXT_PUBLIC_PHONE_DISPLAY` sur Vercel | `.env.example` · Vercel dashboard |
-
----
-
-## 📊 Analytics — Actions manuelles restantes
+## 📊 Analytics — À faire
 
 | Statut | Priorité | Tâche | Fichier(s) |
 |--------|----------|-------|------------|
 | 🔴 | 💡 P3 | Créer un compte Plausible/Umami et renseigner `NEXT_PUBLIC_ANALYTICS_DOMAIN` + `NEXT_PUBLIC_ANALYTICS_SCRIPT` sur Vercel | `.env.example` · Vercel dashboard |
-
----
-
-## 📬 Notifications — Actions manuelles restantes
-
-| Statut | Priorité | Tâche | Fichier(s) |
-|--------|----------|-------|------------|
-| 🔴 | ⚠️ P2 | Créer compte Resend, vérifier domaine, remplacer `from:` dans contact.ts, renseigner `RESEND_API_KEY` + `RESEND_TO_EMAIL` sur Vercel | `lib/actions/contact.ts` · Vercel dashboard |
-
----
-
-## 🔍 SEO — Actions manuelles restantes
-
-| Statut | Priorité | Tâche | Fichier(s) |
-|--------|----------|-------|------------|
-| 🔴 | 🔥 P1 | Renseigner `NEXT_PUBLIC_SITE_URL=https://votre-domaine.fr` sur Vercel avant mise en ligne | Vercel dashboard |
-| 🔴 | ⚠️ P2 | Ajouter `favicon.ico` (32×32 px) et `apple-touch-icon.png` (180×180 px) dans `public/` | `public/` |
-| 🔴 | ⚠️ P2 | Redimensionner `hero-home.webp` à 1200×630 px pour l'Open Graph | `public/images/` |
-
----
-
-## 🗄️ Base de données — Actions manuelles restantes
-
-| Statut | Priorité | Tâche | Fichier(s) |
-|--------|----------|-------|------------|
-| 🔴 | 🔥 P1 | Exécuter `add_featured_home.sql` dans l'éditeur SQL Supabase | `supabase/migrations/` |
-| 🔴 | ⚠️ P2 | Vider `external_url` des simulations existantes + cocher `featured_home` sur les projets à mettre en avant | Admin Supabase |
-
----
-
-## ⚖️ Légal — Contenu à compléter manuellement
-
-| Statut | Priorité | Tâche | Fichier(s) |
-|--------|----------|-------|------------|
-| 🔴 | 🔥 P1 | Remplacer les placeholders dans mentions légales (nom, statut, SIRET, adresse, email, téléphone) | `app/mentions-legales/page.tsx` |
-| 🔴 | 🔥 P1 | Remplacer les placeholders dans politique de confidentialité (nom, email contact) | `app/politique-confidentialite/page.tsx` |
-| 🔴 | ⚠️ P2 | Remplacer l'adresse `from:` Resend par votre domaine vérifié | `lib/actions/contact.ts` |
 
 ---
 
@@ -107,19 +62,20 @@
 | Gestion d'erreur globale (`app/error.tsx`) |
 | Barre sticky contact mobile (`StickyContactBar`) — téléphone via env var |
 | Script analytics conditionnel (production uniquement) dans layout |
-| Favicon + apple-touch-icon + theme-color dans metadata |
+| `icon.svg` favicon + `apple-touch-icon.png` (180×180) dans `app/` |
 | `robots: noindex` sur les pages admin (login + protected layout) |
 | Security headers HTTP (X-Frame-Options, X-Content-Type-Options, Referrer-Policy) |
 | Magic bytes validation sur l'upload d'image |
 | Whitelist protocole `external_url` (https/http uniquement) |
 | Suppression du log email en production dans AdminLayout |
-| Pages `/mentions-legales` et `/politique-confidentialite` créées (placeholders à compléter) |
+| Pages `/mentions-legales` et `/politique-confidentialite` complétées (nom, adresse, email, téléphone) |
 | Liens footer vers pages légales |
 | Mention consentement RGPD dans le formulaire contact |
 | `aria-invalid` + `aria-describedby` sur les champs en erreur du formulaire contact |
+| Formulaire contact — valeurs conservées en cas d'erreur (inputs contrôlés) |
 | Rate limiting serverside sur le formulaire contact (3 req / 10 min par IP) |
-| Intégration Resend pour notifications email (actif si RESEND_API_KEY défini) |
-| Migration RLS UUID-spécifique préparée (à exécuter manuellement dans Supabase) |
+| Intégration Resend — compte créé, domaine vérifié, `from:` configuré, clés Vercel renseignées |
+| Migration RLS UUID-spécifique exécutée dans Supabase |
 | `markContactRead` déplacé de `project.ts` vers `contact.ts` |
 | CTA conversion en fin de page `/simulations` et `/realisations` |
 | CTA Sigweb "Ce site vous plaît ?" en fin de chaque page simulation |
@@ -133,6 +89,11 @@
 | Alt fallback sur `PageHero` (utilise `title` si `imageAlt` absent) |
 | Section Autonomy enrichie avec exemples concrets |
 | Section Trust enrichie avec délais concrets (réponse 24h, mise en ligne 2–4 semaines) |
-| `NEXT_PUBLIC_SITE_URL` env var pour le domaine (sitemap, robots, OG, JSON-LD) |
+| `NEXT_PUBLIC_SITE_URL` renseigné sur Vercel (domaine de production) |
+| `NEXT_PUBLIC_PHONE` et `NEXT_PUBLIC_PHONE_DISPLAY` renseignés sur Vercel |
 | `.env.example` créé avec toutes les variables nécessaires |
 | `resend` installé dans les dépendances |
+| `hero-home.webp` redimensionné à 1200×630 px pour l'Open Graph |
+| `add_featured_home.sql` exécuté dans Supabase — `featured_home` actif en production |
+| `external_url` vidé sur les simulations + `featured_home` coché sur les projets mis en avant |
+| Site déployé en production sur sigweb.fr (Vercel + domaine personnalisé) |
