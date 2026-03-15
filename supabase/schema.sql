@@ -64,11 +64,11 @@ create policy "public_read_published_projects"
   for select
   using (published = true);
 
--- Admin : accès complet sur les projets (utilisateur authentifié)
+-- Admin : accès complet sur les projets (UUID admin spécifique — voir rls_admin_uuid.sql)
 create policy "admin_all_projects"
   on projects
   for all
-  using (auth.role() = 'authenticated');
+  using (auth.uid() = '<ADMIN_UUID>'::uuid);
 
 -- Contact : insert public (formulaire de contact)
 create policy "public_insert_contact"
@@ -80,13 +80,13 @@ create policy "public_insert_contact"
 create policy "admin_read_contacts"
   on contacts
   for select
-  using (auth.role() = 'authenticated');
+  using (auth.uid() = '<ADMIN_UUID>'::uuid);
 
 -- Admin : mise à jour des messages (marquer comme lu)
 create policy "admin_update_contacts"
   on contacts
   for update
-  using (auth.role() = 'authenticated');
+  using (auth.uid() = '<ADMIN_UUID>'::uuid);
 
 -- ── Index ─────────────────────────────────────────────────────
 

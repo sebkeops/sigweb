@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     title: 'SIGWEB | Création de sites internet pour commerces locaux, artisans et indépendants',
     description:
       'Je crée des sites internet simples, beaux et faciles à gérer pour les boulangeries, boucheries, pizzerias, coiffeurs et artisans. Entre Toulouse et le Gers, en Occitanie.',
-    url: 'https://sigweb.fr',
+    url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://sigweb.fr',
     images: [{ url: '/images/hero-home.webp', width: 1200, height: 630 }],
   },
 }
