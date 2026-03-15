@@ -27,3 +27,8 @@ create policy "admin_update_contacts"
   on contacts
   for update
   using (auth.uid() = 'REMPLACER_PAR_VOTRE_UUID_ADMIN'::uuid);
+
+create policy "admin_delete_contacts"
+  on contacts
+  for delete
+  using (auth.uid() = 'REMPLACER_PAR_VOTRE_UUID_ADMIN'::uuid);
