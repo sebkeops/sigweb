@@ -21,7 +21,7 @@ export default function MentionsLegalesPage() {
               {/* TODO: Remplacer par vos vraies informations */}
               <strong>Nom :</strong>Sébastien SIGUENZA<br />
               <strong>Statut :</strong> Auto-entrepreneur<br />
-              <strong>SIRET :</strong> Numéro SIRET — à compléter<br />
+              {/* <strong>SIRET :</strong> TODO<br /> */}
               <strong>Adresse :</strong>33 impasse de l'autan 32600 SEGOUFIELLE<br />
               <strong>Email :</strong>contact@sigweb.fr <br />
               <strong>Téléphone :</strong>06.51.92.73.81
