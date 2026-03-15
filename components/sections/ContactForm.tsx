@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useRef } from 'react'
+import { useActionState, useState } from 'react'
 import { submitContact, type ContactActionState } from '@/lib/actions/contact'
 import { Button } from '@/components/ui/Button'
 
@@ -19,7 +19,19 @@ const initialState: ContactActionState = { success: false }
 
 export default function ContactForm() {
   const [state, action, pending] = useActionState(submitContact, initialState)
-  const formRef = useRef<HTMLFormElement>(null)
+  const [fields, setFields] = useState({
+    name: '',
+    business_name: '',
+    email: '',
+    phone: '',
+    business_type: '',
+    message: '',
+  })
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
+    const { name, value } = e.target
+    setFields((prev) => ({ ...prev, [name]: value }))
+  }
 
   if (state.success) {
     return (
@@ -34,7 +46,7 @@ export default function ContactForm() {
   }
 
   return (
-    <form ref={formRef} action={action} noValidate className="space-y-5">
+    <form action={action} noValidate className="space-y-5">
       {state.error && (
         <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 font-body text-sm text-red-700">
           {state.error}
@@ -54,6 +66,8 @@ export default function ContactForm() {
             autoComplete="name"
             required
             maxLength={100}
+            value={fields.name}
+            onChange={handleChange}
             aria-invalid={!!state.fieldErrors?.name}
             aria-describedby={state.fieldErrors?.name ? 'name-error' : undefined}
             className="w-full rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
@@ -78,6 +92,8 @@ export default function ContactForm() {
             type="text"
             autoComplete="organization"
             maxLength={150}
+            value={fields.business_name}
+            onChange={handleChange}
             className="w-full rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             placeholder="Boulangerie Dupont"
           />
@@ -97,6 +113,8 @@ export default function ContactForm() {
             autoComplete="email"
             required
             maxLength={255}
+            value={fields.email}
+            onChange={handleChange}
             aria-invalid={!!state.fieldErrors?.email}
             aria-describedby={state.fieldErrors?.email ? 'email-error' : undefined}
             className="w-full rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
@@ -121,6 +139,8 @@ export default function ContactForm() {
             type="tel"
             autoComplete="tel"
             maxLength={20}
+            value={fields.phone}
+            onChange={handleChange}
             className="w-full rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             placeholder="06 12 34 56 78"
           />
@@ -138,6 +158,8 @@ export default function ContactForm() {
         <select
           id="business_type"
           name="business_type"
+          value={fields.business_type}
+          onChange={handleChange}
           className="w-full rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
         >
           {businessTypes.map((opt) => (
@@ -162,6 +184,8 @@ export default function ContactForm() {
           required
           rows={5}
           maxLength={2000}
+          value={fields.message}
+          onChange={handleChange}
           aria-invalid={!!state.fieldErrors?.message}
           aria-describedby={state.fieldErrors?.message ? 'message-error' : undefined}
           className="w-full resize-none rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
