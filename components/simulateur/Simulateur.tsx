@@ -441,14 +441,8 @@ function StepResult({
             </div>
 
             <div className="pt-2">
-              <button
-                type="submit"
-                disabled={submitState === 'loading'}
-                className="w-full rounded-sm bg-cta py-4 font-heading text-base font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta focus-visible:ring-offset-2 disabled:opacity-50 md:w-auto md:px-10"
-              >
-                {submitState === 'loading' ? 'Envoi en cours…' : 'Recevoir mon estimation détaillée'}
-              </button>
-              <p className="mt-3 font-body text-xs leading-relaxed text-muted">
+              {/* Consentement RGPD */}
+              <p className="mb-4 font-body text-xs leading-relaxed text-muted">
                 En soumettant ce formulaire, vous acceptez que vos données soient utilisées pour
                 traiter votre demande. Elles ne seront jamais cédées à des tiers.{' '}
                 <Link href="/politique-confidentialite" className="underline hover:text-primary">
@@ -456,6 +450,13 @@ function StepResult({
                 </Link>
                 .
               </p>
+              <button
+                type="submit"
+                disabled={submitState === 'loading'}
+                className="w-full rounded-sm bg-cta py-4 font-heading text-base font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cta focus-visible:ring-offset-2 disabled:opacity-50 md:w-auto md:px-10"
+              >
+                {submitState === 'loading' ? 'Envoi en cours…' : 'Recevoir mon estimation détaillée'}
+              </button>
             </div>
           </form>
 
