@@ -8,6 +8,7 @@ const navLinks = [
   { href: '/methode', label: 'Ma méthode' },
 ]
 
+
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-surface/90 backdrop-blur-sm">
@@ -32,13 +33,21 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* CTA desktop */}
-          <Link
-            href="/contact"
-            className="hidden rounded-sm bg-cta px-5 py-2.5 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90 md:inline-block"
-          >
-            Me contacter
-          </Link>
+          {/* CTAs desktop */}
+          <div className="hidden items-center gap-3 md:flex">
+            <Link
+              href="/simulateur"
+              className="rounded-sm border border-primary px-5 py-2.5 font-heading text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-white"
+            >
+              Estimer mon projet
+            </Link>
+            <Link
+              href="/contact"
+              className="rounded-sm bg-cta px-5 py-2.5 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90"
+            >
+              Me contacter
+            </Link>
+          </div>
 
           {/* Burger mobile */}
           <MobileMenu />
