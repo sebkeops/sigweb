@@ -270,6 +270,8 @@ function StepResult({
           </p>
           <Link
             href="/simulations"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center gap-2 font-body text-sm font-semibold text-primary hover:underline"
           >
             Voir les simulations →
@@ -445,7 +447,7 @@ function StepResult({
               <p className="mb-4 font-body text-xs leading-relaxed text-muted">
                 En soumettant ce formulaire, vous acceptez que vos données soient utilisées pour
                 traiter votre demande. Elles ne seront jamais cédées à des tiers.{' '}
-                <Link href="/politique-confidentialite" className="underline hover:text-primary">
+                <Link href="/politique-confidentialite" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
                   En savoir plus
                 </Link>
                 .
@@ -467,6 +469,8 @@ function StepResult({
             </p>
             <Link
               href="/simulations"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 font-body text-sm font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
             >
               Voir les simulations →

@@ -212,7 +212,7 @@ export default function ContactForm() {
       <p className="font-body text-xs leading-relaxed text-muted">
         En soumettant ce formulaire, vous acceptez que vos données soient utilisées pour traiter
         votre demande. Elles ne seront jamais cédées à des tiers.{' '}
-        <a href="/politique-confidentialite" className="underline hover:text-primary">
+        <a href="/politique-confidentialite" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary">
           En savoir plus
         </a>.
       </p>
