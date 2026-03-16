@@ -141,9 +141,14 @@ export default function ContactForm() {
             maxLength={20}
             value={fields.phone}
             onChange={handleChange}
+            aria-invalid={!!state.fieldErrors?.phone}
+            aria-describedby={state.fieldErrors?.phone ? 'phone-error' : undefined}
             className="w-full rounded-sm border border-border bg-surface px-4 py-3 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
             placeholder="06 12 34 56 78"
           />
+          {state.fieldErrors?.phone && (
+            <p id="phone-error" className="mt-1 font-body text-xs text-red-600">{state.fieldErrors.phone[0]}</p>
+          )}
         </div>
       </div>
 

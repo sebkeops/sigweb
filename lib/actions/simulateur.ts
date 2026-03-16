@@ -8,7 +8,12 @@ import { createClient } from '@/lib/supabase/server'
 const simulateurSchema = z.object({
   name: z.string().min(2, 'Merci de saisir votre nom (au moins 2 caractères).').max(100).trim(),
   email: z.string().email('Adresse email invalide.').max(255).trim().toLowerCase(),
-  phone: z.string().max(20).trim().optional(),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^(\+33\s?|0)[1-9](\s?[0-9]{2}){4}$/, 'Numéro de téléphone invalide.')
+    .optional()
+    .or(z.literal('')),
   business_name: z.string().max(150).trim().optional(),
   summary: z.string().min(1).max(5000).trim(),
   website: z.string().max(0, 'Erreur de validation.'), // honeypot

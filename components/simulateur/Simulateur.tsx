@@ -422,9 +422,16 @@ function StepResult({
                   maxLength={20}
                   value={form.phone}
                   onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                  aria-invalid={!!formErrors.phone}
+                  aria-describedby={formErrors.phone ? 'sim-phone-error' : undefined}
                   className={inputClass}
                   placeholder="06 00 00 00 00"
                 />
+                {formErrors.phone && (
+                  <p id="sim-phone-error" className="mt-1 font-body text-xs text-red-600">
+                    {formErrors.phone}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -548,6 +555,9 @@ export default function Simulateur() {
     }
     if (!form.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
       errors.email = 'Adresse email invalide.'
+    }
+    if (form.phone.trim() && !/^(\+33\s?|0)[1-9](\s?[0-9]{2}){4}$/.test(form.phone.trim())) {
+      errors.phone = 'Numéro de téléphone invalide (ex : 06 12 34 56 78).'
     }
     if (Object.keys(errors).length > 0) {
       setFormErrors(errors)
