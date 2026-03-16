@@ -20,8 +20,8 @@ export default function SimulateurPage() {
   return (
     <>
       <Header />
-      <main>
-          <Simulateur />
+      <main className="min-h-[calc(100vh-4rem)]">
+        <Simulateur />
       </main>
       <Footer />
     </>
