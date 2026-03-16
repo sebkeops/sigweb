@@ -36,13 +36,10 @@ export default function Header() {
 
           {/* CTAs desktop */}
           <div className="hidden items-center gap-3 md:flex">
-            <Link
-              href="/simulateur"
-              className="rounded-sm border border-primary px-5 py-2.5 font-heading text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-white"
-            >
+            <ContactLink href="/simulateur" className="rounded-sm border border-primary px-5 py-2.5 font-heading text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-white">
               Estimer mon projet
-            </Link>
-            <ContactLink className="rounded-sm bg-cta px-5 py-2.5 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90">
+            </ContactLink>
+            <ContactLink href="/contact" className="rounded-sm bg-cta px-5 py-2.5 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90">
               Me contacter
             </ContactLink>
           </div>

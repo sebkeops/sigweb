@@ -57,14 +57,10 @@ export default function MobileMenu() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/simulateur"
-              onClick={() => setOpen(false)}
-              className="mt-6 block rounded-sm bg-primary px-5 py-3 text-center font-heading text-sm font-bold text-white transition-opacity hover:opacity-90"
-            >
+            <ContactLink href="/simulateur" className="mt-6 block rounded-sm bg-primary px-5 py-3 text-center font-heading text-sm font-bold text-white transition-opacity hover:opacity-90">
               Estimer mon projet
-            </Link>
-            <ContactLink className="mt-3 block rounded-sm bg-cta px-5 py-3 text-center font-heading text-sm font-bold text-white transition-opacity hover:opacity-90">
+            </ContactLink>
+            <ContactLink href="/contact" className="mt-3 block rounded-sm bg-cta px-5 py-3 text-center font-heading text-sm font-bold text-white transition-opacity hover:opacity-90">
               Me contacter
             </ContactLink>
           </nav>
