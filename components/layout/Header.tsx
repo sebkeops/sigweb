@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import Logo from '@/components/ui/Logo'
 import MobileMenu from '@/components/layout/MobileMenu'
+import ContactLink from '@/components/layout/ContactLink'
 
 const navLinks = [
   { href: '/simulations', label: 'Simulations' },
@@ -41,12 +42,9 @@ export default function Header() {
             >
               Estimer mon projet
             </Link>
-            <Link
-              href="/contact"
-              className="rounded-sm bg-cta px-5 py-2.5 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90"
-            >
+            <ContactLink className="rounded-sm bg-cta px-5 py-2.5 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90">
               Me contacter
-            </Link>
+            </ContactLink>
           </div>
 
           {/* Burger mobile */}
