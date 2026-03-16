@@ -41,7 +41,7 @@ export default function Hero() {
               </p>
 
               <div className="flex flex-wrap justify-center gap-4 md:justify-start">
-                <LinkButton href="/simulateur" variant="primary" size="lg">
+                <LinkButton href="/simulateur" variant="cta" size="lg">
                   Estimer mon projet
                 </LinkButton>
                 <Link
