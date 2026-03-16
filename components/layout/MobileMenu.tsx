@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import ContactLink from '@/components/layout/ContactLink'
 
 const navLinks = [
   { href: '/simulations', label: 'Simulations' },
@@ -57,12 +58,15 @@ export default function MobileMenu() {
               </Link>
             ))}
             <Link
-              href="/contact"
+              href="/simulateur"
               onClick={() => setOpen(false)}
-              className="mt-6 block rounded-sm bg-cta px-5 py-3 text-center font-heading text-sm font-bold text-white transition-opacity hover:opacity-90"
+              className="mt-6 block rounded-sm bg-primary px-5 py-3 text-center font-heading text-sm font-bold text-white transition-opacity hover:opacity-90"
             >
-              Me contacter
+              Estimer mon projet
             </Link>
+            <ContactLink className="mt-3 block rounded-sm bg-cta px-5 py-3 text-center font-heading text-sm font-bold text-white transition-opacity hover:opacity-90">
+              Me contacter
+            </ContactLink>
           </nav>
         </div>
       )}

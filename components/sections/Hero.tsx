@@ -41,14 +41,14 @@ export default function Hero() {
               </p>
 
               <div className="flex flex-wrap justify-center gap-4 md:justify-start">
-                <LinkButton href="/simulations" variant="primary" size="lg">
-                  Voir les simulations
+                <LinkButton href="/simulateur" variant="cta" size="lg">
+                  Estimer mon projet
                 </LinkButton>
                 <Link
-                  href="/contact"
+                  href="/simulations"
                   className="inline-flex items-center justify-center rounded-sm border border-white/30 bg-transparent px-7 py-3.5 font-heading text-base font-bold text-white transition-colors hover:border-white/60 hover:bg-white/10"
                 >
-                  Demander un devis
+                  Voir les simulations
                 </Link>
               </div>
             </div>

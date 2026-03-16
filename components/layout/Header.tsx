@@ -1,12 +1,14 @@
 import Link from 'next/link'
 import Logo from '@/components/ui/Logo'
 import MobileMenu from '@/components/layout/MobileMenu'
+import ContactLink from '@/components/layout/ContactLink'
 
 const navLinks = [
   { href: '/simulations', label: 'Simulations' },
   { href: '/realisations', label: 'Réalisations' },
   { href: '/methode', label: 'Ma méthode' },
 ]
+
 
 export default function Header() {
   return (
@@ -32,13 +34,18 @@ export default function Header() {
             ))}
           </nav>
 
-          {/* CTA desktop */}
-          <Link
-            href="/contact"
-            className="hidden rounded-sm bg-cta px-5 py-2.5 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90 md:inline-block"
-          >
-            Me contacter
-          </Link>
+          {/* CTAs desktop */}
+          <div className="hidden items-center gap-3 md:flex">
+            <Link
+              href="/simulateur"
+              className="rounded-sm border border-primary px-5 py-2.5 font-heading text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-white"
+            >
+              Estimer mon projet
+            </Link>
+            <ContactLink className="rounded-sm bg-cta px-5 py-2.5 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90">
+              Me contacter
+            </ContactLink>
+          </div>
 
           {/* Burger mobile */}
           <MobileMenu />

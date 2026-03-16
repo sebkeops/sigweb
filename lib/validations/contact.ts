@@ -15,9 +15,10 @@ export const contactSchema = z.object({
     .toLowerCase(),
   phone: z
     .string()
-    .max(20)
     .trim()
-    .optional(),
+    .regex(/^(\+33\s?|0)[1-9](\s?[0-9]{2}){4}$/, 'Numéro de téléphone invalide.')
+    .optional()
+    .or(z.literal('')),
   business_type: z.string().max(100).trim().optional(),
   message: z
     .string()
