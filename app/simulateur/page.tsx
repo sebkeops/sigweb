@@ -21,16 +21,7 @@ export default function SimulateurPage() {
     <>
       <Header />
       <main>
-        {/* Intro SEO visible (pour les moteurs) */}
-        <div className="border-b border-border bg-surface px-6 py-8 md:px-12">
-          <div className="mx-auto max-w-2xl">
-            <p className="font-body text-sm text-muted">
-              Créez votre site internet avec SIGWEB · Toulouse – Gers – Occitanie
-            </p>
-          </div>
-        </div>
-
-        <Simulateur />
+          <Simulateur />
       </main>
       <Footer />
     </>

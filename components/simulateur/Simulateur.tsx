@@ -272,7 +272,7 @@ function StepResult({
             href="/simulations"
             className="inline-flex items-center gap-2 font-body text-sm font-semibold text-primary hover:underline"
           >
-            Voir des exemples de sites →
+            Voir les simulations →
           </Link>
         </div>
       </section>
@@ -448,19 +448,27 @@ function StepResult({
               >
                 {submitState === 'loading' ? 'Envoi en cours…' : 'Recevoir mon estimation détaillée'}
               </button>
+              <p className="mt-3 font-body text-xs leading-relaxed text-muted">
+                En soumettant ce formulaire, vous acceptez que vos données soient utilisées pour
+                traiter votre demande. Elles ne seront jamais cédées à des tiers.{' '}
+                <Link href="/politique-confidentialite" className="underline hover:text-primary">
+                  En savoir plus
+                </Link>
+                .
+              </p>
             </div>
           </form>
 
           {/* Lien secondaire vers simulations */}
           <div className="mt-10 border-t border-border pt-8 text-center">
             <p className="mb-3 font-body text-sm text-muted">
-              Pas encore prêt à vous lancer ? Jetez d&apos;abord un œil aux exemples.
+              Pas encore prêt à vous lancer ? Jetez d&apos;abord un œil aux simulations.
             </p>
             <Link
               href="/simulations"
               className="inline-flex items-center gap-2 font-body text-sm font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-sm"
             >
-              Voir des exemples de sites →
+              Voir les simulations →
             </Link>
           </div>
         </div>
