@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import ProjectCard from '@/components/sections/ProjectCard'
@@ -64,13 +65,21 @@ export default async function RealisationsPage() {
             <h2 className="mb-4 font-heading text-2xl font-extrabold text-white md:text-3xl">
               Vous avez un projet de site internet ?
             </h2>
-            <p className="mb-8 font-body text-base text-white/80">
-              Je crée des sites simples et efficaces pour les artisans et commerçants locaux.
-              Contactez-moi pour en discuter, sans engagement.
+            <p className="mb-8 font-body text-base text-primary-soft">
+              Estimez votre projet en 2 minutes ou parlez-moi directement de votre activité.
+              Sans engagement.
             </p>
-            <LinkButton href="/contact" variant="cta" size="lg">
-              Me contacter
-            </LinkButton>
+            <div className="flex flex-wrap justify-center gap-4">
+              <LinkButton href="/simulateur" variant="cta" size="lg">
+                Estimer mon projet
+              </LinkButton>
+              <Link
+                href="/contact"
+                className="inline-flex items-center justify-center rounded-sm border border-white/30 bg-transparent px-7 py-3.5 font-heading text-base font-bold text-white transition-colors hover:border-white/60 hover:bg-white/10"
+              >
+                Me contacter
+              </Link>
+            </div>
           </div>
         </section>
       </main>
