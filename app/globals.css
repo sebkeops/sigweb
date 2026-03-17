@@ -48,6 +48,24 @@
   transform: translateY(0);
 }
 
+/* ── Animation mots rotatifs hero ───────────────────────────── */
+@keyframes wordIn {
+  from { opacity: 0; transform: translateY(60%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes wordOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-60%); }
+}
+
+.animate-word-in  { animation: wordIn  0.3s ease forwards; }
+.animate-word-out { animation: wordOut 0.3s ease forwards; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-word-in, .animate-word-out { animation: none; }
+}
+
 /* ── Simulateur step transition ─────────────────────────────── */
 @keyframes fadeStep {
   from {

@@ -9,26 +9,28 @@ interface Props {
 
 export default function AnimatedWords({ words, className = '' }: Props) {
   const [index, setIndex] = useState(0)
-  const [visible, setVisible] = useState(true)
+  const [phase, setPhase] = useState<'in' | 'out'>('in')
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setVisible(false)
+      setPhase('out')
       setTimeout(() => {
         setIndex((i) => (i + 1) % words.length)
-        setVisible(true)
-      }, 350)
-    }, 2800)
+        setPhase('in')
+      }, 300)
+    }, 2000)
     return () => clearInterval(timer)
   }, [words.length])
 
   return (
-    <span
-      aria-live="polite"
-      aria-atomic="true"
-      className={`inline-block transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'} ${className}`}
-    >
-      {words[index]}
+    <span className="inline-block overflow-hidden align-bottom">
+      <span
+        aria-live="polite"
+        aria-atomic="true"
+        className={`inline-block ${phase === 'in' ? 'animate-word-in' : 'animate-word-out'} ${className}`}
+      >
+        {words[index]}
+      </span>
     </span>
   )
 }
