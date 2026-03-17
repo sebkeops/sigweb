@@ -15,6 +15,7 @@ export default function StickyContactBar() {
         href="/simulateur"
         className="flex flex-1 items-center justify-center gap-2 bg-cta py-4 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90"
       >
+        <span aria-hidden="true">🖥️</span>
         Estimer mon projet
       </ContactLink>
       <div className="w-px bg-border" />
@@ -22,6 +23,7 @@ export default function StickyContactBar() {
         href="/contact"
         className="flex flex-1 items-center justify-center gap-2 py-4 font-heading text-sm font-bold text-primary transition-colors hover:bg-surface-strong"
       >
+        <span aria-hidden="true">✉️</span>
         Me contacter
       </Link>
     </div>
