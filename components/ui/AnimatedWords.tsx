@@ -27,7 +27,7 @@ export default function AnimatedWords({ words, className = '' }: Props) {
       <span
         aria-live="polite"
         aria-atomic="true"
-        className={`inline-block ${phase === 'in' ? 'animate-word-in' : 'animate-word-out'} ${className}`}
+        className={`inline-block whitespace-nowrap ${phase === 'in' ? 'animate-word-in' : 'animate-word-out'} ${className}`}
       >
         {words[index]}
       </span>
