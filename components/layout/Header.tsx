@@ -31,7 +31,7 @@ export default function Header() {
           {/* Logo — centré sur mobile, à gauche sur desktop */}
           <Link href="/" className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2.5 text-ink md:static md:translate-x-0">
             <Logo size={70} uid="header" />
-            <span className="translate-y-[-3px] font-heading text-xl font-bold text-primary">SIGWEB</span>
+            <span className="font-heading text-xl font-bold text-primary">SIGWEB</span>
           </Link>
 
           {/* Navigation desktop */}

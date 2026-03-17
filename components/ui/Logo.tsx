@@ -10,7 +10,7 @@ export default function Logo({ size = 32, uid = 'logo' }: LogoProps) {
 
   return (
     <svg
-      viewBox="0 0 200 200"
+      viewBox="0 -18 200 200"
       fill="none"
       width={size}
       height={size}
