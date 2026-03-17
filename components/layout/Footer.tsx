@@ -25,7 +25,7 @@ export default function Footer() {
           <div>
             <Link href="/" className="mb-4 inline-flex items-center gap-2.5">
               <Logo size={52} uid="footer" />
-              <span className="translate-y-[-3px] font-heading text-lg font-bold text-primary">SIGWEB</span>
+              <span className="font-heading text-lg font-bold text-primary">SIGWEB</span>
             </Link>
             <p className="font-body text-sm text-muted">Entre Toulouse et le Gers, en Occitanie</p>
             <p className="mt-1 font-body text-sm text-muted">
