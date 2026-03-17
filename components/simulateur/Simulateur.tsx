@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { submitSimulateur } from '@/lib/actions/simulateur'
 import {
@@ -511,6 +511,10 @@ export default function Simulateur() {
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const topRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [animKey])
 
   function goTo(nextStep: WizardStep) {
     setHistory((h) => [...h, step])
