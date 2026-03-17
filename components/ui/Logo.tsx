@@ -19,13 +19,13 @@ export default function Logo({ size = 32, uid = 'logo' }: LogoProps) {
     >
       <defs>
         <linearGradient id={g1} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#d98a3d" />
+          <stop offset="0%" stopColor="#cc7018" />
           <stop offset="35%" stopColor="#c88a45" />
           <stop offset="70%" stopColor="#5c7c5f" />
           <stop offset="100%" stopColor="#2f6f4f" />
         </linearGradient>
         <linearGradient id={g2} x1="100%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#d98a3d" />
+          <stop offset="0%" stopColor="#cc7018" />
           <stop offset="100%" stopColor="#2f6f4f" />
         </linearGradient>
       </defs>
@@ -33,7 +33,7 @@ export default function Logo({ size = 32, uid = 'logo' }: LogoProps) {
       {/* Halo */}
       <path
         d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100"
-        stroke="#d98a3d"
+        stroke="#cc7018"
         strokeWidth="14"
         strokeLinecap="round"
         fill="none"

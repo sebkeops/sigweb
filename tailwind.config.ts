@@ -20,10 +20,10 @@ const config: Config = {
           soft: '#dceade',
         },
         accent: {
-          DEFAULT: '#d98a3d',
-          soft: '#f7e4cf',
+          DEFAULT: '#cc7018',
+          soft: '#f5dfc8',
         },
-        cta: '#e26d2f',
+        cta: '#e05c0e',
         ink: '#243129',
         text: '#2f3a34',
         muted: '#6d776f',

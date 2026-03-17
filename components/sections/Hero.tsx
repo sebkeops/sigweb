@@ -1,7 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { LinkButton } from '@/components/ui/Button'
+import AnimatedWords from '@/components/ui/AnimatedWords'
 
+const rotatingWords = ['commerces locaux', 'artisans', 'indépendants']
 
 export default function Hero() {
   return (
@@ -32,8 +34,7 @@ export default function Hero() {
 
               <h1 className="mb-5 font-heading text-4xl font-extrabold leading-tight text-white md:text-5xl lg:text-6xl">
                 Création de sites internet pour{' '}
-                <span className="text-accent">commerces locaux</span>
-                {', '}artisans et indépendants
+                <AnimatedWords words={rotatingWords} className="text-accent" />
               </h1>
 
               <p className="mb-8 font-body text-lg leading-relaxed text-white/80">
