@@ -23,7 +23,7 @@ export default function AnimatedWords({ words, className = '' }: Props) {
   }, [words.length])
 
   return (
-    <span className="inline-block min-h-[2.4em] overflow-hidden align-bottom sm:min-h-0">
+    <span className="inline-block overflow-hidden align-bottom">
       <span
         aria-live="polite"
         aria-atomic="true"

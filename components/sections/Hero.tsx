@@ -33,7 +33,9 @@ export default function Hero() {
               </span>
 
               <h1 className="mb-5 font-heading text-4xl font-extrabold leading-tight text-white md:text-5xl lg:text-6xl">
-                Création de sites internet pour{' '}
+                Création de sites internet pour
+                <br className="sm:hidden" />
+                {' '}
                 <AnimatedWords words={rotatingWords} className="text-accent" />
               </h1>
 
