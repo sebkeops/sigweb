@@ -30,3 +30,11 @@ next-env.d.ts
 # OS
 .DS_Store
 Thumbs.db
+
+# Configuration locale Claude Code
+.claude/
+
+# Documents personnels et exports CSV (contiennent des données prospects réelles)
+divers/
+sources/
+*.csv

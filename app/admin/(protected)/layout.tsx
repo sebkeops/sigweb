@@ -40,6 +40,9 @@ export default async function AdminLayout({ children }: { children: React.ReactN
               <Link href="/admin/projets" className="font-body text-sm font-medium text-muted hover:text-primary">
                 Projets
               </Link>
+              <Link href="/admin/crm" className="font-body text-sm font-medium text-muted hover:text-primary">
+                CRM
+              </Link>
               <Link href="/admin/contacts" className="relative font-body text-sm font-medium text-muted hover:text-primary">
                 Messages
                 {unread > 0 && (
