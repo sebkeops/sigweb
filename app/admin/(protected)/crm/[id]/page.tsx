@@ -14,6 +14,7 @@ import {
   STATUT_LABELS,
 } from '@/lib/crm/constants'
 import DeleteProspectButton from './DeleteProspectButton'
+import GenerateMaquetteButton from './GenerateMaquetteButton'
 import RefreshFromGoogleButton from './RefreshFromGoogleButton'
 import ScoreBreakdown from './ScoreBreakdown'
 
@@ -27,6 +28,24 @@ async function getProspect(id: string): Promise<Prospect | null> {
   const supabase = await createClient()
   const { data } = await supabase.from('prospects').select('*').eq('id', id).single()
   return (data as Prospect | null) ?? null
+}
+
+interface ExistingMaquette {
+  id: string
+  slug: string
+  published: boolean
+}
+
+async function getExistingMaquette(prospectId: string): Promise<ExistingMaquette | null> {
+  const supabase = await createClient()
+  // Lookup par prospect_id (et pas via prospects.maquette_id) : reste cohérent
+  // même si la liaison prospect.maquette_id a échoué après l'insert maquette.
+  const { data } = await supabase
+    .from('maquettes')
+    .select('id, slug, published')
+    .eq('prospect_id', prospectId)
+    .maybeSingle()
+  return (data as ExistingMaquette | null) ?? null
 }
 
 function formatDate(dateStr: string | null) {
@@ -74,7 +93,10 @@ const valueClass = 'font-body text-sm text-ink'
 
 export default async function ProspectDetailPage({ params }: Props) {
   const { id } = await params
-  const p = await getProspect(id)
+  const [p, existingMaquette] = await Promise.all([
+    getProspect(id),
+    getExistingMaquette(id),
+  ])
   if (!p) notFound()
 
   const mapsUrl = buildMapsUrl(p)
@@ -94,6 +116,11 @@ export default async function ProspectDetailPage({ params }: Props) {
         </div>
         <div className="flex flex-wrap items-start gap-4">
           <RefreshFromGoogleButton prospectId={p.id} hasPlaceId={!!p.google_place_id} />
+          <GenerateMaquetteButton
+            prospectId={p.id}
+            categorie={p.categorie}
+            existingMaquette={existingMaquette}
+          />
           <LinkButton href={`/admin/crm/${p.id}/modifier`} variant="primary" size="sm">
             Modifier
           </LinkButton>

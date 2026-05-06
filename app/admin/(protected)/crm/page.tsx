@@ -11,6 +11,8 @@ import type {
 import { Badge } from '@/components/ui/Badge'
 import { LinkButton } from '@/components/ui/Button'
 import ProspectFilters from '@/components/admin/ProspectFilters'
+import BackfillGoogleReviewsButton from './BackfillGoogleReviewsButton'
+import MigrateMaquettesPhotosButton from './MigrateMaquettesPhotosButton'
 import RecomputeAllScoresButton from './RecomputeAllScoresButton'
 import {
   CANAL_BADGE,
@@ -67,6 +69,32 @@ function buildScoreTooltip(p: Prospect): string {
   }
   const d = p.score_calcule_at ? formatDate(p.score_calcule_at) : '—'
   return `Score calculé automatiquement le ${d}.`
+}
+
+async function countEligibleForBackfill(): Promise<number> {
+  const supabase = await createClient()
+  const { count, error } = await supabase
+    .from('prospects')
+    .select('id', { count: 'exact', head: true })
+    .not('google_place_id', 'is', null)
+  if (error) {
+    console.error('[crm/page] countEligibleForBackfill', error)
+    return 0
+  }
+  return count ?? 0
+}
+
+async function countMaquettesToMigrate(): Promise<number> {
+  const supabase = await createClient()
+  const { count, error } = await supabase
+    .from('maquettes')
+    .select('id', { count: 'exact', head: true })
+    .is('available_photos', null)
+  if (error) {
+    console.error('[crm/page] countMaquettesToMigrate', error)
+    return 0
+  }
+  return count ?? 0
 }
 
 async function getProspects(filters: {
@@ -129,6 +157,8 @@ export default async function AdminCrmPage({ searchParams }: Props) {
 
   const prospects = await getProspects({ canal, statut, categorie, source, q, sort })
   const hasFilters = !!(canal || statut || categorie || source || q || sort)
+  const eligibleForBackfill = await countEligibleForBackfill()
+  const maquettesToMigrate = await countMaquettesToMigrate()
 
   return (
     <div>
@@ -163,7 +193,9 @@ export default async function AdminCrmPage({ searchParams }: Props) {
         </div>
       </div>
 
-      <div className="mb-2 flex justify-end">
+      <div className="mb-2 flex justify-end gap-6">
+        <MigrateMaquettesPhotosButton pendingCount={maquettesToMigrate} />
+        <BackfillGoogleReviewsButton eligibleCount={eligibleForBackfill} />
         <RecomputeAllScoresButton />
       </div>
 
