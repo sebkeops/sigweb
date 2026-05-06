@@ -20,3 +20,8 @@ export {
   photoAssignmentsSchema,
   assertAssignmentsPointToPool,
 } from './schema'
+
+// `processPhotoBuffer` est `server-only` (sharp). NE PAS le re-exporter ici :
+// l'index est tiré dans le bundle client (PhotoManager → lib/maquette/photos),
+// importer le module sharp casserait le build. À importer directement depuis
+// `@/lib/maquette/photos/process` dans les server actions uniquement.

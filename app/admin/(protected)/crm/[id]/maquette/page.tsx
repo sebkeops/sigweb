@@ -1,33 +1,38 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import PublishToggleButton from './PublishToggleButton'
+import { Accordion, AccordionItem } from '@/components/ui/Accordion'
+import type { Maquette, Prospect } from '@/types'
+import { EditorProvider } from './editor/EditorContext'
+import EditorHeader from './EditorHeader'
+import LockBodyScroll from './LockBodyScroll'
+import PreviewPane from './PreviewPane'
+import styles from './styles.module.css'
+import { getTemplate } from '@/lib/maquette'
+import IdentitySection from './sections/IdentitySection'
+import PhotosSection from './sections/PhotosSection'
+import HeroSection from './sections/HeroSection'
+import HistoireSection from './sections/HistoireSection'
+import UniversSection from './sections/UniversSection'
+import CtaSection from './sections/CtaSection'
+import AvisSection from './sections/AvisSection'
+import InfosSection from './sections/InfosSection'
+import AdvancedSection from './sections/AdvancedSection'
 
-export const metadata: Metadata = { title: 'Maquette | Admin Sigweb' }
-
-/**
- * Placeholder éditeur de maquette — Session 3 livrera l'UI complète.
- *
- * On vérifie quand même que la maquette existe (sinon 404) pour ne pas
- * proposer un placeholder sur une URL invalide. Si la maquette existe,
- * on affiche un message clair + un retour vers la fiche prospect.
- */
+export const metadata: Metadata = { title: 'Éditeur maquette | Admin Sigweb' }
 
 interface Props {
   params: Promise<{ id: string }>
 }
 
-export default async function MaquetteEditorPlaceholder({ params }: Props) {
+export default async function MaquetteEditorPage({ params }: Props) {
   const { id } = await params
 
   const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) notFound()
 
   const { data: maquette } = await supabase
     .from('maquettes')
-    .select('id, slug, published, prospect_id')
+    .select('*')
     .eq('prospect_id', id)
     .maybeSingle()
 
@@ -35,56 +40,64 @@ export default async function MaquetteEditorPlaceholder({ params }: Props) {
 
   const { data: prospect } = await supabase
     .from('prospects')
-    .select('nom_commerce')
+    .select('*')
     .eq('id', id)
     .maybeSingle()
 
+  if (!prospect) notFound()
+
+  const m = maquette as Maquette
+  const p = prospect as Prospect
+
+  const previewUrl = `/admin/maquette-preview/${id}`
+  const template = getTemplate(m.template_variant)
+  const universItems = m.univers_items ?? template.universItems
+
   return (
-    <div className="mx-auto max-w-2xl py-12 text-center">
-      <Link
-        href={`/admin/crm/${id}`}
-        className="font-body text-sm text-muted hover:text-primary"
-      >
-        ← Retour à la fiche prospect
-      </Link>
+    <EditorProvider maquetteId={m.id} initialUpdatedAt={m.updated_at}>
+      <LockBodyScroll />
+      <EditorHeader maquette={m} prospectId={id} prospectName={p.nom_commerce} />
 
-      <div className="mt-8 rounded-md border border-border bg-surface p-10 shadow-sm">
-        <h1 className="mb-3 font-heading text-2xl font-bold text-ink">
-          Éditeur de maquette
-        </h1>
-        <p className="mb-6 font-body text-base text-text">
-          Maquette générée pour <strong>{prospect?.nom_commerce ?? 'ce prospect'}</strong>.
-          L&apos;éditeur sera disponible prochainement (Session 3).
-        </p>
-        <p className="mb-8 font-body text-sm text-muted">
-          Slug : <code className="rounded bg-surface-strong px-2 py-1">{maquette.slug}</code>
-          <br />
-          Statut : {maquette.published ? 'publiée' : 'brouillon'}
-        </p>
+      <div className={styles.editorLayout}>
+        <div className={styles.formColumn}>
+          <Accordion
+            storageKey={`editor-${m.id}`}
+            defaultOpen={['identity', 'hero']}
+          >
+            <AccordionItem id="identity" title="1. Identité & branding">
+              <IdentitySection maquette={m} />
+            </AccordionItem>
+            <AccordionItem id="photos" title="2. Photos">
+              <PhotosSection maquette={m} universItems={universItems} />
+            </AccordionItem>
+            <AccordionItem id="hero" title="3. Hero">
+              <HeroSection maquette={m} />
+            </AccordionItem>
+            <AccordionItem id="histoire" title="4. Histoire">
+              <HistoireSection maquette={m} />
+            </AccordionItem>
+            <AccordionItem id="univers" title="5. Univers produits">
+              <UniversSection maquette={m} />
+            </AccordionItem>
+            <AccordionItem id="cta" title="6. CTA banner">
+              <CtaSection maquette={m} />
+            </AccordionItem>
+            <AccordionItem id="avis" title="7. Avis Google">
+              <AvisSection prospect={p} />
+            </AccordionItem>
+            <AccordionItem id="infos" title="8. Infos pratiques">
+              <InfosSection prospect={p} />
+            </AccordionItem>
+            <AccordionItem id="advanced" title="9. Avancé">
+              <AdvancedSection maquette={m} prospectId={id} />
+            </AccordionItem>
+          </Accordion>
+        </div>
 
-        <div className="flex flex-col items-center gap-4">
-          <PublishToggleButton maquetteId={maquette.id} published={maquette.published} />
-
-          <div className="flex flex-wrap justify-center gap-3">
-            {maquette.published && (
-              <a
-                href={`/demos/${maquette.slug}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center rounded-md border border-border bg-transparent px-5 py-2.5 font-heading text-sm font-bold text-text transition-opacity hover:bg-surface-strong"
-              >
-                Voir la page publiée ↗
-              </a>
-            )}
-            <Link
-              href={`/admin/crm/${id}`}
-              className="inline-flex items-center justify-center rounded-md border border-border bg-transparent px-5 py-2.5 font-heading text-sm font-bold text-text transition-opacity hover:bg-surface-strong"
-            >
-              Retour à la fiche
-            </Link>
-          </div>
+        <div className={styles.previewColumn}>
+          <PreviewPane previewUrl={previewUrl} />
         </div>
       </div>
-    </div>
+    </EditorProvider>
   )
 }

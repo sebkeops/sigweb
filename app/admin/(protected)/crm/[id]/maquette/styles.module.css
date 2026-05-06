@@ -1,0 +1,159 @@
+/*
+ * Styles scopés à l'éditeur de maquette `/admin/crm/[id]/maquette`.
+ * Utilise les tokens Sigweb existants (couleurs admin, fonts Nunito/Inter
+ * via le RootLayout) — pas de Fraunces/Manrope ici.
+ *
+ * Stratégie scroll : `<LockBodyScroll>` désactive le scroll global de la
+ * page admin → la viewport est figée. Les colonnes formulaire et preview
+ * gèrent chacune leur propre scroll interne, sans conflit avec une
+ * scrollbar globale.
+ */
+
+/* Layout split 2 colonnes — hauteur figée à la viewport, le scroll global
+   est verrouillé via <LockBodyScroll>. */
+.editorLayout {
+  display: grid;
+  grid-template-columns: 40% 60%;
+  gap: 24px;
+  margin-top: 24px;
+  /* viewport - admin header (~72px) - main py-10 (80px) - editor header (~56px) - margin-top (24px) */
+  height: calc(100vh - 232px);
+  min-height: 480px;
+}
+
+/* Colonne formulaire — overflow scroll interne. `min-height: 0` est
+   nécessaire en grid pour autoriser un enfant plus petit que son contenu. */
+.formColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+/* `flex-shrink: 0` sur les enfants directs : sinon en flex column avec
+   container borné, les AccordionItem se compressent à des barres fines
+   inutilisables. Avec ça, ils gardent leur taille naturelle et le scroll
+   interne du formColumn prend le relais. */
+.formColumn > * {
+  flex-shrink: 0;
+}
+
+/* Colonne preview — pleine hauteur du parent (déjà borné). */
+.previewColumn {
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* Panneau preview */
+.previewPane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border-radius: 6px;
+  border: 1px solid var(--color-border, #e5e1d8);
+  background: var(--color-surface, #ffffff);
+  overflow: hidden;
+}
+
+.previewToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-border, #e5e1d8);
+  background: var(--color-surface-soft, #f9f7f1);
+  flex-shrink: 0;
+}
+
+.previewToggle {
+  display: inline-flex;
+  border-radius: 6px;
+  background: var(--color-surface-strong, #efeae0);
+  padding: 2px;
+}
+.previewToggle button {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-muted, #7a6e60);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.previewToggle button:hover {
+  color: var(--color-ink, #1e1e1e);
+}
+.previewToggleActive {
+  background: var(--color-surface, #ffffff) !important;
+  color: var(--color-ink, #1e1e1e) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.previewOpen {
+  font-size: 0.75rem;
+  color: var(--color-primary, #2f6f4f);
+  text-decoration: none;
+}
+.previewOpen:hover { text-decoration: underline; }
+
+.previewFrame {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: var(--color-surface-strong, #efeae0);
+  overflow: auto;
+  padding: 12px;
+}
+
+/* Wrapper qui contient l'iframe scaled — sa hauteur est ajustée par JS pour
+   compenser le `transform: scale()` (sinon un grand vide apparaît en bas). */
+.previewIframeWrapper {
+  position: relative;
+}
+.previewIframeWrapper[data-viewport='desktop'] {
+  /* L'iframe enfant utilise transform-origin: top left, donc on n'a pas
+     besoin de centrer ici — la box scaled colle au coin haut-gauche. */
+  overflow: hidden;
+}
+.previewIframeWrapper[data-viewport='mobile'] {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+}
+
+.previewIframe {
+  border: none;
+  background: white;
+  display: block;
+  /* Hauteur ajustée DYNAMIQUEMENT côté JS (PreviewPane) à partir de la
+     hauteur réelle du document interne, communiquée via postMessage.
+     → pas de scroll interne, pas de vide en bas. */
+}
+.previewFrame[data-viewport='mobile'] .previewIframe {
+  border-radius: 18px;
+}
+
+/* Responsive : on empile en colonne sous 1100px, preview après formulaire. */
+@media (max-width: 1100px) {
+  .editorLayout {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    height: auto;
+    min-height: 0;
+  }
+  .formColumn {
+    overflow-y: visible;
+    max-height: none;
+  }
+  .previewColumn {
+    height: 600px;
+  }
+}

@@ -11,6 +11,7 @@ import type {
 import { Badge } from '@/components/ui/Badge'
 import { LinkButton } from '@/components/ui/Button'
 import ProspectFilters from '@/components/admin/ProspectFilters'
+import BackfillGooglePhotosButton from './BackfillGooglePhotosButton'
 import BackfillGoogleReviewsButton from './BackfillGoogleReviewsButton'
 import MigrateMaquettesPhotosButton from './MigrateMaquettesPhotosButton'
 import RecomputeAllScoresButton from './RecomputeAllScoresButton'
@@ -196,6 +197,7 @@ export default async function AdminCrmPage({ searchParams }: Props) {
       <div className="mb-2 flex justify-end gap-6">
         <MigrateMaquettesPhotosButton pendingCount={maquettesToMigrate} />
         <BackfillGoogleReviewsButton eligibleCount={eligibleForBackfill} />
+        <BackfillGooglePhotosButton eligibleCount={eligibleForBackfill} />
         <RecomputeAllScoresButton />
       </div>
 
