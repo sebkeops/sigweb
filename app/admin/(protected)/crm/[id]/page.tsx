@@ -14,6 +14,7 @@ import {
   STATUT_LABELS,
 } from '@/lib/crm/constants'
 import DeleteProspectButton from './DeleteProspectButton'
+import GenerateAfficheButton from './GenerateAfficheButton'
 import GenerateMaquetteButton from './GenerateMaquetteButton'
 import RefreshFromGoogleButton from './RefreshFromGoogleButton'
 import ScoreBreakdown from './ScoreBreakdown'
@@ -121,6 +122,7 @@ export default async function ProspectDetailPage({ params }: Props) {
             categorie={p.categorie}
             existingMaquette={existingMaquette}
           />
+          <GenerateAfficheButton prospectId={p.id} />
           <LinkButton href={`/admin/crm/${p.id}/modifier`} variant="primary" size="sm">
             Modifier
           </LinkButton>
