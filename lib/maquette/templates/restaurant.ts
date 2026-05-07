@@ -4,53 +4,53 @@ export const restaurant: TemplateConfig = {
   variant: 'restaurant',
 
   palette: {
-    cream:        '#F3EEE5',
-    creamLight:   '#FAF6EE',
-    creamWarm:    '#E5DBC8',
-    ink:          '#1A1A14',
-    inkSoft:      '#3D3D2E',
-    inkMuted:     '#6F6F5A',
-    primary:      '#4A6B4A', // sauge profond
-    primarySoft:  '#6B8A6B',
-    accent:       '#A87C45', // bois doré
-    accentLight:  '#C49C68',
+    cream:        '#F4EFE5',
+    creamLight:   '#FAF6EC',
+    creamWarm:    '#E8DECA',
+    ink:          '#1A1814',
+    inkSoft:      '#3F3D33',
+    inkMuted:     '#6E6B5E',
+    primary:      '#3D5C3A', // vert profond
+    primarySoft:  '#577A55',
+    accent:       '#B5904A', // ocre chaud
+    accentLight:  '#D0AC6A',
   },
 
   defaults: {
     heroEyebrow: (city) =>
-      city ? `Restaurant · ${city}` : 'Restaurant',
-    heroTitle: 'Une cuisine *de saison*, simple et juste.',
+      city ? `Cuisine de saison · ${city}` : 'Cuisine de saison',
+    heroTitle: 'Une cuisine *de saison*, faite ici.',
     heroLead:
-      'Une carte courte, des produits choisis, des assiettes pensées pour vous faire plaisir. À midi, le soir, ou en famille le dimanche.',
+      'Des produits frais choisis chaque matin, des recettes simples et soignées, et le plaisir de manger comme à la maison.',
     heroQuote:
-      'La cuisine, c\'est l\'attention portée à un produit. Un peu de feu, un peu de temps, beaucoup de patience.',
+      'Bien manger, c\'est d\'abord respecter ce qu\'on a dans l\'assiette. Le produit, le geste, et le temps qu\'il faut.',
     heroQuoteAuthor: '— Le chef',
-    histoireTitle: 'Une *table sincère*, à hauteur de chacun.',
+    histoireTitle: 'Une cuisine *qui a du sens*.',
     histoireLead:
-      'On sert ce qu\'on aime cuisiner — sans esbroufe, avec ce qu\'on trouve de meilleur autour.',
+      'Des produits frais, une carte qui change avec les saisons, et l\'envie de bien faire chaque jour.',
     textePresentation:
-      'Notre carte change avec les saisons. On travaille avec des producteurs et maraîchers du coin, on cuisine à la commande, on garde des prix justes. Que ce soit pour un déjeuner rapide, un dîner détendu ou un repas de famille, vous êtes les bienvenus.',
-    universSectionTitle: 'Une carte *courte*, pensée chaque saison.',
+      'Le marché du matin guide notre carte. Nos producteurs, on les connaît : maraîchers, éleveurs, fromagers, vignerons. Tout vient de la région autant que possible. Les recettes ? Simples, généreuses, soignées — celles qui rassemblent et donnent envie de revenir.',
+    universSectionTitle: 'Une carte de saison, et bien *plus encore*.',
     universSectionIntro:
-      'Quelques entrées, quelques plats, quelques desserts. Tout ce qu\'il faut, rien de superflu.',
-    ctaBannerTitle: 'Réserver une *table* ?',
+      'Notre cuisine évolue au rythme des produits du moment. Découvrez nos cinq univers, à déguster sur place ou à emporter.',
+    ctaBannerTitle: 'Une *réservation* ?',
     ctaBannerText:
-      'Pour un repas en semaine, un dîner du week-end ou un événement familial — passez-nous un coup de fil, on garde la table.',
+      'Pour une table, un événement ou une commande à emporter, un coup de fil et on s\'occupe de tout.',
     brandTagline: 'Restaurant · Cuisine de saison',
   },
 
   universItems: [
-    { cat: 'Le midi',           name: 'Menu du jour',       desc: 'Entrée, plat, dessert. Au tableau chaque matin, selon le marché.' },
-    { cat: 'À la carte',        name: 'Plats de saison',    desc: 'Une dizaine de plats, renouvelés au fil des saisons.' },
-    { cat: 'Pour partager',     name: 'Tables conviviales', desc: 'Plats à partager pour 2, 4 ou plus. Idéal le week-end.' },
-    { cat: 'Sucré',             name: 'Desserts maison',    desc: 'Pâtisseries faites sur place. Tarte du jour, glaces artisanales.' },
-    { cat: 'Sur commande',      name: 'Repas privés',       desc: 'Anniversaires, baptêmes, repas de famille. Devis sur demande.' },
+    { cat: 'Spécialité maison', name: 'Notre carte',       desc: 'Une cuisine généreuse qui change au fil des saisons. Entrées, plats du terroir, desserts maison.' },
+    { cat: 'Au quotidien',      name: 'Plat du jour',      desc: 'Une suggestion différente chaque jour, à un prix doux pour le midi.' },
+    { cat: 'Pratique',          name: 'Menu midi',         desc: 'Formule rapide et complète, idéale pour la pause déjeuner.' },
+    { cat: 'Événements',        name: 'Soirées spéciales', desc: 'Repas à thème, soirées dégustation, événements privés.' },
+    { cat: 'Service',           name: 'À emporter',        desc: 'Vos plats favoris à emporter, sur commande.' },
   ],
 
   valeursItems: [
-    { title: 'Produits du marché',    desc: 'Maraîchers et producteurs locaux.' },
-    { title: 'Carte de saison',       desc: 'Renouvelée plusieurs fois par an.' },
-    { title: 'Cuisiné à la commande', desc: 'Tout est préparé sur place.' },
-    { title: 'Accueil familial',      desc: 'Une table où on prend le temps.' },
+    { title: 'Produits frais',   desc: 'Marché du matin, producteurs locaux.' },
+    { title: 'Carte de saison',  desc: 'Ce qui pousse, ce qui se mange.' },
+    { title: 'Cuisine ouverte',  desc: 'Du visible, pas de mystère.' },
+    { title: 'Accueil familial', desc: 'Comme chez vous, en mieux.' },
   ],
 }

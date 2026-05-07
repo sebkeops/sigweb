@@ -101,9 +101,9 @@ describe('generateInitialMaquette — eyebrow et ville', () => {
     expect(generateInitialMaquette(makeProspect({ categorie: 'boucherie', ville: 'Auch' })).hero_eyebrow)
       .toBe('Artisan boucher · Auch')
     expect(generateInitialMaquette(makeProspect({ categorie: 'restaurant', ville: 'Auch' })).hero_eyebrow)
-      .toBe('Restaurant · Auch')
+      .toBe('Cuisine de saison · Auch')
     expect(generateInitialMaquette(makeProspect({ categorie: 'pizzeria', ville: 'Auch' })).hero_eyebrow)
-      .toBe('Pizzeria artisanale · Auch')
+      .toBe('Pizzeria au feu de bois · Auch')
   })
 })
 
@@ -204,7 +204,7 @@ describe('generateInitialMaquette — contenus par défaut', () => {
     expect(m.univers_items[0]).toEqual({
       cat: 'Spécialité maison',
       name: 'Pains au levain',
-      desc: 'Tradition, complet, multi-céréales, seigle. Cuits sur sole.',
+      desc: 'Tradition, complet, multi-céréales, seigle. Cuits sur sole, pour une croûte épaisse et une mie souple.',
     })
   })
 
