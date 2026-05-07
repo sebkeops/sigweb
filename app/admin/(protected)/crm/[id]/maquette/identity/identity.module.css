@@ -1,0 +1,209 @@
+/* Logo uploader */
+.logoUploader {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.logoPreview {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--color-surface-strong, #efeae0);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--color-border, #e5e1d8);
+}
+.logoPreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.logoFallback {
+  font-family: serif;
+  font-size: 38px;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--color-ink, #1e1e1e);
+}
+
+.logoActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.logoHint {
+  grid-column: 1 / -1;
+  font-size: 0.75rem;
+  color: var(--color-muted, #7a6e60);
+  line-height: 1.5;
+  margin-top: 4px;
+}
+
+.btnPrimary {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--color-primary, #2f6f4f);
+  background: var(--color-primary, #2f6f4f);
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btnPrimary:hover { background: var(--color-primary-dark, #245940); }
+.btnPrimary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btnGhost {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--color-border, #e5e1d8);
+  background: transparent;
+  color: var(--color-ink, #1e1e1e);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btnGhost:hover { background: var(--color-surface-strong, #efeae0); }
+.btnGhost:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.errorMessage {
+  grid-column: 1 / -1;
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: #b91c1c;
+}
+.errorBanner {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background: rgb(254, 243, 199);
+  border: 1px solid rgb(252, 211, 77);
+  font-size: 0.78rem;
+  color: rgb(120, 53, 15);
+}
+.errorAction {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: none;
+  background: rgb(120, 53, 15);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Palette selector */
+.paletteSelector {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-border, #e5e1d8);
+}
+
+.modesFieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.modesLegend {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-muted, #7a6e60);
+  margin-bottom: 8px;
+}
+
+.modeOption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border, #e5e1d8);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  font-size: 0.85rem;
+  color: var(--color-ink, #1e1e1e);
+}
+.modeOption:hover {
+  background: var(--color-surface-soft, #f9f7f1);
+}
+.modeOption input[type='radio']:checked ~ .modeLabel {
+  font-weight: 600;
+}
+.modeOption:has(input:checked) {
+  border-color: var(--color-primary, #2f6f4f);
+  background: var(--color-surface-soft, #f9f7f1);
+}
+
+.modeDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.modeDisabled:hover { background: transparent; }
+
+.modeLabel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.modeHint {
+  font-size: 0.72rem;
+  color: var(--color-muted, #7a6e60);
+  font-weight: 400;
+}
+
+.modeSwatches {
+  display: flex;
+  gap: 4px;
+}
+
+.swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Custom color pickers */
+.customPickers {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--color-surface-soft, #f9f7f1);
+  border-radius: 6px;
+}
+
+.colorPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--color-ink, #1e1e1e);
+}
+.colorPicker input[type='color'] {
+  width: 60px;
+  height: 36px;
+  border: 1px solid var(--color-border, #e5e1d8);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 2px;
+  background: white;
+}

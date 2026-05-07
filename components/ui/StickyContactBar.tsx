@@ -7,7 +7,12 @@ import ContactLink from '@/components/layout/ContactLink'
 export default function StickyContactBar() {
   const pathname = usePathname()
 
-  if (pathname.startsWith('/admin')) return null
+  // Masque la sticky bar Sigweb sur :
+  //   - /admin       : back-office
+  //   - /demos/*     : pages publiques de maquettes (chaque maquette a sa
+  //                    propre sticky CTA "Appeler" — la bar Sigweb la cacherait
+  //                    et casserait l'illusion de site dédié au commerce).
+  if (pathname.startsWith('/admin') || pathname.startsWith('/demos')) return null
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex sm:hidden border-t border-border bg-surface shadow-card">

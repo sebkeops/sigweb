@@ -26,6 +26,10 @@ export function enrichedToFormDefaults(data: EnrichedPlaceData): Partial<Prospec
  * Champs google_* + lat/lon + last_enriched_at à insérer/mettre à jour
  * en base. Source de vérité : la donnée Google fraîche (récupérée par
  * une server action qui a refait un Place Details).
+ *
+ * `google_reviews` : snapshot des avis détaillés (max 5, filtrés sur
+ * texte non vide à la normalisation). `null` si aucun avis exploitable
+ * — l'UI maquette gérera l'affichage dégradé.
  */
 export function enrichedToGoogleDbFields(data: EnrichedPlaceData) {
   return {
@@ -38,6 +42,7 @@ export function enrichedToGoogleDbFields(data: EnrichedPlaceData) {
     google_photo_refs: data.photoRefs.length > 0 ? data.photoRefs : null,
     google_maps_url: data.googleMapsUrl,
     google_primary_type_display: data.primaryTypeDisplay,
+    google_reviews: data.reviews.length > 0 ? data.reviews : null,
     latitude: data.latitude,
     longitude: data.longitude,
     last_enriched_at: new Date().toISOString(),

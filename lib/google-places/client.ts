@@ -75,8 +75,11 @@ export async function fetchPlacesApi<T>(path: string, opts: FetchOptions): Promi
   }
 }
 
+// `reviews` est inclus dans DETAILS uniquement (pas dans SEARCH) : on ne veut
+// les avis qu'au moment de l'enrichissement détaillé d'une fiche, pas pour
+// chaque candidat de recherche. Limite la taille de la réponse SearchText.
 export const PLACE_FIELDS_DETAILS =
-  'id,displayName,formattedAddress,addressComponents,location,types,primaryType,primaryTypeDisplayName,businessStatus,rating,userRatingCount,regularOpeningHours,internationalPhoneNumber,nationalPhoneNumber,websiteUri,googleMapsUri,photos'
+  'id,displayName,formattedAddress,addressComponents,location,types,primaryType,primaryTypeDisplayName,businessStatus,rating,userRatingCount,regularOpeningHours,internationalPhoneNumber,nationalPhoneNumber,websiteUri,googleMapsUri,photos,reviews'
 
 export const PLACE_FIELDS_SEARCH =
   'places.id,places.displayName,places.formattedAddress,places.addressComponents,places.location,places.types,places.primaryType,places.primaryTypeDisplayName,places.businessStatus,places.rating,places.userRatingCount,places.regularOpeningHours,places.internationalPhoneNumber,places.nationalPhoneNumber,places.websiteUri,places.googleMapsUri,places.photos'

@@ -1,6 +1,11 @@
 import 'server-only'
 
-import type { GoogleBusinessStatus, GoogleOpeningHours, ProspectCategorie } from '@/types'
+import type {
+  GoogleBusinessStatus,
+  GoogleOpeningHours,
+  GoogleReviewItem,
+  ProspectCategorie,
+} from '@/types'
 import {
   fetchPlacesApi,
   GooglePlacesError,
@@ -13,6 +18,8 @@ import {
   extractCity,
   extractPhotoRefs,
   extractPostalCode,
+  formatAuthorName,
+  getAuthorInitial,
   mapGoogleTypeToCategorie,
 } from './mapping'
 import { resolveAndParseMapsUrl } from './urls'
@@ -24,10 +31,22 @@ export { searchNearby, searchNearbyMulti } from './nearby'
 export type { NearbyHit } from './nearby'
 export {
   categorieToGoogleTypes,
+  formatAuthorName,
+  getAuthorInitial,
   sourceableCategories,
 } from './mapping'
 
 // ── Types Google bruts (extrait du field mask) ──────────────────────────
+
+interface RawReview {
+  name?: string
+  rating?: number
+  text?: { text?: string; languageCode?: string }
+  originalText?: { text?: string; languageCode?: string }
+  authorAttribution?: { displayName?: string; uri?: string; photoUri?: string }
+  publishTime?: string
+  relativePublishTimeDescription?: string
+}
 
 interface RawPlace {
   id: string
@@ -47,6 +66,7 @@ interface RawPlace {
   websiteUri?: string
   googleMapsUri?: string
   photos?: { name?: string }[]
+  reviews?: RawReview[]
 }
 
 interface SearchResponse {
@@ -76,6 +96,42 @@ export interface EnrichedPlaceData {
   longitude: number | null
   distanceKm: number | null
   suggestedCategorie: ProspectCategorie
+  /**
+   * Avis détaillés Google (max 5, pas de pagination côté API).
+   * Le nom d'auteur est déjà tronqué via `formatAuthorName` (Prénom + Initiale.).
+   * Vide si aucun avis n'est disponible (commerce récent, jamais évalué…).
+   */
+  reviews: GoogleReviewItem[]
+}
+
+function normalizeReview(raw: RawReview): GoogleReviewItem | null {
+  if (!raw.name || typeof raw.rating !== 'number') return null
+
+  // Filtre V1 : on jette les avis sans texte exploitable. Un "5 étoiles
+  // sans commentaire" n'a aucune valeur visuelle dans la section avis.
+  // Si l'API renvoie peu d'avis avec texte, l'UI gérera l'affichage
+  // dégradé (ex: bandeau noté sans cartes).
+  const rawText = raw.text?.text ?? raw.originalText?.text ?? ''
+  const text = rawText.trim()
+  if (text.length === 0) return null
+
+  const displayName = raw.authorAttribution?.displayName ?? ''
+  return {
+    name: raw.name,
+    rating: Math.max(1, Math.min(5, Math.round(raw.rating))),
+    text,
+    author_name: formatAuthorName(displayName),
+    author_initial: getAuthorInitial(displayName),
+    publish_time: raw.publishTime ?? null,
+  }
+}
+
+function normalizeReviews(reviews: RawReview[] | undefined): GoogleReviewItem[] {
+  if (!reviews) return []
+  return reviews
+    .map(normalizeReview)
+    .filter((r): r is GoogleReviewItem => r !== null)
+    .slice(0, 5)
 }
 
 function normalizeBusinessStatus(s: string | undefined): GoogleBusinessStatus | null {
@@ -106,6 +162,7 @@ function normalizePlace(raw: RawPlace): EnrichedPlaceData {
     longitude: lon,
     distanceKm: lat != null && lon != null ? distanceFromBase(lat, lon) : null,
     suggestedCategorie: mapGoogleTypeToCategorie(raw.types),
+    reviews: normalizeReviews(raw.reviews),
   }
 }
 

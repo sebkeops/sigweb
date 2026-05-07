@@ -73,9 +73,17 @@ export function extractPostalCode(components: AddressComponent[] | undefined): s
   return cp?.longText ?? cp?.shortText ?? null
 }
 
+/**
+ * Extrait les références photos d'une réponse Google Places.
+ *
+ * Limite par défaut : 10 (Session 3.0 — augmenté de 5 → 10 pour offrir
+ * un pool large que l'admin réorganisera dans l'éditeur). L'API Places
+ * (New) renvoie typiquement jusqu'à 10 photos par lieu, parfois moins
+ * selon le commerce. Pas de pagination disponible au-delà.
+ */
 export function extractPhotoRefs(
   photos: { name?: string }[] | undefined,
-  max = 5
+  max = 10
 ): string[] {
   if (!photos) return []
   return photos
@@ -83,3 +91,7 @@ export function extractPhotoRefs(
     .filter((n): n is string => typeof n === 'string' && n.startsWith('places/'))
     .slice(0, max)
 }
+
+// Les helpers `formatAuthorName` et `getAuthorInitial` sont définis dans
+// `./author-name.ts` (sans 'server-only' pour rester testables côté Node).
+export { formatAuthorName, getAuthorInitial } from './author-name'
