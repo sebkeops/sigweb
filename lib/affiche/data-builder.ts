@@ -4,6 +4,7 @@ import type { Prospect } from '@/types'
 import { getCategorieLabel } from './categories'
 import { getSigwebConfig, shortSiteDisplay } from './config'
 import { buildContent } from './content'
+import { normalizeImageBuffer } from './image-normalizer'
 import { resolveAffichePhotoBuffer } from './photo-resolver'
 import { generateQRCodeDataUrl } from './qr-code'
 import type { AfficheData } from './types'
@@ -43,10 +44,12 @@ export async function buildAfficheData(
 
   const content = buildContent({ variant, prospect, qrTargetUrl })
 
-  // Buffer → dataURL pour @react-pdf/<Image> (qui accepte aussi Buffer mais
-  // dataURL est plus simple à passer à travers les composants RSC).
-  const photoUrl = photoBuffer
-    ? `data:image/jpeg;base64,${photoBuffer.toString('base64')}`
+  // Normalisation format → @react-pdf ne gère que JPEG/PNG. Les uploads
+  // admin sont stockés en WebP, donc on doit reconvertir le buffer (sinon
+  // <Image> échoue silencieusement et le hero rend vide).
+  const normalizedPhoto = photoBuffer ? await normalizeImageBuffer(photoBuffer) : null
+  const photoUrl = normalizedPhoto
+    ? `data:${normalizedPhoto.mime};base64,${normalizedPhoto.data.toString('base64')}`
     : null
 
   return {
