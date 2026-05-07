@@ -773,6 +773,145 @@ export async function deleteMaquetteLogo(
   return { success: true, updatedAt: updated.updated_at }
 }
 
+// ─── Slug édition ──────────────────────────────────────────────────────────
+
+const SLUG_REGEX = /^[a-z0-9-]+$/
+
+const updateMaquetteSlugSchema = z.object({
+  newSlug: z.string()
+    .min(1)
+    .max(80)
+    .regex(SLUG_REGEX, 'Format invalide : seules les minuscules, chiffres et tirets sont autorisés.'),
+}).strict()
+
+export type UpdateSlugResult =
+  | { success: true; data: { slug: string; updatedAt: string; url: string | null } }
+  | { success: false; error: string; code: 'stale' | 'validation' | 'duplicate' | 'other'; currentUpdatedAt?: string }
+
+/**
+ * Modifie le slug d'une maquette.
+ *
+ * ⚠️ ACTE DESTRUCTIF — le slug pilote l'URL publique /demos/[slug] et les
+ * QR codes imprimés des affiches A4. Toute modification CASSE les liens
+ * distribués / QR codes pré-imprimés. La confirmation utilisateur est de la
+ * responsabilité de l'UI (modale type "tape l'ancien slug pour confirmer").
+ *
+ * Validations :
+ *   - format strict ^[a-z0-9-]+$ (cohérent avec le CHECK BDD)
+ *   - longueur 1–80
+ *   - unicité globale (autre maquette → rejet `duplicate`)
+ *   - lock optimiste updated_at
+ *
+ * Effets :
+ *   - UPDATE `maquettes.slug`
+ *   - Si publiée, UPDATE `prospects.maquette_url` avec la nouvelle URL
+ *   - revalidatePath sur l'ancien ET le nouveau slug
+ */
+export async function updateMaquetteSlug(
+  maquetteId: string,
+  expectedUpdatedAt: string,
+  rawNewSlug: string
+): Promise<UpdateSlugResult> {
+  let supabase: SupabaseClient
+  try {
+    supabase = await assertAuthenticated()
+  } catch {
+    return { success: false, error: 'Non autorisé.', code: 'other' }
+  }
+
+  const parsed = updateMaquetteSlugSchema.safeParse({ newSlug: rawNewSlug })
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: parsed.error.issues[0]?.message ?? 'Slug invalide.',
+      code: 'validation',
+    }
+  }
+  const newSlug = parsed.data.newSlug
+
+  const { data: current, error: selErr } = await supabase
+    .from('maquettes')
+    .select('updated_at, slug, published, prospect_id')
+    .eq('id', maquetteId)
+    .maybeSingle()
+  if (selErr || !current) {
+    return { success: false, error: 'Maquette introuvable.', code: 'other' }
+  }
+  if (current.updated_at !== expectedUpdatedAt) {
+    return {
+      success: false,
+      code: 'stale',
+      error: 'Cette maquette a été modifiée ailleurs (autre onglet ?). Rechargez pour voir les derniers changements.',
+      currentUpdatedAt: current.updated_at,
+    }
+  }
+
+  // No-op si identique
+  if (current.slug === newSlug) {
+    const url = current.published ? `${SITE_URL}/demos/${newSlug}` : null
+    return { success: true, data: { slug: newSlug, updatedAt: current.updated_at, url } }
+  }
+
+  // Check unicité (autre maquette avec ce slug)
+  const { data: dup } = await supabase
+    .from('maquettes')
+    .select('id')
+    .eq('slug', newSlug)
+    .neq('id', maquetteId)
+    .maybeSingle()
+  if (dup) {
+    return {
+      success: false,
+      code: 'duplicate',
+      error: `Le slug « ${newSlug} » est déjà utilisé par une autre maquette.`,
+    }
+  }
+
+  const { data: updated, error: updErr } = await supabase
+    .from('maquettes')
+    .update({ slug: newSlug })
+    .eq('id', maquetteId)
+    .eq('updated_at', expectedUpdatedAt)
+    .select('updated_at')
+    .maybeSingle()
+
+  if (updErr) {
+    if (updErr.code === '23505') {
+      return {
+        success: false,
+        code: 'duplicate',
+        error: `Le slug « ${newSlug} » vient d'être pris par une autre maquette.`,
+      }
+    }
+    console.error('[updateMaquetteSlug] update', updErr)
+    return { success: false, error: 'Erreur lors de la sauvegarde.', code: 'other' }
+  }
+  if (!updated) {
+    return {
+      success: false,
+      code: 'stale',
+      error: 'Cette maquette a été modifiée pendant l\'opération. Rechargez la page.',
+    }
+  }
+
+  // Si la maquette est publiée, on resync prospects.maquette_url
+  let url: string | null = null
+  if (current.published) {
+    url = `${SITE_URL}/demos/${newSlug}`
+    await supabase
+      .from('prospects')
+      .update({ maquette_url: url })
+      .eq('id', current.prospect_id)
+  }
+
+  revalidatePath(`/admin/crm/${current.prospect_id}/maquette`)
+  revalidatePath(`/admin/maquette-preview/${current.prospect_id}`)
+  revalidatePath(`/demos/${current.slug}`)
+  revalidatePath(`/demos/${newSlug}`)
+
+  return { success: true, data: { slug: newSlug, updatedAt: updated.updated_at, url } }
+}
+
 // ─── Upload photo manuelle (univers / hero / histoire) ─────────────────────
 
 export type UploadPhotoResult =

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/ui/Modal'
 import { deleteMaquette } from '@/lib/actions/maquette'
 import type { Maquette } from '@/types'
+import SlugEditor from '../advanced/SlugEditor'
 
 interface Props {
   maquette: Maquette
@@ -13,8 +14,7 @@ interface Props {
 }
 
 /**
- * Section "Avancé" — héberge les actions à risque (suppression maquette).
- * URL custom et dépublication seront ajoutées en Session 3.5 / 3.6.
+ * Section "Avancé" — édition du slug + zone destructive (suppression).
  */
 export default function AdvancedSection({ maquette, prospectId }: Props) {
   const router = useRouter()
@@ -38,18 +38,7 @@ export default function AdvancedSection({ maquette, prospectId }: Props) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <div className="mb-2 font-body text-xs font-semibold uppercase tracking-wider text-muted">
-          URL publique
-        </div>
-        <code className="rounded bg-surface-strong px-2 py-1 font-body text-sm text-ink">
-          /demos/{maquette.slug}
-        </code>
-        <p className="mt-2 font-body text-xs text-muted">
-          La modification du slug (rupture des liens existants et QR codes imprimés)
-          sera disponible en Session 3.5.
-        </p>
-      </div>
+      <SlugEditor maquette={maquette} />
 
       <div className="border-t border-border pt-6">
         <div className="mb-2 font-body text-xs font-semibold uppercase tracking-wider text-red-700">
