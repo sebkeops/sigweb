@@ -164,8 +164,14 @@ export interface MaquetteValeurItem {
  * Avis affiché dans la maquette.
  * Snapshot autonome : permet l'édition manuelle d'un texte sans casser
  * la source `prospects.google_reviews`. `edited = true` flagge un override.
+ *
+ * `source_id` : référence Google (`places/X/reviews/Y`) si l'avis vient d'un
+ * avis Google sélectionné. Permet de retrouver l'avis original pour
+ * "Réinitialiser le texte". Absent pour les avis ajoutés manuellement
+ * (futur — pas implémenté en V1).
  */
 export interface MaquetteAvisItem {
+  source_id?: string
   author: string
   author_initial?: string
   rating: number       // 1..5
@@ -238,6 +244,20 @@ export interface MaquettePhotoAssignment {
   photo_id: string | null
 }
 
+/**
+ * Overrides des infos pratiques affichées dans la maquette publiée.
+ *
+ * Sémantique par champ :
+ *   - clé absente (undefined)  → utiliser la valeur du prospect
+ *   - clé présente avec null   → masquer cette info sur la maquette
+ *   - clé présente avec string → override avec cette valeur custom
+ */
+export interface MaquetteInfosOverrides {
+  adresse?: string | null
+  telephone?: string | null
+  email?: string | null
+}
+
 export interface Maquette {
   id: string
   created_at: string
@@ -248,6 +268,8 @@ export interface Maquette {
   template_variant: MaquetteTemplateVariant
   published: boolean
   published_at: string | null
+
+  infos_overrides: MaquetteInfosOverrides | null
 
   hero_eyebrow: string | null
   hero_title: string | null

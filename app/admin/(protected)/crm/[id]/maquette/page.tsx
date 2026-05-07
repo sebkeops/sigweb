@@ -77,16 +77,16 @@ export default async function MaquetteEditorPage({ params }: Props) {
               <HistoireSection maquette={m} />
             </AccordionItem>
             <AccordionItem id="univers" title="5. Univers produits">
-              <UniversSection maquette={m} />
+              <UniversSection maquette={m} defaultItems={template.universItems} />
             </AccordionItem>
             <AccordionItem id="cta" title="6. CTA banner">
               <CtaSection maquette={m} />
             </AccordionItem>
             <AccordionItem id="avis" title="7. Avis Google">
-              <AvisSection prospect={p} />
+              <AvisSection prospect={p} initialAvis={m.avis_items} />
             </AccordionItem>
             <AccordionItem id="infos" title="8. Infos pratiques">
-              <InfosSection prospect={p} />
+              <InfosSection prospect={p} initialOverrides={m.infos_overrides} />
             </AccordionItem>
             <AccordionItem id="advanced" title="9. Avancé">
               <AdvancedSection maquette={m} prospectId={id} />

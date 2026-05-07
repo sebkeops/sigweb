@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import { stripItalicMarkers } from '@/lib/maquette/render/parseItalicMarkers'
 import { resolvePhotoUrl } from '@/lib/maquette/render/resolvePhotoUrl'
 import { formatTelHref } from '@/lib/maquette/render/palette'
+import { resolveInfos } from '@/lib/maquette/render/resolveInfos'
 import type { Maquette, Prospect } from '@/types'
 import styles from '../styles.module.css'
 import MobileToggle from './MobileToggle'
@@ -14,16 +15,13 @@ interface Props {
   cssVars: CSSProperties
 }
 
-function buildMapsUrl(p: Prospect): string | null {
-  const parts = [p.adresse, p.code_postal, p.ville].filter(Boolean)
-  if (parts.length === 0) return null
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(parts.join(', '))}`
-}
-
 export default function Header({ maquette, prospect, brandTagline, cssVars }: Props) {
-  const tel = formatTelHref(prospect.telephone)
+  const resolved = resolveInfos(prospect, maquette.infos_overrides)
+  const tel = formatTelHref(resolved.telephone)
   const logoUrl = resolvePhotoUrl(maquette.logo_url, { width: 80 })
-  const mapsUrl = buildMapsUrl(prospect)
+  const mapsUrl = resolved.adresseLine
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resolved.adresseLine)}`
+    : null
 
   return (
     <>
@@ -39,7 +37,7 @@ export default function Header({ maquette, prospect, brandTagline, cssVars }: Pr
             <div className={styles.mobilePanelFooter}>
               {tel && (
                 <a href={`tel:${tel}`} className={`${styles.btn} ${styles.btnPrimary}`}>
-                  <span>📞</span> {prospect.telephone}
+                  <span>📞</span> {resolved.telephone}
                 </a>
               )}
               {mapsUrl && (
@@ -76,7 +74,7 @@ export default function Header({ maquette, prospect, brandTagline, cssVars }: Pr
 
           {tel ? (
             <a href={`tel:${tel}`} className={styles.ctaTel}>
-              <span>📞</span> {prospect.telephone}
+              <span>📞</span> {resolved.telephone}
             </a>
           ) : (
             <span className={styles.headerSpacer} />

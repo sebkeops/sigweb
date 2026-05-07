@@ -35,6 +35,50 @@ describe('updateMaquetteContentSchema — whitelist (sécurité)', () => {
     }
   })
 
+  it('ACCEPTE univers_items (5 cartes valides)', () => {
+    const r = updateMaquetteContentSchema.safeParse({
+      univers_items: Array.from({ length: 5 }, (_, i) => ({
+        cat: `Catégorie ${i}`,
+        name: `Produit ${i}`,
+        desc: `Description ${i}`,
+      })),
+    })
+    expect(r.success).toBe(true)
+  })
+
+  it('univers_items REJETTE un nombre différent de 5', () => {
+    const four = Array.from({ length: 4 }, () => ({ cat: 'a', name: 'b', desc: 'c' }))
+    expect(updateMaquetteContentSchema.safeParse({ univers_items: four }).success).toBe(false)
+    const six = Array.from({ length: 6 }, () => ({ cat: 'a', name: 'b', desc: 'c' }))
+    expect(updateMaquetteContentSchema.safeParse({ univers_items: six }).success).toBe(false)
+  })
+
+  it('univers_items REJETTE un cat trop long (>60)', () => {
+    const items = Array.from({ length: 5 }, () => ({
+      cat: 'a'.repeat(61),
+      name: 'b',
+      desc: 'c',
+    }))
+    expect(updateMaquetteContentSchema.safeParse({ univers_items: items }).success).toBe(false)
+  })
+
+  it('univers_items trim chaque champ', () => {
+    const items = Array.from({ length: 5 }, () => ({
+      cat: '  trimmed  ',
+      name: '  name  ',
+      desc: '  desc  ',
+    }))
+    const r = updateMaquetteContentSchema.safeParse({ univers_items: items })
+    expect(r.success).toBe(true)
+    if (!r.success) return
+    expect(r.data.univers_items![0]).toEqual({ cat: 'trimmed', name: 'name', desc: 'desc' })
+  })
+
+  it('univers_items ACCEPTE null (reset)', () => {
+    const r = updateMaquetteContentSchema.safeParse({ univers_items: null })
+    expect(r.success).toBe(true)
+  })
+
   it('REJETTE un champ inconnu (typo, attaque)', () => {
     const r = updateMaquetteContentSchema.safeParse({ hero_titel: 'typo' })
     expect(r.success).toBe(false)

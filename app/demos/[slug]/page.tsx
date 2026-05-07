@@ -104,8 +104,12 @@ export default async function MaquettePage({ params }: Props) {
       />
       <CtaBanner maquette={maquette} prospect={prospect} />
       <Avis prospect={prospect} customAvis={maquette.avis_items} />
-      <Infos prospect={prospect} />
-      <Footer prospect={prospect} brandTagline={template.defaults.brandTagline} />
+      <Infos prospect={prospect} overrides={maquette.infos_overrides} />
+      <Footer
+        prospect={prospect}
+        brandTagline={template.defaults.brandTagline}
+        overrides={maquette.infos_overrides}
+      />
     </div>
   )
 }

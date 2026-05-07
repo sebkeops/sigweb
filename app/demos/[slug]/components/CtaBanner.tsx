@@ -1,5 +1,6 @@
 import { parseItalicMarkers } from '@/lib/maquette/render/parseItalicMarkers'
 import { formatTelHref } from '@/lib/maquette/render/palette'
+import { resolveInfos } from '@/lib/maquette/render/resolveInfos'
 import type { Maquette, Prospect } from '@/types'
 import styles from '../styles.module.css'
 
@@ -9,7 +10,8 @@ interface Props {
 }
 
 export default function CtaBanner({ maquette, prospect }: Props) {
-  const tel = formatTelHref(prospect.telephone)
+  const resolved = resolveInfos(prospect, maquette.infos_overrides)
+  const tel = formatTelHref(resolved.telephone)
 
   return (
     <section className={styles.ctaBanner}>
@@ -26,7 +28,7 @@ export default function CtaBanner({ maquette, prospect }: Props) {
         <div className={styles.ctaActions}>
           {tel && (
             <a href={`tel:${tel}`} className={`${styles.btn} ${styles.btnPrimary}`}>
-              <span>📞</span> {prospect.telephone}
+              <span>📞</span> {resolved.telephone}
             </a>
           )}
           <a href="#infos" className={`${styles.btn} ${styles.btnGhost}`}>

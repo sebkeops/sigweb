@@ -78,8 +78,12 @@ export default async function MaquettePreviewPage({ params }: Props) {
       />
       <CtaBanner maquette={m} prospect={p} />
       <Avis prospect={p} customAvis={m.avis_items} />
-      <Infos prospect={p} />
-      <Footer prospect={p} brandTagline={template.defaults.brandTagline} />
+      <Infos prospect={p} overrides={m.infos_overrides} />
+      <Footer
+        prospect={p}
+        brandTagline={template.defaults.brandTagline}
+        overrides={m.infos_overrides}
+      />
     </div>
   )
 }
