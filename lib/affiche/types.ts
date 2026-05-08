@@ -66,7 +66,8 @@ export interface AfficheData {
     phoneHref: string           // tel: URI
     email: string
     siteDisplay: string         // ex: "sigweb.fr"
-    logoUrl: string
+    logoUrl: string             // logo SIGWEB (utilisé dans le HeaderBand)
+    avatarUrl: string           // photo de Sébastien (utilisée en avatar rond dans la signature footer)
   }
 }
 

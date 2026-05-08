@@ -18,6 +18,7 @@ export interface SigwebConfig {
   contactLocation: string        // "Ségoufielle, Gers"
   businessLabel: string          // baseline header
   logoUrl: string                // logo rond blanc dans les bandeaux
+  avatarUrl: string              // photo de Sébastien, avatar rond dans la signature footer
   siteUrl: string                // https://www.sigweb.fr
 }
 
@@ -29,6 +30,7 @@ const DEFAULTS: SigwebConfig = {
   contactLocation:    'Ségoufielle, Gers',
   businessLabel:      'Sites internet pour commerçants et artisans',
   logoUrl:            'https://www.sigweb.fr/images/logo-v2.png',
+  avatarUrl:          'https://www.sigweb.fr/images/sebastien.siguenza.png',
   siteUrl:            'https://www.sigweb.fr',
 }
 
@@ -41,6 +43,7 @@ export function getSigwebConfig(): SigwebConfig {
     contactLocation:     process.env.SIGWEB_CONTACT_LOCATION       ?? DEFAULTS.contactLocation,
     businessLabel:       process.env.SIGWEB_BUSINESS_LABEL         ?? DEFAULTS.businessLabel,
     logoUrl:             process.env.SIGWEB_LOGO_URL               ?? DEFAULTS.logoUrl,
+    avatarUrl:           process.env.SIGWEB_AVATAR_URL             ?? DEFAULTS.avatarUrl,
     siteUrl:             process.env.SIGWEB_SITE_URL               ?? DEFAULTS.siteUrl,
   }
 }

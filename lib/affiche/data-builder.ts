@@ -86,6 +86,7 @@ export async function buildAfficheData(
       email: config.contactEmail,
       siteDisplay: shortSiteDisplay(config.siteUrl),
       logoUrl: config.logoUrl,
+      avatarUrl: config.avatarUrl,
     },
   }
 }
