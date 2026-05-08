@@ -49,6 +49,9 @@ export interface RenderedEmail {
   toEmail: string
   fromEmail: string
   fromName: string
+  /** Adresse de réponse — peut différer de fromEmail si on envoie depuis un
+   *  sous-domaine technique mais qu'on veut router les réponses ailleurs. */
+  replyToEmail: string
 }
 
 export class EmailEligibilityError extends Error {
@@ -147,6 +150,11 @@ export async function renderEmailContent(
 
   const fromEmail = process.env.RESEND_FROM_EMAIL ?? 'contact@sigweb.fr'
   const fromName = process.env.RESEND_FROM_NAME ?? 'Sébastien — SIGWEB'
+  // Adresse de réponse — utile quand on envoie depuis un sous-domaine technique
+  // (ex : `contact@updates.sigweb.fr` côté Resend) mais qu'on veut que les
+  // réponses arrivent sur l'adresse principale `contact@sigweb.fr`.
+  // Si non défini, fallback sur fromEmail (Resend gère naturellement).
+  const replyToEmail = process.env.RESEND_REPLY_TO_EMAIL ?? fromEmail
 
   const hasGoogleData =
     prospect.google_rating != null && prospect.google_reviews_count != null
@@ -220,6 +228,7 @@ export async function renderEmailContent(
     toEmail: prospect.email,
     fromEmail,
     fromName,
+    replyToEmail,
   }
 }
 
@@ -301,6 +310,9 @@ export async function sendProspectEmail(
   const result = await resend.emails.send({
     from: `${rendered.fromName} <${rendered.fromEmail}>`,
     to: finalTo,
+    // Si le destinataire répond, sa réponse part vers `replyToEmail` même si
+    // l'expéditeur technique est un sous-domaine vérifié type updates.sigweb.fr.
+    replyTo: rendered.replyToEmail,
     subject: finalSubject,
     html: finalHtml,
     text: finalText,

@@ -18,6 +18,7 @@ import GenerateAfficheButton from './GenerateAfficheButton'
 import GenerateMaquetteButton from './GenerateMaquetteButton'
 import RefreshFromGoogleButton from './RefreshFromGoogleButton'
 import ScoreBreakdown from './ScoreBreakdown'
+import SendEmailButton from './SendEmailButton'
 
 export const metadata: Metadata = { title: 'Fiche prospect | Admin Sigweb' }
 
@@ -123,6 +124,12 @@ export default async function ProspectDetailPage({ params }: Props) {
             existingMaquette={existingMaquette}
           />
           <GenerateAfficheButton prospectId={p.id} />
+          <SendEmailButton
+            prospectId={p.id}
+            hasEmail={!!p.email}
+            isUnsubscribed={p.email_unsubscribed}
+            hasPublishedMaquette={existingMaquette?.published === true}
+          />
           <LinkButton href={`/admin/crm/${p.id}/modifier`} variant="primary" size="sm">
             Modifier
           </LinkButton>

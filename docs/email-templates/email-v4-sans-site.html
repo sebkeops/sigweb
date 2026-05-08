@@ -14,13 +14,11 @@ body { margin: 0; padding: 40px 20px; background: #ECE7DC; font-family: 'Nunito'
 .client-header strong { color: #1A1814; font-weight: 600; }
 .email-wrapper { background: #FFFFFF; padding: 0; border-radius: 0 0 6px 6px; overflow: hidden; }
 
-/* Bandeau brand SIGWEB avec logo */
-.brand-band { background: #2F6F4F; padding: 18px 36px; display: flex; align-items: center; gap: 14px; justify-content: center; }
-.brand-band-logo { width: 44px; height: 44px; flex-shrink: 0; background: #FFFFFF; border-radius: 50%; padding: 6px; display: flex; align-items: center; justify-content: center; }
-.brand-band-logo img { max-width: 100%; max-height: 100%; }
-.brand-band-text { color: #FFFFFF; }
+/* Bandeau brand SIGWEB avec logo — table-based pour Gmail (qui ne supporte pas flex) */
+.brand-band { background: #2F6F4F; }
+.brand-band td { vertical-align: middle; }
 .brand-name-text { font-family: 'Nunito', sans-serif; font-size: 24px; font-weight: 700; color: #FFFFFF; letter-spacing: 0.04em; line-height: 1; }
-.brand-tagline-text { font-size: 11px; color: rgba(255,255,255,0.9); margin-top: 4px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; }
+.brand-tagline-text { font-family: 'Nunito', sans-serif; font-size: 11px; color: #FFFFFF; opacity: 0.9; margin-top: 4px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 500; }
 
 .email-content { font-family: 'Nunito', sans-serif; max-width: 600px; margin: 0 auto; color: #1A1814; line-height: 1.65; font-size: 15px; padding: 36px 36px 32px; }
 .email-content p { margin: 0 0 18px 0; font-weight: 400; }
@@ -42,12 +40,12 @@ body { margin: 0; padding: 40px 20px; background: #ECE7DC; font-family: 'Nunito'
 .cta-row { text-align: center; margin: 28px 0 24px; }
 .cta-button-primary { display: inline-block; background: #E05C0E; color: #FFFFFF !important; padding: 14px 32px; text-decoration: none; border-radius: 4px; font-weight: 700; font-size: 14px; letter-spacing: 0.01em; box-shadow: 0 2px 8px rgba(224, 92, 14, 0.25); }
 
-/* Bénéfices express */
-.benefits { background: #FAF8F4; padding: 18px 22px; border-radius: 4px; margin: 24px 0; font-size: 13px; line-height: 1.7; color: #3F3D33; }
-.benefits ul { margin: 0; padding: 0 0 0 18px; list-style: none; }
-.benefits li { position: relative; padding-left: 8px; font-weight: 500; }
-.benefits li::before { content: '✓'; color: #2F6F4F; font-weight: 700; position: absolute; left: -14px; }
-.benefits strong { color: #1A1814; font-weight: 700; }
+/* Bénéfices express — checkmarks en <span> inline (Gmail strip ::before) */
+.benefits { background: #FAF8F4; padding: 18px 22px 14px; border-radius: 4px; margin: 24px 0; font-size: 13px; line-height: 1.7; color: #3F3D33; }
+.benefit-row { font-weight: 500; padding-bottom: 6px; }
+.benefit-row:last-child { padding-bottom: 0; }
+.benefit-check { color: #2F6F4F; font-weight: 700; margin-right: 8px; display: inline-block; }
+.benefits strong, .benefit-row strong { color: #1A1814; font-weight: 700; }
 
 /* Section "En savoir plus" — header vert + body crème dégradé.
    Le bloc se lit en 2 temps : un titre sobre en bandeau vert, puis les
@@ -101,16 +99,30 @@ body { margin: 0; padding: 40px 20px; background: #ECE7DC; font-family: 'Nunito'
 
   <div class="email-wrapper">
 
-    <!-- Bandeau de tête SIGWEB avec logo -->
-    <div class="brand-band">
-      <div class="brand-band-logo">
-        <img src="https://www.sigweb.fr/images/logo-v2.png" alt="SIGWEB">
-      </div>
-      <div class="brand-band-text">
-        <div class="brand-name-text">SIGWEB</div>
-        <div class="brand-tagline-text">Sites internet pour commerçants et artisans</div>
-      </div>
-    </div>
+    <!-- Bandeau de tête SIGWEB avec logo — table-based pour compat Gmail/Outlook -->
+    <table class="brand-band" cellpadding="0" cellspacing="0" border="0" role="presentation" style="width:100%;background-color:#2F6F4F;">
+      <tr>
+        <td align="center" style="padding:18px 36px;">
+          <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="margin:0 auto;">
+            <tr>
+              <td valign="middle" style="padding-right:14px;">
+                <table cellpadding="0" cellspacing="0" border="0" role="presentation" style="background:#FFFFFF;border-radius:22px;width:44px;height:44px;">
+                  <tr>
+                    <td align="center" valign="middle" style="height:44px;width:44px;">
+                      <img src="https://www.sigweb.fr/images/logo-v2.png" alt="SIGWEB" width="32" style="display:block;border:0;max-width:32px;height:auto;" />
+                    </td>
+                  </tr>
+                </table>
+              </td>
+              <td valign="middle">
+                <div class="brand-name-text">SIGWEB</div>
+                <div class="brand-tagline-text">Sites internet pour commerçants et artisans</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
 
     <div class="email-content">
 
@@ -148,11 +160,9 @@ body { margin: 0; padding: 40px 20px; background: #ECE7DC; font-family: 'Nunito'
       </div>
 
       <div class="benefits">
-        <ul>
-          <li>Mise en ligne en <strong>2 à 4 semaines</strong></li>
-          <li>Espace de gestion <strong>autonome</strong> (modifiable depuis votre téléphone)</li>
-          <li>Simulation <strong>gratuite et sans engagement</strong></li>
-        </ul>
+        <div class="benefit-row"><span class="benefit-check">✓</span>Mise en ligne en <strong>2 à 4 semaines</strong></div>
+        <div class="benefit-row"><span class="benefit-check">✓</span>Espace de gestion <strong>autonome</strong> (modifiable depuis votre téléphone)</div>
+        <div class="benefit-row"><span class="benefit-check">✓</span>Simulation <strong>gratuite et sans engagement</strong></div>
       </div>
 
       <p>
