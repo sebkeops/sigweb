@@ -49,6 +49,8 @@ function makeProspect(overrides: Partial<Prospect> = {}): Prospect {
     google_reviews: null,
     maquette_id: null,
     maquette_url: null,
+    email_unsubscribed: false,
+    email_unsubscribed_at: null,
     ...overrides,
   }
 }

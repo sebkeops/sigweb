@@ -9,7 +9,7 @@ import { resolveAffichePhotoBuffer } from './photo-resolver'
 import { generateQRCodeDataUrl } from './qr-code'
 import type { AfficheData } from './types'
 import { resolveQRCodeUrl } from './url-resolver'
-import { getAfficheVariant } from './variant-selector'
+import { getProspectWebVariant } from '@/lib/web-variant'
 
 /**
  * Construit l'objet `AfficheData` complet à partir d'un prospect, prêt
@@ -32,7 +32,7 @@ export async function buildAfficheData(
   prospect: Prospect,
   supabase: SupabaseClient
 ): Promise<AfficheData> {
-  const variant = getAfficheVariant(prospect)
+  const variant = getProspectWebVariant(prospect)
   const config = getSigwebConfig()
   const qrTargetUrl = resolveQRCodeUrl(prospect)
 

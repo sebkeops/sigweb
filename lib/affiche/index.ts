@@ -8,12 +8,11 @@
  */
 
 export { buildAfficheData } from './data-builder'
-export { getAfficheVariant } from './variant-selector'
 export { resolveQRCodeUrl, shortDisplayUrl } from './url-resolver'
 export { getCategorieLabel } from './categories'
 export { buildContent, formatRating } from './content'
 export { generateQRCodeDataUrl } from './qr-code'
 export { getSigwebConfig, shortSiteDisplay } from './config'
-export type { AfficheData, AfficheVariant, AfficheCategorie } from './types'
+export type { AfficheData, AfficheCategorie } from './types'
 export type { ContentInput, ContentResult } from './content'
 export type { SigwebConfig } from './config'

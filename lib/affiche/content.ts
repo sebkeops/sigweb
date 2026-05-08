@@ -1,7 +1,7 @@
-import type { Prospect } from '@/types'
+import type { Prospect, WebVariant } from '@/types'
 import { getCategorieLabel } from './categories'
 import { shortDisplayUrl } from './url-resolver'
-import type { AfficheData, AfficheVariant } from './types'
+import type { AfficheData } from './types'
 
 /**
  * Textes éditoriaux des 2 variantes — résolus avec les données prospect.
@@ -20,7 +20,7 @@ import type { AfficheData, AfficheVariant } from './types'
  */
 
 export interface ContentInput {
-  variant: AfficheVariant
+  variant: WebVariant
   prospect: Pick<Prospect, 'nom_commerce' | 'categorie' | 'ville' | 'google_rating' | 'google_reviews_count'>
   qrTargetUrl: string
 }

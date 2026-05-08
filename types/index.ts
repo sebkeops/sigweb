@@ -139,6 +139,11 @@ export interface Prospect {
   // Liaison maquette
   maquette_id: string | null
   maquette_url: string | null
+
+  // Désabonnement email (RGPD) — un prospect désabonné ne reçoit plus
+  // jamais d'email, même via campagne manuelle.
+  email_unsubscribed: boolean
+  email_unsubscribed_at: string | null
 }
 
 // ─── Maquettes (générateur de maquettes ultra-personnalisées) ────────────────
@@ -310,3 +315,98 @@ export const MAQUETTE_PHOTO_SLOTS: readonly MaquettePhotoSlot[] = [
   'hero', 'histoire',
   'univers_1', 'univers_2', 'univers_3', 'univers_4', 'univers_5',
 ] as const
+
+// ─── Emails de prospection (Resend + tracking) ──────────────────────────────
+
+/**
+ * Variante de communication choisie selon l'état web du prospect.
+ *
+ *   - 'sans-site' : pas de site (ou compte réseau social seul)
+ *   - 'avec-site' : vrai site OU plateforme générique low-cost
+ *
+ * Logique de sélection centralisée dans `lib/web-variant/getProspectWebVariant()`.
+ * Partagée entre le générateur d'affiche A4 et le système d'envoi d'emails.
+ */
+export type WebVariant = 'sans-site' | 'avec-site'
+
+/**
+ * Statut d'un envoi, en cascade avec les events Resend :
+ *   pending  → email créé en BDD, pas encore envoyé à Resend
+ *   sent     → Resend a accepté la requête (resend_id présent)
+ *   delivered → webhook email.delivered
+ *   opened   → webhook email.opened (au moins 1 fois)
+ *   clicked  → webhook email.clicked (au moins 1 fois — opened reste true)
+ *   bounced  → adresse rejetée (hard ou soft bounce)
+ *   complained → marqué spam par le destinataire
+ */
+export type EmailSendStatus =
+  | 'pending'
+  | 'sent'
+  | 'delivered'
+  | 'opened'
+  | 'clicked'
+  | 'bounced'
+  | 'complained'
+
+/**
+ * Template d'une campagne. V1 : 1 seule campagne `is_default = true` à la
+ * fois (index unique partiel garantit l'unicité).
+ *
+ * Le HTML/text contient des placeholders Mustache-like `{{var}}` (cf. seed
+ * `seed_default_email_campaign.sql` pour la liste exhaustive). Ils sont
+ * substitués au moment de l'envoi par le service de rendu (Phase 5).
+ */
+export interface EmailCampaign {
+  id: string
+  created_at: string
+  updated_at: string
+  name: string
+
+  variant_sans_site_subject: string
+  variant_sans_site_body_html: string
+  variant_sans_site_body_text: string
+
+  variant_avec_site_subject: string
+  variant_avec_site_body_html: string
+  variant_avec_site_body_text: string
+
+  is_default: boolean
+}
+
+/**
+ * Trace d'un email envoyé. On stocke le contenu FINAL après substitution
+ * (subject + body), pas le template — l'historique reste lisible même si
+ * la campagne est éditée plus tard.
+ */
+export interface EmailSend {
+  id: string
+  created_at: string
+
+  prospect_id: string
+  campaign_id: string | null
+
+  variant: WebVariant
+
+  to_email: string
+  from_email: string
+  subject: string
+  body_html: string
+  body_text: string
+
+  preview_image_url: string | null
+  maquette_url: string | null
+
+  resend_id: string | null
+  status: EmailSendStatus
+
+  sent_at: string | null
+  delivered_at: string | null
+  first_opened_at: string | null
+  last_opened_at: string | null
+  open_count: number
+  first_clicked_at: string | null
+  click_count: number
+  bounced_at: string | null
+  bounce_reason: string | null
+  unsubscribed_at: string | null
+}

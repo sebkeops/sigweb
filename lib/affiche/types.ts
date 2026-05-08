@@ -1,11 +1,4 @@
-import type { ProspectCategorie } from '@/types'
-
-/**
- * Variante de l'affiche selon l'état web du prospect.
- *   - 'sans-site' : pas de site (ou réseaux sociaux uniquement)
- *   - 'avec-site' : site existant (vrai site OU plateforme générique)
- */
-export type AfficheVariant = 'sans-site' | 'avec-site'
+import type { ProspectCategorie, WebVariant } from '@/types'
 
 /**
  * Données prêtes à injecter dans le rendu PDF.
@@ -21,7 +14,7 @@ export type AfficheVariant = 'sans-site' | 'avec-site'
  * Le rendu PDF (Phase 3) parse ces marqueurs.
  */
 export interface AfficheData {
-  variant: AfficheVariant
+  variant: WebVariant
   prospect: {
     nomCommerce: string
     /** Libellé humanisé pour insertion dans les phrases : "boulangerie", "restaurant"... */

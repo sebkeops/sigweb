@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Prospect } from '@/types'
-import { getAfficheVariant } from './variant-selector'
+import { getProspectWebVariant } from './selector'
 
 function makeProspect(overrides: Partial<Prospect> = {}): Prospect {
   return {
@@ -21,31 +21,32 @@ function makeProspect(overrides: Partial<Prospect> = {}): Prospect {
     score_activite: null, score_malus: null, score_override_manuel: null,
     score_explanations: null, score_calcule_at: null, score_override_at: null,
     google_reviews: null, maquette_id: null, maquette_url: null,
+    email_unsubscribed: false, email_unsubscribed_at: null,
     ...overrides,
   } as Prospect
 }
 
-describe('getAfficheVariant', () => {
+describe('getProspectWebVariant', () => {
   it('score_besoin_web === 4 → sans-site (pas de site OU réseau social)', () => {
-    expect(getAfficheVariant(makeProspect({ score_besoin_web: 4 }))).toBe('sans-site')
+    expect(getProspectWebVariant(makeProspect({ score_besoin_web: 4 }))).toBe('sans-site')
   })
 
   it('score_besoin_web === 3 → avec-site (plateforme générique low-cost)', () => {
-    expect(getAfficheVariant(makeProspect({ score_besoin_web: 3 }))).toBe('avec-site')
+    expect(getProspectWebVariant(makeProspect({ score_besoin_web: 3 }))).toBe('avec-site')
   })
 
   it('score_besoin_web === 2 → avec-site (vrai site)', () => {
-    expect(getAfficheVariant(makeProspect({ score_besoin_web: 2 }))).toBe('avec-site')
+    expect(getProspectWebVariant(makeProspect({ score_besoin_web: 2 }))).toBe('avec-site')
   })
 
   it('score_besoin_web === null + site_existant_url vide → sans-site (fallback prudent)', () => {
-    expect(getAfficheVariant(makeProspect({ score_besoin_web: null, site_existant_url: null }))).toBe('sans-site')
-    expect(getAfficheVariant(makeProspect({ score_besoin_web: null, site_existant_url: '' }))).toBe('sans-site')
-    expect(getAfficheVariant(makeProspect({ score_besoin_web: null, site_existant_url: '   ' }))).toBe('sans-site')
+    expect(getProspectWebVariant(makeProspect({ score_besoin_web: null, site_existant_url: null }))).toBe('sans-site')
+    expect(getProspectWebVariant(makeProspect({ score_besoin_web: null, site_existant_url: '' }))).toBe('sans-site')
+    expect(getProspectWebVariant(makeProspect({ score_besoin_web: null, site_existant_url: '   ' }))).toBe('sans-site')
   })
 
   it('score_besoin_web === null + site_existant_url présent → avec-site', () => {
-    expect(getAfficheVariant(makeProspect({
+    expect(getProspectWebVariant(makeProspect({
       score_besoin_web: null,
       site_existant_url: 'https://example.com',
     }))).toBe('avec-site')
