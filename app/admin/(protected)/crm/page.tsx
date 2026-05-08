@@ -295,12 +295,21 @@ export default async function AdminCrmPage({ searchParams }: Props) {
                     <span className="font-body text-sm text-muted">{formatDate(p.date_dernier_contact)}</span>
                   </td>
                   <td className="px-5 py-4">
-                    <Link
-                      href={`/admin/crm/${p.id}`}
-                      className="font-body text-sm font-medium text-primary hover:underline"
-                    >
-                      Voir
-                    </Link>
+                    <div className="flex items-center gap-3">
+                      <Link
+                        href={`/admin/crm/${p.id}`}
+                        className="font-body text-sm font-medium text-primary hover:underline"
+                      >
+                        Voir
+                      </Link>
+                      <span className="text-muted">·</span>
+                      <Link
+                        href={`/admin/crm/${p.id}/modifier`}
+                        className="font-body text-sm font-medium text-primary hover:underline"
+                      >
+                        Modifier
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

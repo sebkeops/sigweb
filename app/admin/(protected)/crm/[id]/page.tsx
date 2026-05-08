@@ -116,24 +116,32 @@ export default async function ProspectDetailPage({ params }: Props) {
           <span className="text-muted">/</span>
           <h1 className="font-heading text-2xl font-extrabold text-ink">{p.nom_commerce}</h1>
         </div>
-        <div className="flex flex-wrap items-start gap-4">
-          <RefreshFromGoogleButton prospectId={p.id} hasPlaceId={!!p.google_place_id} />
-          <GenerateMaquetteButton
-            prospectId={p.id}
-            categorie={p.categorie}
-            existingMaquette={existingMaquette}
-          />
-          <GenerateAfficheButton prospectId={p.id} />
-          <SendEmailButton
-            prospectId={p.id}
-            hasEmail={!!p.email}
-            isUnsubscribed={p.email_unsubscribed}
-            hasPublishedMaquette={existingMaquette?.published === true}
-          />
-          <LinkButton href={`/admin/crm/${p.id}/modifier`} variant="primary" size="sm">
-            Modifier
-          </LinkButton>
-          <DeleteProspectButton id={p.id} nom={p.nom_commerce} />
+        <div className="flex flex-wrap items-start gap-3">
+          {/* Groupe 1 — production de livrables */}
+          <div className="flex flex-wrap items-start gap-3">
+            <GenerateMaquetteButton
+              prospectId={p.id}
+              categorie={p.categorie}
+              existingMaquette={existingMaquette}
+            />
+            <GenerateAfficheButton prospectId={p.id} />
+            <SendEmailButton
+              prospectId={p.id}
+              hasEmail={!!p.email}
+              isUnsubscribed={p.email_unsubscribed}
+              hasPublishedMaquette={existingMaquette?.published === true}
+            />
+          </div>
+          {/* Séparateur visuel */}
+          <div className="mt-1 hidden h-8 w-px self-start bg-border sm:block" aria-hidden />
+          {/* Groupe 2 — gestion de la fiche */}
+          <div className="flex flex-wrap items-start gap-3">
+            <RefreshFromGoogleButton prospectId={p.id} hasPlaceId={!!p.google_place_id} />
+            <LinkButton href={`/admin/crm/${p.id}/modifier`} variant="primary" size="sm">
+              Modifier
+            </LinkButton>
+            <DeleteProspectButton id={p.id} nom={p.nom_commerce} />
+          </div>
         </div>
       </div>
 
