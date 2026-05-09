@@ -51,6 +51,31 @@ interface ResendEvent {
 // Évite que Next.js ne mette en cache la route
 export const dynamic = 'force-dynamic'
 
+/**
+ * Priorité des statuts pour empêcher la régression quand Resend renvoie
+ * des events dans le désordre (typiquement un `email.delivered` retenté
+ * par Resend qui arrive APRÈS un `email.clicked` déjà traité).
+ *
+ * Bounced et complained sont prioritaires : ce sont des échecs définitifs
+ * et l'info doit toujours remonter, même si l'email avait été ouvert avant.
+ */
+const STATUS_PRIORITY: Record<EmailSendStatus, number> = {
+  pending: 0,
+  sent: 1,
+  delivered: 2,
+  opened: 3,
+  clicked: 4,
+  bounced: 5,
+  complained: 6,
+}
+
+function pickHigherStatus(
+  current: EmailSendStatus,
+  next: EmailSendStatus
+): EmailSendStatus {
+  return STATUS_PRIORITY[next] >= STATUS_PRIORITY[current] ? next : current
+}
+
 export async function POST(request: NextRequest) {
   const secret = process.env.RESEND_WEBHOOK_SECRET
   if (!secret) {
@@ -95,7 +120,16 @@ export async function POST(request: NextRequest) {
     .from('email_sends')
     .select('id, status, prospect_id, open_count, click_count, first_opened_at, first_clicked_at, delivered_at')
     .eq('resend_id', emailId)
-    .maybeSingle()
+    .maybeSingle<{
+      id: string
+      status: EmailSendStatus
+      prospect_id: string
+      open_count: number
+      click_count: number
+      first_opened_at: string | null
+      first_clicked_at: string | null
+      delivered_at: string | null
+    }>()
 
   if (selectErr) {
     console.error('[webhooks/resend] DB select failed:', selectErr.message)
@@ -110,12 +144,16 @@ export async function POST(request: NextRequest) {
 
   const now = new Date().toISOString()
 
+  // Tous les handlers passent par `pickHigherStatus(existing.status, ...)`
+  // pour qu'un event arrivé en retard (Resend retente plusieurs jours en
+  // backoff exponentiel) ne puisse jamais régresser un statut déjà acquis.
+  // Les compteurs et timestamps sont mis à jour indépendamment du statut.
   switch (event.type) {
     case 'email.delivered': {
       await supabase
         .from('email_sends')
         .update({
-          status: 'delivered' as EmailSendStatus,
+          status: pickHigherStatus(existing.status, 'delivered'),
           delivered_at: existing.delivered_at ?? now,
         })
         .eq('id', existing.id)
@@ -123,13 +161,10 @@ export async function POST(request: NextRequest) {
     }
 
     case 'email.opened': {
-      // Ne pas régresser le statut si l'email a déjà été cliqué.
-      const newStatus: EmailSendStatus =
-        existing.status === 'clicked' ? 'clicked' : 'opened'
       await supabase
         .from('email_sends')
         .update({
-          status: newStatus,
+          status: pickHigherStatus(existing.status, 'opened'),
           first_opened_at: existing.first_opened_at ?? now,
           last_opened_at: now,
           open_count: existing.open_count + 1,
@@ -142,7 +177,7 @@ export async function POST(request: NextRequest) {
       await supabase
         .from('email_sends')
         .update({
-          status: 'clicked' as EmailSendStatus,
+          status: pickHigherStatus(existing.status, 'clicked'),
           first_clicked_at: existing.first_clicked_at ?? now,
           click_count: existing.click_count + 1,
         })
@@ -158,7 +193,7 @@ export async function POST(request: NextRequest) {
       await supabase
         .from('email_sends')
         .update({
-          status: 'bounced' as EmailSendStatus,
+          status: pickHigherStatus(existing.status, 'bounced'),
           bounced_at: now,
           bounce_reason: reason,
         })
@@ -173,7 +208,7 @@ export async function POST(request: NextRequest) {
       await supabase
         .from('email_sends')
         .update({
-          status: 'complained' as EmailSendStatus,
+          status: pickHigherStatus(existing.status, 'complained'),
         })
         .eq('id', existing.id)
 
