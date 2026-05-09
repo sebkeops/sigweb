@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import type { Prospect } from '@/types'
+import type { EmailSend, Prospect } from '@/types'
 import { Badge } from '@/components/ui/Badge'
 import { LinkButton } from '@/components/ui/Button'
 import {
@@ -14,6 +14,7 @@ import {
   STATUT_LABELS,
 } from '@/lib/crm/constants'
 import DeleteProspectButton from './DeleteProspectButton'
+import EmailHistorySection from './EmailHistorySection'
 import GenerateAfficheButton from './GenerateAfficheButton'
 import GenerateMaquetteButton from './GenerateMaquetteButton'
 import RefreshFromGoogleButton from './RefreshFromGoogleButton'
@@ -48,6 +49,16 @@ async function getExistingMaquette(prospectId: string): Promise<ExistingMaquette
     .eq('prospect_id', prospectId)
     .maybeSingle()
   return (data as ExistingMaquette | null) ?? null
+}
+
+async function getEmailsForProspect(prospectId: string): Promise<EmailSend[]> {
+  const supabase = await createClient()
+  const { data } = await supabase
+    .from('email_sends')
+    .select('*')
+    .eq('prospect_id', prospectId)
+    .order('created_at', { ascending: false })
+  return (data ?? []) as EmailSend[]
 }
 
 function formatDate(dateStr: string | null) {
@@ -95,9 +106,10 @@ const valueClass = 'font-body text-sm text-ink'
 
 export default async function ProspectDetailPage({ params }: Props) {
   const { id } = await params
-  const [p, existingMaquette] = await Promise.all([
+  const [p, existingMaquette, emails] = await Promise.all([
     getProspect(id),
     getExistingMaquette(id),
+    getEmailsForProspect(id),
   ])
   if (!p) notFound()
 
@@ -295,6 +307,9 @@ export default async function ProspectDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Historique emails */}
+      <EmailHistorySection emails={emails} />
 
       {/* Données Google — visible uniquement si la fiche est liée */}
       {p.google_place_id && (
