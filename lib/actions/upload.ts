@@ -4,7 +4,7 @@ import sharp from 'sharp'
 import { createClient } from '@/lib/supabase/server'
 
 const BUCKET = 'project-images'
-const MAX_SIZE = 5 * 1024 * 1024 // 5 Mo
+const MAX_SIZE = 4 * 1024 * 1024 // 4 Mo (cap aligne sur bodySizeLimit Next + Vercel Hobby)
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif']
 
 /** Vérifie les magic bytes pour rejeter les fichiers non-image avant tout traitement */
@@ -38,7 +38,7 @@ export async function uploadProjectImage(
   const file = formData.get('file')
   if (!(file instanceof File) || file.size === 0) return { error: 'Aucun fichier reçu.' }
   if (!ALLOWED_TYPES.includes(file.type)) return { error: 'Format non supporté. Utilisez JPG, PNG ou WebP.' }
-  if (file.size > MAX_SIZE) return { error: "L'image ne doit pas dépasser 5 Mo." }
+  if (file.size > MAX_SIZE) return { error: "L'image ne doit pas dépasser 4 Mo." }
 
   // Validation magic bytes (vérification du vrai type de fichier, indépendant du MIME client)
   const buffer = Buffer.from(await file.arrayBuffer())

@@ -109,7 +109,7 @@ export default function LogoUploader({ maquette, getUpdatedAt, onSaved }: Props)
       </div>
 
       <p className={styles.logoHint}>
-        JPEG, PNG ou WebP. 5 Mo max. 64×64 minimum, 4000×4000 maximum.
+        JPEG, PNG ou WebP. 4 Mo max. 64×64 minimum, 4000×4000 maximum.
         Le logo est redimensionné en WebP 512 px max et les couleurs dominantes
         sont automatiquement extraites pour proposer une palette personnalisée.
       </p>

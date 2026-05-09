@@ -7,13 +7,15 @@ import sharp from 'sharp'
  * Sécurité (cf. brief V1) :
  *   - MIME réel détecté par sharp (pas l'extension du nom)
  *   - Whitelist : JPEG, PNG, WebP (pas de SVG en V1, trop complexe à sanitizer)
- *   - Taille max 5 MB
+ *   - Taille max 4 MB (cap aligné sur la limite serverless Vercel Hobby
+ *     de 4.5 Mo + bodySizeLimit Next.js — au-dessus, le 413 remonte avant
+ *     même d'atteindre cette validation)
  *   - Dimensions : 64×64 min, 4000×4000 max
  *
  * Sortie : buffer WebP qualité 90, max 512 px, transparence préservée.
  */
 
-const MAX_SIZE_BYTES = 5 * 1024 * 1024
+const MAX_SIZE_BYTES = 4 * 1024 * 1024
 const MIN_DIMENSION = 64
 const MAX_DIMENSION = 4000
 const ALLOWED_FORMATS = new Set(['jpeg', 'png', 'webp'])
@@ -44,7 +46,7 @@ export async function processLogoBuffer(buffer: Buffer): Promise<LogoProcessingR
     throw new LogoValidationError('EMPTY', 'Fichier vide.')
   }
   if (buffer.length > MAX_SIZE_BYTES) {
-    throw new LogoValidationError('TOO_LARGE', 'Le fichier dépasse 5 Mo.')
+    throw new LogoValidationError('TOO_LARGE', 'Le fichier dépasse 4 Mo.')
   }
 
   // Détection MIME réel via sharp (lit les magic bytes)

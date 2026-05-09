@@ -8,7 +8,8 @@ import { LogoValidationError } from '@/lib/maquette/logo'
  * Sécurité (alignée sur le pipeline logo) :
  *   - MIME réel détecté par sharp (pas l'extension)
  *   - Whitelist : JPEG, PNG, WebP (pas de SVG)
- *   - Taille max 5 MB
+ *   - Taille max 4 MB (cap aligné sur la limite serverless Vercel Hobby +
+ *     bodySizeLimit Next.js — cf. lib/maquette/logo/process.ts)
  *   - Dimensions : 400×400 min (pour avoir de la matière sur cards univers
  *     qui s'affichent en 16:10), 4000×4000 max
  *
@@ -19,7 +20,7 @@ import { LogoValidationError } from '@/lib/maquette/logo'
  * tous les uploads d'image (cohérence côté handler client).
  */
 
-const MAX_SIZE_BYTES = 5 * 1024 * 1024
+const MAX_SIZE_BYTES = 4 * 1024 * 1024
 const MIN_DIMENSION = 400
 const MAX_DIMENSION = 4000
 const ALLOWED_FORMATS = new Set(['jpeg', 'png', 'webp'])
@@ -38,7 +39,7 @@ export async function processPhotoBuffer(buffer: Buffer): Promise<PhotoProcessin
     throw new LogoValidationError('EMPTY', 'Fichier vide.')
   }
   if (buffer.length > MAX_SIZE_BYTES) {
-    throw new LogoValidationError('TOO_LARGE', 'Le fichier dépasse 5 Mo.')
+    throw new LogoValidationError('TOO_LARGE', 'Le fichier dépasse 4 Mo.')
   }
 
   let metadata: sharp.Metadata

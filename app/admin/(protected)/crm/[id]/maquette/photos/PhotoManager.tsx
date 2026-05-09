@@ -323,7 +323,7 @@ function Gallery({
       <p className={styles.columnHint}>
         {pool.length} photo{pool.length > 1 ? 's' : ''} dans le pool. Glisse une vignette
         vers un emplacement à droite, ou ramène une photo assignée ici pour la libérer.
-        JPEG / PNG / WebP, 5 Mo max, 400×400 minimum.
+        JPEG / PNG / WebP, 4 Mo max, 400×400 minimum.
       </p>
       {uploadError && <p className={styles.uploadError}>{uploadError}</p>}
       <div className={styles.galleryGrid}>

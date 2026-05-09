@@ -233,7 +233,7 @@ export default function ProjectForm({ project, action }: ProjectFormProps) {
                 {uploading ? 'Upload en cours…' : 'Cliquez pour choisir une image'}
               </span>
               <span className="font-body text-xs text-muted">
-                JPG, PNG, WebP — max 5 Mo — converti automatiquement en WebP
+                JPG, PNG, WebP — max 4 Mo — converti automatiquement en WebP
               </span>
               <input
                 type="file"
