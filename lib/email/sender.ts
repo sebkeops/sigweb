@@ -301,9 +301,12 @@ export async function sendProspectEmail(
   }
 
   const resend = new Resend(apiKey)
-  const unsubscribeUrl = `${
+  // Header `List-Unsubscribe` doit pointer vers l'endpoint **one-click**
+  // (POST RFC 8058 sans confirmation visuelle) — distinct du lien cliquable
+  // dans le body HTML qui pointe vers la page UI `/unsubscribe`.
+  const unsubscribeApiUrl = `${
     process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.sigweb.fr'
-  }/unsubscribe?token=${encodeURIComponent(
+  }/api/unsubscribe?token=${encodeURIComponent(
     generateUnsubscribeToken(params.prospectId)
   )}`
 
@@ -317,10 +320,10 @@ export async function sendProspectEmail(
     html: finalHtml,
     text: finalText,
     headers: {
-      // Standard mail RFC 8058 — permet aux clients (Gmail, Apple Mail)
-      // d'afficher un bouton "Se désabonner" natif et d'invoquer notre URL
-      // par GET. Améliore la délivrabilité (signal anti-spam).
-      'List-Unsubscribe': `<${unsubscribeUrl}>`,
+      // RFC 8058 : Gmail/Outlook affichent un bouton "Désabonner" natif et
+      // POSTent sur l'URL ci-dessous avec body `List-Unsubscribe=One-Click`.
+      // Améliore aussi la délivrabilité (signal anti-spam).
+      'List-Unsubscribe': `<${unsubscribeApiUrl}>`,
       'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
     },
   })
