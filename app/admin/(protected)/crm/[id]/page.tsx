@@ -18,6 +18,7 @@ import EmailHistorySection from './EmailHistorySection'
 import GenerateAfficheButton from './GenerateAfficheButton'
 import GenerateMaquetteButton from './GenerateMaquetteButton'
 import RefreshFromGoogleButton from './RefreshFromGoogleButton'
+import ResubscribeButton from './ResubscribeButton'
 import ScoreBreakdown from './ScoreBreakdown'
 import SendEmailButton from './SendEmailButton'
 
@@ -143,6 +144,12 @@ export default async function ProspectDetailPage({ params }: Props) {
               isUnsubscribed={p.email_unsubscribed}
               hasPublishedMaquette={existingMaquette?.published === true}
             />
+            {p.email_unsubscribed && (
+              <ResubscribeButton
+                prospectId={p.id}
+                unsubscribedAt={p.email_unsubscribed_at}
+              />
+            )}
           </div>
           {/* Séparateur visuel */}
           <div className="mt-1 hidden h-8 w-px self-start bg-border sm:block" aria-hidden />

@@ -235,3 +235,44 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     }
   }
 }
+
+// ─── resubscribeProspect ─────────────────────────────────────────────────
+//
+// Réactive l'envoi d'emails à un prospect précédemment désabonné. Action
+// admin uniquement (un prospect ne peut pas se réabonner seul — RGPD : un
+// re-consentement exige normalement un double opt-in qu'on ne gère pas
+// pour cette V1, le réabonnement passe donc par un échange manuel avec
+// l'admin).
+
+export type ResubscribeResult =
+  | { success: true }
+  | { success: false; error: string }
+
+export async function resubscribeProspect(
+  prospectId: string
+): Promise<ResubscribeResult> {
+  try {
+    const supabase = await assertAdmin()
+    const { error } = await supabase
+      .from('prospects')
+      .update({
+        email_unsubscribed: false,
+        email_unsubscribed_at: null,
+      })
+      .eq('id', prospectId)
+
+    if (error) {
+      console.error('[resubscribeProspect]', error)
+      return { success: false, error: error.message }
+    }
+
+    revalidatePath(`/admin/crm/${prospectId}`)
+    return { success: true }
+  } catch (e) {
+    console.error('[resubscribeProspect]', e)
+    return {
+      success: false,
+      error: (e as Error)?.message ?? 'Erreur lors du réabonnement.',
+    }
+  }
+}
