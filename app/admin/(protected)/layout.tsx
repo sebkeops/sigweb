@@ -46,13 +46,15 @@ export default async function AdminLayout({ children }: { children: React.ReactN
             {/* Hamburger + drawer — visibles uniquement < lg */}
             <MobileNavDrawer links={ADMIN_NAV_LINKS} unread={unread} userEmail={user.email ?? ''} />
 
+            {/* Logo : centre en absolu sur mobile (pattern du site public),
+                a gauche en flux normal sur desktop. */}
             <Link
               href="/admin/crm"
               aria-label="Sigweb Admin"
-              className="flex items-center gap-2"
+              className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2 lg:static lg:translate-x-0"
             >
               <Logo size={30} uid="admin-logo" />
-              <span className="hidden items-center gap-1.5 lg:flex">
+              <span className="flex items-center gap-1.5">
                 <span className="font-heading text-lg font-bold text-primary">Sigweb</span>
                 <span className="rounded-md bg-cta px-1.5 py-0.5 font-body text-[10px] font-bold leading-none text-white">
                   Admin
