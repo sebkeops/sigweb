@@ -42,7 +42,9 @@ export default function EditorHeader({ maquette, prospectId, prospectName }: Pro
   }
 
   return (
-    <div className="sticky top-0 z-10 border-b border-border bg-surface px-6 py-3 shadow-sm">
+    // top-[71px] en mobile = hauteur du header admin sticky, pour s'empiler
+    // dessous sans etre masque. lg: header admin non sticky -> top-0 inchange.
+    <div className="sticky top-[71px] z-10 border-b border-border bg-surface px-6 py-3 shadow-sm lg:top-0">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 font-body text-sm">
           <Link href="/admin/crm" className="text-muted hover:text-primary">

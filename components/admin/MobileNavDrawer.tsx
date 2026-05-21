@@ -40,7 +40,9 @@ export default function MobileNavDrawer({ links, unread, userEmail }: MobileNavD
         onClick={() => setOpen(true)}
         aria-label="Ouvrir le menu"
         aria-expanded={open}
-        className="-ml-1 flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-sm text-ink transition-colors hover:bg-surface-soft"
+        // `-my-[3px]` : le bouton garde sa cible tactile de 44px mais ne gonfle
+        // pas la hauteur du header mobile — celle-ci reste alignee sur le desktop.
+        className="-my-[3px] -ml-1 flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-sm text-ink transition-colors hover:bg-surface-soft"
       >
         <span className="block h-0.5 w-6 rounded-full bg-current" />
         <span className="block h-0.5 w-6 rounded-full bg-current" />

@@ -39,7 +39,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-surface-soft">
       {/* Barre admin */}
-      <header className="border-b border-border bg-surface shadow-sm">
+      <header className="sticky top-0 z-40 border-b border-border bg-surface shadow-sm lg:static">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3 lg:gap-8">
             {/* Hamburger + drawer — visibles uniquement < lg */}
