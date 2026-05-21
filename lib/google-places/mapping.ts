@@ -23,6 +23,17 @@ const TYPE_RULES: { types: string[]; categorie: ProspectCategorie }[] = [
   { types: ['painter'], categorie: 'peintre' },
   { types: ['landscaping'], categorie: 'paysagiste' },
   { types: ['photographer'], categorie: 'photographe' },
+  // V2 — types Google sans ambiguïté avec les règles V1 ci-dessus.
+  // Sans ces règles, l'enrichissement Google d'un fleuriste / garagiste / etc.
+  // retombait sur 'autre' : le formulaire pré-remplissait alors le select sur
+  // "Autre" et le prospect était silencieusement enregistré dans la mauvaise
+  // catégorie (le libellé Google masquait le problème à l'affichage).
+  { types: ['florist'], categorie: 'fleuriste' },
+  { types: ['car_repair'], categorie: 'garagiste' },
+  { types: ['jewelry_store'], categorie: 'bijoutier' },
+  { types: ['book_store'], categorie: 'librairie' },
+  { types: ['chocolate_shop'], categorie: 'chocolatier' },
+  { types: ['campground'], categorie: 'camping' },
 ]
 
 export function mapGoogleTypeToCategorie(types: string[] | undefined): ProspectCategorie {

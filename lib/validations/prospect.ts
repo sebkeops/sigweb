@@ -1,9 +1,21 @@
 import { z } from 'zod'
 
 const CATEGORIES = [
-  'boulangerie', 'boucherie', 'restaurant', 'pizzeria', 'primeur', 'fromager',
-  'caviste', 'coiffeur', 'esthetique', 'kine', 'cabinet', 'menuisier',
-  'plombier', 'electricien', 'peintre', 'paysagiste', 'photographe', 'autre',
+  // V1
+  'boulangerie', 'boucherie', 'restaurant', 'pizzeria',
+  'primeur', 'fromager', 'caviste',
+  'coiffeur', 'esthetique', 'kine', 'cabinet',
+  'menuisier', 'plombier', 'electricien', 'peintre', 'paysagiste',
+  'photographe',
+  // V2 — stubs (brief "Consolidation finale" — exposition admin gérée par
+  // `CATEGORIES_EXPOSED_IN_ADMIN`, pas par cette validation côté serveur).
+  'bar_cafe', 'traiteur', 'chocolatier', 'epicerie_fine',
+  'macon', 'couvreur', 'carreleur', 'piscinier',
+  'osteopathe', 'praticien_bien_etre',
+  'fleuriste', 'bijoutier', 'librairie', 'garagiste',
+  'gite', 'camping',
+  // Fallback
+  'autre',
 ] as const
 
 const CANAUX = ['a_definir', 'terrain', 'email', 'reseaux', 'telephone', 'ecarte'] as const

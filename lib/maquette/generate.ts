@@ -82,8 +82,24 @@ export function generateInitialMaquette(
     histoire_lead:       defaults.histoireLead,
     texte_presentation:  defaults.textePresentation,
     annee_creation:      null,
+    // Section "Nos créations" — persistée dès la création pour que l'éditeur
+    // ait des valeurs initiales modifiables (fallback template inutile à l'usage,
+    // mais conservé dans Univers.tsx pour rétro-compatibilité des maquettes
+    // pré-migration).
+    univers_section_suptitle: defaults.universSectionSuptitle,
+    univers_section_title:    defaults.universSectionTitle,
+    univers_section_intro:    defaults.universSectionIntro,
     cta_banner_title:    defaults.ctaBannerTitle,
     cta_banner_text:     defaults.ctaBannerText,
+
+    // Lexique global — extension presets métier, persisté pour éditabilité.
+    brand_tagline:        defaults.brandTagline,
+    nav_histoire_label:   defaults.navHistoireLabel,
+    nav_univers_label:    defaults.navUniversLabel,
+    hero_cta_primaire:    defaults.heroCtaPrimaire,
+    histoire_suptitle:    defaults.histoireSuptitle,
+    avis_section_titre:   defaults.avisSectionTitre,
+    footer_colonne_label: defaults.footerColonneLabel,
 
     logo_url:            null,
     logo_initial:        getLogoInitial(prospect.nom_commerce),

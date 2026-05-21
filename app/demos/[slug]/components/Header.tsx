@@ -10,12 +10,29 @@ import MobileToggle from './MobileToggle'
 interface Props {
   maquette: Maquette
   prospect: Prospect
+  /**
+   * Tagline par défaut depuis le template (fallback si `maquette.brand_tagline`
+   * est NULL — cas pré-migration BDD).
+   */
   brandTagline: string
+  /**
+   * Labels de nav par défaut depuis le template (fallback si les champs
+   * `maquette.nav_*_label` sont NULL).
+   */
+  defaultNavHistoireLabel: string
+  defaultNavUniversLabel: string
   /** Propagé jusqu'au panel mobile (rendu via portail hors `.demoRoot`). */
   cssVars: CSSProperties
 }
 
-export default function Header({ maquette, prospect, brandTagline, cssVars }: Props) {
+export default function Header({
+  maquette,
+  prospect,
+  brandTagline,
+  defaultNavHistoireLabel,
+  defaultNavUniversLabel,
+  cssVars,
+}: Props) {
   const resolved = resolveInfos(prospect, maquette.infos_overrides)
   const tel = formatTelHref(resolved.telephone)
   const logoUrl = resolvePhotoUrl(maquette.logo_url, { width: 80 })
@@ -23,14 +40,19 @@ export default function Header({ maquette, prospect, brandTagline, cssVars }: Pr
     ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(resolved.adresseLine)}`
     : null
 
+  // Lecture du lexique conditionné par catégorie (édition possible côté admin).
+  const navHistoire = maquette.nav_histoire_label ?? defaultNavHistoireLabel
+  const navUnivers = maquette.nav_univers_label ?? defaultNavUniversLabel
+  const tagline = maquette.brand_tagline ?? brandTagline
+
   return (
     <>
       <header className={styles.header}>
         <div className={styles.headerInner}>
           <MobileToggle cssVars={cssVars}>
             <nav className={styles.mobileNav}>
-              <a href="#histoire" data-mobile-link>La maison</a>
-              <a href="#univers" data-mobile-link>Nos créations</a>
+              <a href="#histoire" data-mobile-link>{navHistoire}</a>
+              <a href="#univers" data-mobile-link>{navUnivers}</a>
               <a href="#avis" data-mobile-link>Avis</a>
               <a href="#infos" data-mobile-link>Nous trouver</a>
             </nav>
@@ -61,13 +83,13 @@ export default function Header({ maquette, prospect, brandTagline, cssVars }: Pr
             </div>
             <div>
               <div className={styles.brandName}>{stripItalicMarkers(prospect.nom_commerce)}</div>
-              <div className={styles.brandTagline}>{brandTagline}</div>
+              <div className={styles.brandTagline}>{tagline}</div>
             </div>
           </a>
 
           <nav className={styles.nav}>
-            <a href="#histoire">La maison</a>
-            <a href="#univers">Nos créations</a>
+            <a href="#histoire">{navHistoire}</a>
+            <a href="#univers">{navUnivers}</a>
             <a href="#avis">Avis</a>
             <a href="#infos">Nous trouver</a>
           </nav>

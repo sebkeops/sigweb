@@ -57,9 +57,27 @@ export interface Contact {
 }
 
 export type ProspectCategorie =
-  | 'boulangerie' | 'boucherie' | 'restaurant' | 'pizzeria' | 'primeur' | 'fromager'
-  | 'caviste' | 'coiffeur' | 'esthetique' | 'kine' | 'cabinet' | 'menuisier'
-  | 'plombier' | 'electricien' | 'peintre' | 'paysagiste' | 'photographe' | 'autre'
+  // V1 — Commerces de bouche
+  | 'boulangerie' | 'boucherie' | 'restaurant' | 'pizzeria'
+  | 'primeur' | 'fromager' | 'caviste'
+  // V1 — Services à la personne
+  | 'coiffeur' | 'esthetique' | 'kine' | 'cabinet'
+  // V1 — Bâtiment & artisanat
+  | 'menuisier' | 'plombier' | 'electricien' | 'peintre' | 'paysagiste'
+  // V1 — Commerces & services
+  | 'photographe'
+  // V2 — Commerces de bouche additionnels
+  | 'bar_cafe' | 'traiteur' | 'chocolatier' | 'epicerie_fine'
+  // V2 — Bâtiment & artisanat additionnels
+  | 'macon' | 'couvreur' | 'carreleur' | 'piscinier'
+  // V2 — Services à la personne additionnels
+  | 'osteopathe' | 'praticien_bien_etre'
+  // V2 — Commerces & services additionnels
+  | 'fleuriste' | 'bijoutier' | 'librairie' | 'garagiste'
+  // V2 — Hébergement
+  | 'gite' | 'camping'
+  // Fallback
+  | 'autre'
 
 export type ProspectCanal =
   | 'a_definir' | 'terrain' | 'email' | 'reseaux' | 'telephone' | 'ecarte'
@@ -148,7 +166,17 @@ export interface Prospect {
 
 // ─── Maquettes (générateur de maquettes ultra-personnalisées) ────────────────
 
-export type MaquetteTemplateVariant = 'boulangerie' | 'boucherie' | 'restaurant' | 'pizzeria'
+/**
+ * Variant de template d'une maquette générée.
+ *
+ * Aligné 1:1 sur `ProspectCategorie` depuis la généralisation Famille 2 →
+ * toutes catégories : chaque catégorie a son template, construit à partir
+ * d'un preset métier (cf. `lib/maquette/presets/metiers.ts`). Les 4 variants
+ * Famille 2 (boulangerie, boucherie, restaurant, pizzeria) conservent leurs
+ * `TemplateConfig` historiques pour zéro régression ; les 14 autres sont
+ * dérivés d'une base générique + preset.
+ */
+export type MaquetteTemplateVariant = ProspectCategorie
 
 export type MaquettePaletteMode = 'category' | 'extracted' | 'custom'
 
@@ -285,8 +313,33 @@ export interface Maquette {
   histoire_lead: string | null
   texte_presentation: string | null
   annee_creation: number | null
+  /** Suptitle de la section "Nos créations" — éditable depuis l'éditeur. */
+  univers_section_suptitle: string | null
+  /** Titre de la section "Nos créations" (markdown italique `*mot*`). */
+  univers_section_title: string | null
+  /** Paragraphe descriptif de la section "Nos créations". */
+  univers_section_intro: string | null
   cta_banner_title: string | null
   cta_banner_text: string | null
+
+  // ── Lexique global éditable (extension presets métier) ──
+  // Tous nullable : fallback sur `template.defaults.*` côté rendu si NULL
+  // (couvre les maquettes pré-migration ainsi que les nouveaux champs vidés
+  // manuellement par l'admin).
+  /** Sous-titre affiché sous le nom du commerce (header + footer). */
+  brand_tagline: string | null
+  /** Label de nav vers #histoire (header + footer). */
+  nav_histoire_label: string | null
+  /** Label de nav vers #univers (header + footer). */
+  nav_univers_label: string | null
+  /** Texte du bouton Hero primaire. */
+  hero_cta_primaire: string | null
+  /** Suptitle de la section Histoire (sectionEyebrow). */
+  histoire_suptitle: string | null
+  /** Titre de la section Avis (markdown italique `*mot*`). */
+  avis_section_titre: string | null
+  /** H4 de la colonne d'ancrage du Footer. */
+  footer_colonne_label: string | null
 
   logo_url: string | null
   logo_initial: string | null

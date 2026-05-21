@@ -88,26 +88,43 @@ export default async function MaquettePage({ params }: Props) {
         maquette={maquette}
         prospect={prospect}
         brandTagline={template.defaults.brandTagline}
+        defaultNavHistoireLabel={template.defaults.navHistoireLabel}
+        defaultNavUniversLabel={template.defaults.navUniversLabel}
         cssVars={cssVars}
       />
-      <Hero maquette={maquette} prospect={prospect} />
+      <Hero
+        maquette={maquette}
+        prospect={prospect}
+        defaultCtaPrimaire={template.defaults.heroCtaPrimaire}
+      />
       <Histoire
         maquette={maquette}
         prospect={prospect}
         defaultValeurs={template.valeursItems}
+        defaultSuptitle={template.defaults.histoireSuptitle}
       />
       <Univers
         maquette={maquette}
         defaultItems={template.universItems}
-        sectionTitle={template.defaults.universSectionTitle}
-        sectionIntro={template.defaults.universSectionIntro}
+        defaultSuptitle={template.defaults.universSectionSuptitle}
+        defaultTitle={template.defaults.universSectionTitle}
+        defaultIntro={template.defaults.universSectionIntro}
       />
       <CtaBanner maquette={maquette} prospect={prospect} />
-      <Avis prospect={prospect} customAvis={maquette.avis_items} />
+      <Avis
+        prospect={prospect}
+        maquette={maquette}
+        customAvis={maquette.avis_items}
+        defaultSectionTitre={template.defaults.avisSectionTitre}
+      />
       <Infos prospect={prospect} overrides={maquette.infos_overrides} />
       <Footer
         prospect={prospect}
-        brandTagline={template.defaults.brandTagline}
+        maquette={maquette}
+        defaultBrandTagline={template.defaults.brandTagline}
+        defaultNavHistoireLabel={template.defaults.navHistoireLabel}
+        defaultNavUniversLabel={template.defaults.navUniversLabel}
+        defaultFooterColonneLabel={template.defaults.footerColonneLabel}
         overrides={maquette.infos_overrides}
       />
     </div>

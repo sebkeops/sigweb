@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import type { Prospect } from '@/types'
 import { Button } from '@/components/ui/Button'
 import type { ProspectActionState } from '@/lib/actions/prospect'
-import { CANAL_OPTIONS, CATEGORIE_OPTIONS, STATUT_OPTIONS } from '@/lib/crm/constants'
+import { CANAL_OPTIONS, getExposedCategoriesByFamily, STATUT_OPTIONS } from '@/lib/crm/constants'
 
 interface ProspectFormProps {
   prospect?: Prospect
@@ -38,6 +38,14 @@ export default function ProspectForm({ prospect, initialData, enrichedToken, act
   const router = useRouter()
   // Source unique pour les valeurs initiales : prospect (édition) sinon initialData (pré-remplissage).
   const seed: Partial<Prospect> = prospect ?? initialData ?? {}
+
+  // Enrichissement Google dont le type n'a pas pu être mappé sur une catégorie
+  // CRM : `suggestedCategorie` vaut alors 'autre'. Dans ce cas on NE pré-sélectionne
+  // PAS "Autre" — le select reste sur "Choisir…" pour forcer un choix explicite de
+  // l'admin. Sinon un fleuriste / garagiste est enregistré silencieusement 'autre'
+  // (le libellé Google masque le problème dans la liste et la fiche).
+  const enrichmentFellBackToAutre =
+    !prospect && seed.categorie === 'autre' && !!seed.google_primary_type_display
 
   useEffect(() => {
     if (state.success) {
@@ -87,22 +95,27 @@ export default function ProspectForm({ prospect, initialData, enrichedToken, act
               id="categorie"
               name="categorie"
               required
-              defaultValue={seed.categorie ?? ''}
+              defaultValue={enrichmentFellBackToAutre ? '' : (seed.categorie ?? '')}
               className={fieldClass}
             >
               <option value="" disabled>
                 Choisir…
               </option>
-              {CATEGORIE_OPTIONS.map((o) => (
-                <option key={o.value} value={o.value}>
-                  {o.label}
-                </option>
+              {getExposedCategoriesByFamily().map((g) => (
+                <optgroup key={g.family} label={g.label}>
+                  {g.options.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
             {err('categorie')}
             {seed.categorie === 'autre' && seed.google_primary_type_display && (
               <p className="mt-1 font-body text-xs text-muted">
-                Type Google : <strong>{seed.google_primary_type_display}</strong> — sera affiché tel quel dans la liste et la fiche.
+                Type Google : <strong>{seed.google_primary_type_display}</strong> — choisissez
+                la catégorie Sigweb correspondante si elle existe, sinon laissez «&nbsp;Autre&nbsp;».
               </p>
             )}
           </div>

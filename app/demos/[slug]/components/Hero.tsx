@@ -8,9 +8,14 @@ import styles from '../styles.module.css'
 interface Props {
   maquette: Maquette
   prospect: Prospect
+  /**
+   * Texte du bouton CTA primaire par défaut depuis le template (fallback
+   * si `maquette.hero_cta_primaire` est NULL — cas pré-migration BDD).
+   */
+  defaultCtaPrimaire: string
 }
 
-export default function Hero({ maquette, prospect }: Props) {
+export default function Hero({ maquette, prospect, defaultCtaPrimaire }: Props) {
   // Source de vérité Session 3.0+ : pool + assignations.
   // L'ancien champ `maquette.hero_photo_url` reste rempli en parallèle pour
   // compat mais on ne le lit plus côté rendu (cf. CLEANUP-TODO.md).
@@ -39,7 +44,7 @@ export default function Hero({ maquette, prospect }: Props) {
 
           <div className={styles.heroActions}>
             <a href="#univers" className={`${styles.btn} ${styles.btnPrimary}`}>
-              Voir nos créations →
+              {maquette.hero_cta_primaire ?? defaultCtaPrimaire}
             </a>
             <a href="#infos" className={`${styles.btn} ${styles.btnGhost}`}>
               Nous trouver

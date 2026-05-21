@@ -4,7 +4,10 @@ import { useState } from 'react'
 import { UNIVERS_LIMITS } from '@/lib/maquette/content-schema'
 import type { Maquette, MaquetteUniversItem } from '@/types'
 import { useEditor } from '../editor/EditorContext'
+import EditableField from '../editor/EditableField'
 import styles from '../identity/identity.module.css'
+
+const HINT_ITALIC = 'Encadrez avec *des étoiles* les mots à mettre en italique dans le rendu.'
 
 interface Props {
   maquette: Maquette
@@ -57,7 +60,59 @@ export default function UniversSection({ maquette, defaultItems }: Props) {
 
   return (
     <div className={styles.universContainer ?? ''}>
-      <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'flex-end' }}>
+      <div style={{ marginBottom: 18, paddingBottom: 14, borderBottom: '1px solid var(--color-border, #e5e1d8)' }}>
+        <div
+          style={{
+            marginBottom: 10,
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            color: 'var(--color-ink, #1e1e1e)',
+          }}
+        >
+          En-tête de section
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <EditableField
+            kind="text"
+            field="univers_section_suptitle"
+            label="Sur-titre"
+            placeholder="Nos créations"
+            initialValue={maquette.univers_section_suptitle}
+          />
+          <EditableField
+            kind="textarea"
+            field="univers_section_title"
+            label="Titre"
+            hint={HINT_ITALIC}
+            placeholder="Du pain, des viennoiseries, et bien *plus encore*."
+            initialValue={maquette.univers_section_title}
+            rows={2}
+          />
+          <EditableField
+            kind="textarea"
+            field="univers_section_intro"
+            label="Paragraphe d'intro"
+            placeholder="Chaque produit est confectionné à la main, dans notre fournil…"
+            initialValue={maquette.univers_section_intro}
+            rows={3}
+          />
+        </div>
+      </div>
+
+      <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+        <div
+          style={{
+            fontSize: '0.78rem',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            color: 'var(--color-ink, #1e1e1e)',
+          }}
+        >
+          Cartes (5)
+        </div>
         <button
           type="button"
           onClick={resetAll}
