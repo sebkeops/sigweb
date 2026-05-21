@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import LogoutButton from './LogoutButton'
 import InactivityLogout from './InactivityLogout'
 import MobileNavDrawer from '@/components/admin/MobileNavDrawer'
+import Logo from '@/components/ui/Logo'
 
 /** Liens de navigation admin — partagés par la nav desktop et le drawer mobile. */
 const ADMIN_NAV_LINKS = [
@@ -39,14 +40,24 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-surface-soft">
       {/* Barre admin */}
-      <header className="sticky top-0 z-40 border-b border-border bg-surface shadow-sm lg:static">
+      <header className="sticky top-0 z-40 border-b border-border bg-surface shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3 lg:gap-8">
             {/* Hamburger + drawer — visibles uniquement < lg */}
             <MobileNavDrawer links={ADMIN_NAV_LINKS} unread={unread} userEmail={user.email ?? ''} />
 
-            <Link href="/admin/projets" className="font-heading text-lg font-bold text-primary">
-              Sigweb Admin
+            <Link
+              href="/admin/crm"
+              aria-label="Sigweb Admin"
+              className="flex items-center gap-2"
+            >
+              <Logo size={30} uid="admin-logo" />
+              <span className="hidden items-center gap-1.5 lg:flex">
+                <span className="font-heading text-lg font-bold text-primary">Sigweb</span>
+                <span className="rounded-md bg-cta px-1.5 py-0.5 font-body text-[10px] font-bold leading-none text-white">
+                  Admin
+                </span>
+              </span>
             </Link>
 
             {/* Nav desktop — figée au pixel, masquée < lg */}
