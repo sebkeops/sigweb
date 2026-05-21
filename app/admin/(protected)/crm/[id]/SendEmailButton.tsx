@@ -115,13 +115,14 @@ export default function SendEmailButton({
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-end gap-1 max-lg:items-stretch">
       <Button
         type="button"
         variant="secondary"
         size="sm"
         onClick={() => openAndLoad()}
         disabled={disabled}
+        className="max-lg:min-h-[44px] max-lg:w-full"
       >
         Envoyer email
       </Button>

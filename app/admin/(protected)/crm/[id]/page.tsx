@@ -131,7 +131,7 @@ export default async function ProspectDetailPage({ params }: Props) {
         </div>
         <div className="flex w-full flex-wrap items-start gap-3 lg:w-auto">
           {/* Groupe 1 — production de livrables */}
-          <div className="flex flex-wrap items-start gap-3">
+          <div className="flex flex-wrap items-start gap-3 max-lg:w-full max-lg:flex-col">
             <GenerateMaquetteButton
               prospectId={p.id}
               categorie={p.categorie}
@@ -154,9 +154,14 @@ export default async function ProspectDetailPage({ params }: Props) {
           {/* Séparateur visuel */}
           <div className="mt-1 hidden h-8 w-px self-start bg-border lg:block" aria-hidden />
           {/* Groupe 2 — gestion de la fiche */}
-          <div className="flex flex-wrap items-start gap-3">
+          <div className="flex flex-wrap items-start gap-3 max-lg:w-full max-lg:flex-col">
             <RefreshFromGoogleButton prospectId={p.id} hasPlaceId={!!p.google_place_id} />
-            <LinkButton href={`/admin/crm/${p.id}/modifier`} variant="primary" size="sm">
+            <LinkButton
+              href={`/admin/crm/${p.id}/modifier`}
+              variant="primary"
+              size="sm"
+              className="max-lg:min-h-[44px] max-lg:w-full"
+            >
               Modifier
             </LinkButton>
             <DeleteProspectButton id={p.id} nom={p.nom_commerce} />

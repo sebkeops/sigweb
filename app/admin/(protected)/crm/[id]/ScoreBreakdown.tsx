@@ -204,11 +204,11 @@ export default function ScoreBreakdown({ prospect: p }: Props) {
       )}
 
       {/* Actions */}
-      <div className="flex flex-wrap gap-3 border-t border-border pt-4">
-        <Button type="button" variant="ghost" size="sm" onClick={handleRecompute} loading={pending}>
+      <div className="flex flex-wrap gap-3 border-t border-border pt-4 max-lg:flex-col">
+        <Button type="button" variant="ghost" size="sm" onClick={handleRecompute} loading={pending} className="max-lg:min-h-[44px] max-lg:w-full">
           Recalculer
         </Button>
-        <Button type="button" variant="secondary" size="sm" onClick={openModal}>
+        <Button type="button" variant="secondary" size="sm" onClick={openModal} className="max-lg:min-h-[44px] max-lg:w-full">
           Forcer un score manuel
         </Button>
       </div>

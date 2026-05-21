@@ -53,8 +53,8 @@ export default function RefreshFromGoogleButton({ prospectId, hasPlaceId }: Prop
   const label = hasPlaceId ? 'Enrichir depuis Google' : 'Lier à Google'
 
   return (
-    <div className="flex flex-col items-end gap-2">
-      <Button type="button" variant="secondary" size="sm" onClick={handleClick} loading={pending}>
+    <div className="flex flex-col items-end gap-2 max-lg:items-stretch">
+      <Button type="button" variant="secondary" size="sm" onClick={handleClick} loading={pending} className="max-lg:min-h-[44px] max-lg:w-full">
         {label}
       </Button>
       {flash && (

@@ -30,7 +30,7 @@ export default function DeleteProspectButton({ id, nom }: Props) {
     <button
       onClick={handleDelete}
       disabled={loading}
-      className="font-body text-sm font-medium text-red-600 hover:underline disabled:opacity-40"
+      className="font-body text-sm font-medium text-red-600 hover:underline disabled:opacity-40 max-lg:flex max-lg:min-h-[44px] max-lg:w-full max-lg:items-center max-lg:justify-center max-lg:rounded-sm max-lg:border max-lg:border-red-600"
     >
       {loading ? '…' : 'Supprimer'}
     </button>
