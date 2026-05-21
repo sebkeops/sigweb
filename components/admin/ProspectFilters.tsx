@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { CANAL_OPTIONS, CATEGORIE_OPTIONS, SOURCE_OPTIONS, STATUT_OPTIONS } from '@/lib/crm/constants'
+import { CANAL_OPTIONS, getExposedCategoriesByFamily, SOURCE_OPTIONS, STATUT_OPTIONS } from '@/lib/crm/constants'
 
 const fieldClass =
   'rounded-sm border border-border bg-white px-3 py-2 font-body text-sm text-ink placeholder:text-muted focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary'
@@ -102,10 +102,14 @@ export default function ProspectFilters() {
         aria-label="Filtrer par catégorie"
       >
         <option value="">Toutes catégories</option>
-        {CATEGORIE_OPTIONS.map((o) => (
-          <option key={o.value} value={o.value}>
-            {o.label}
-          </option>
+        {getExposedCategoriesByFamily().map((g) => (
+          <optgroup key={g.family} label={g.label}>
+            {g.options.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </optgroup>
         ))}
       </select>
 

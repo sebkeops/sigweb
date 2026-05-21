@@ -1,11 +1,18 @@
-import type { GoogleReviewItem, MaquetteAvisItem, Prospect } from '@/types'
+import type { GoogleReviewItem, Maquette, MaquetteAvisItem, Prospect } from '@/types'
 import { formatRelativeTime } from '@/lib/maquette/render/formatRelativeTime'
+import { parseItalicMarkers } from '@/lib/maquette/render/parseItalicMarkers'
 import styles from '../styles.module.css'
 
 interface Props {
   prospect: Prospect
+  maquette: Maquette
   /** En V1, toujours null (édition manuelle des avis = Session 4). */
   customAvis: MaquetteAvisItem[] | null
+  /**
+   * Titre de section par défaut depuis le template (fallback si la maquette
+   * n'a pas encore de valeur persistée — cas avant migration BDD).
+   */
+  defaultSectionTitre: string
 }
 
 interface NormalizedAvis {
@@ -37,20 +44,26 @@ function fromMaquetteAvis(a: MaquetteAvisItem): NormalizedAvis {
   }
 }
 
-export default function Avis({ prospect, customAvis }: Props) {
+export default function Avis({ prospect, maquette, customAvis, defaultSectionTitre }: Props) {
   const items: NormalizedAvis[] = customAvis
     ? customAvis.map(fromMaquetteAvis)
     : (prospect.google_reviews ?? []).slice(0, 3).map(fromGoogleReview)
 
   if (items.length === 0) return null
 
+  // Le titre vient de la maquette (éditable) ou retombe sur le template.
+  // Migration du `<em>habitués</em>` hardcodé vers le système markdown italique
+  // (cohérent avec universSectionTitle / histoireTitle).
+  const sectionTitre = maquette.avis_section_titre ?? defaultSectionTitre
+
   return (
     <section className={`${styles.section} ${styles.avis}`} id="avis">
       <div className={styles.sectionInner}>
         <div className={styles.sectionEyebrow}>Avis clients</div>
-        <h2 className={styles.sectionTitle}>
-          Ce qu&apos;en pensent nos <em>habitués</em>.
-        </h2>
+        <h2
+          className={styles.sectionTitle}
+          dangerouslySetInnerHTML={{ __html: parseItalicMarkers(sectionTitre) }}
+        />
 
         <div className={styles.avisGrid}>
           {items.map((a, i) => {

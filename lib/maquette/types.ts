@@ -42,12 +42,38 @@ export interface TemplateDefaults {
   histoireTitle: string
   histoireLead: string
   textePresentation: string
+  /**
+   * Texte court qui surmonte le titre de la section "Nos créations".
+   * Souvent en capitales dans le contenu — un CSS `text-transform: uppercase`
+   * peut le re-uppercaser, mais le texte source porte déjà la casse cible.
+   */
+  universSectionSuptitle: string
   universSectionTitle: string
   universSectionIntro: string
   ctaBannerTitle: string
   ctaBannerText: string
   /** Tagline sous le nom dans le brand (header), ex: "Boulangerie · Pâtisserie". */
   brandTagline: string
+
+  // ── Lexique global — 6 libellés transverses conditionnés par catégorie ──
+  // Cf. brief "Extension presets métier : lexique global". Les valeurs sont
+  // injectées depuis `MetierPreset.lexique` par la factory `buildTemplate`.
+
+  /** Header + Footer nav, lien #histoire. Ex: "La maison", "Le cabinet". */
+  navHistoireLabel: string
+  /** Header + Footer nav, lien #univers. Ex: "Nos créations", "Nos prestations". */
+  navUniversLabel: string
+  /** Bouton Hero primaire. Ex: "Voir nos créations →". */
+  heroCtaPrimaire: string
+  /** Suptitle de la section Histoire (sectionEyebrow). */
+  histoireSuptitle: string
+  /**
+   * Titre de la section Avis. Syntaxe markdown italique `*mot*` pour la
+   * partie en couleur (rendu via `parseItalicMarkers`).
+   */
+  avisSectionTitre: string
+  /** H4 colonne Footer. Ex: "Le commerce", "L'entreprise". */
+  footerColonneLabel: string
 }
 
 export interface TemplateConfig {
@@ -81,8 +107,20 @@ export interface MaquetteInitialData {
   histoire_lead: string
   texte_presentation: string
   annee_creation: number | null
+  univers_section_suptitle: string
+  univers_section_title: string
+  univers_section_intro: string
   cta_banner_title: string
   cta_banner_text: string
+
+  // ── Lexique global persisté à la génération initiale ──
+  brand_tagline: string
+  nav_histoire_label: string
+  nav_univers_label: string
+  hero_cta_primaire: string
+  histoire_suptitle: string
+  avis_section_titre: string
+  footer_colonne_label: string
 
   logo_url: null
   logo_initial: string

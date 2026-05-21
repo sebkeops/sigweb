@@ -17,6 +17,7 @@ import UniversSection from './sections/UniversSection'
 import CtaSection from './sections/CtaSection'
 import AvisSection from './sections/AvisSection'
 import InfosSection from './sections/InfosSection'
+import LexiqueSection from './sections/LexiqueSection'
 import AdvancedSection from './sections/AdvancedSection'
 
 export const metadata: Metadata = { title: 'Éditeur maquette | Admin Sigweb' }
@@ -73,10 +74,10 @@ export default async function MaquetteEditorPage({ params }: Props) {
             <AccordionItem id="hero" title="3. Hero">
               <HeroSection maquette={m} />
             </AccordionItem>
-            <AccordionItem id="histoire" title="4. Histoire">
-              <HistoireSection maquette={m} />
+            <AccordionItem id="histoire" title="4. Histoire & atouts">
+              <HistoireSection maquette={m} defaultValeurs={template.valeursItems} />
             </AccordionItem>
-            <AccordionItem id="univers" title="5. Univers produits">
+            <AccordionItem id="univers" title="5. Nos créations">
               <UniversSection maquette={m} defaultItems={template.universItems} />
             </AccordionItem>
             <AccordionItem id="cta" title="6. CTA banner">
@@ -88,7 +89,10 @@ export default async function MaquetteEditorPage({ params }: Props) {
             <AccordionItem id="infos" title="8. Infos pratiques">
               <InfosSection prospect={p} initialOverrides={m.infos_overrides} />
             </AccordionItem>
-            <AccordionItem id="advanced" title="9. Avancé">
+            <AccordionItem id="lexique" title="9. Lexique">
+              <LexiqueSection maquette={m} />
+            </AccordionItem>
+            <AccordionItem id="advanced" title="10. Avancé">
               <AdvancedSection maquette={m} prospectId={id} />
             </AccordionItem>
           </Accordion>

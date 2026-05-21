@@ -8,14 +8,25 @@ interface Props {
   maquette: Maquette
   prospect: Prospect
   defaultValeurs: MaquetteValeurItem[]
+  /**
+   * Suptitle de section par défaut depuis le template (fallback si
+   * `maquette.histoire_suptitle` est NULL — cas pré-migration BDD).
+   */
+  defaultSuptitle: string
 }
 
 const VALUE_ICONS = ['◐', '◑', '◒', '◓']
 
-export default function Histoire({ maquette, prospect, defaultValeurs }: Props) {
+export default function Histoire({ maquette, prospect, defaultValeurs, defaultSuptitle }: Props) {
   const photoEntry = getMaquettePhoto(maquette, 'histoire')
   const photo = resolvePhotoUrl(photoEntry?.reference ?? null, { width: 1000 })
   const valeurs = maquette.valeurs_items ?? defaultValeurs
+
+  // Suptitle conditionné par catégorie (édition possible côté admin).
+  const suptitle = maquette.histoire_suptitle ?? defaultSuptitle
+  // Suffixe d'alt image : on dérive du suptitle en minuscules pour rester
+  // cohérent avec le label de section (ex : "Maison X — le cabinet").
+  const altSuffix = suptitle.toLowerCase()
 
   const currentYear = new Date().getFullYear()
   const yearsOfCraft = maquette.annee_creation
@@ -30,7 +41,7 @@ export default function Histoire({ maquette, prospect, defaultValeurs }: Props) 
             {photo
               ? <img
                   src={photo}
-                  alt={`${stripItalicMarkers(prospect.nom_commerce)} — la maison`}
+                  alt={`${stripItalicMarkers(prospect.nom_commerce)} — ${altSuffix}`}
                 />
               : <div className={styles.histoireImageFallback} aria-hidden="true" />
             }
@@ -45,7 +56,7 @@ export default function Histoire({ maquette, prospect, defaultValeurs }: Props) 
           </div>
 
           <div className={styles.histoireText}>
-            <div className={styles.sectionEyebrow}>La maison</div>
+            <div className={styles.sectionEyebrow}>{suptitle}</div>
             {maquette.histoire_title && (
               <h2
                 className={styles.sectionTitle}

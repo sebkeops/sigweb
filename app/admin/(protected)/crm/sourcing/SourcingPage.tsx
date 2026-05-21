@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
-import { CATEGORIE_OPTIONS } from '@/lib/crm/constants'
+import { CATEGORIE_OPTIONS, CATEGORIES_EXPOSED_IN_ADMIN } from '@/lib/crm/constants'
 import type { ProspectCategorie } from '@/types'
 import {
   importSourcingBatchAction,
@@ -42,7 +42,11 @@ interface SourcingMeta {
   count: number
 }
 
-const SOURCEABLE = CATEGORIE_OPTIONS.filter((o) => o.value !== 'autre')
+// Sourcing exclut `autre` (pas une catégorie cible Google) ET les ids non
+// exposés dans l'admin (catégories V2 dont le preset n'est pas finalisé).
+const SOURCEABLE = CATEGORIE_OPTIONS.filter(
+  (o) => o.value !== 'autre' && CATEGORIES_EXPOSED_IN_ADMIN.has(o.value)
+)
 
 const fieldClass =
   'rounded-sm border border-border bg-white px-4 py-2.5 font-body text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary'

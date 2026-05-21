@@ -14,6 +14,7 @@ import type { ProspectCategorie } from '@/types'
  *   - 'cabinet' → "cabinet" (médical / dentaire)
  */
 const CATEGORIE_LABELS_AFFICHE: Record<ProspectCategorie, string> = {
+  // V1
   boulangerie:  'boulangerie',
   boucherie:    'boucherie',
   restaurant:   'restaurant',
@@ -31,6 +32,24 @@ const CATEGORIE_LABELS_AFFICHE: Record<ProspectCategorie, string> = {
   peintre:      'entreprise',
   paysagiste:   'entreprise',
   photographe:  'studio',
+  // V2 — affiche-friendly (stubs ; à affiner si nécessaire après les annexes)
+  bar_cafe:            'établissement',
+  traiteur:            'traiteur',
+  chocolatier:         'chocolaterie',
+  epicerie_fine:       'épicerie fine',
+  macon:               'entreprise',
+  couvreur:            'entreprise',
+  carreleur:           'entreprise',
+  piscinier:           'entreprise',
+  osteopathe:          'cabinet',
+  praticien_bien_etre: 'cabinet',
+  fleuriste:           'boutique',
+  bijoutier:           'boutique',
+  librairie:           'librairie',
+  garagiste:           'garage',
+  gite:                'gîte',
+  camping:             'camping',
+  // Fallback
   autre:        'commerce',
 }
 

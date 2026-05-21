@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Prospect, ProspectCategorie } from '@/types'
-import { generateInitialMaquette, UnsupportedCategoryError } from './generate'
+import { generateInitialMaquette } from './generate'
 
 function makeProspect(overrides: Partial<Prospect> = {}): Prospect {
   return {
@@ -56,35 +56,28 @@ function makeProspect(overrides: Partial<Prospect> = {}): Prospect {
 }
 
 describe('generateInitialMaquette — sélection du template', () => {
-  it.each<[ProspectCategorie, string]>([
-    ['boulangerie', 'boulangerie'],
-    ['boucherie', 'boucherie'],
-    ['restaurant', 'restaurant'],
-    ['pizzeria', 'pizzeria'],
-  ])('catégorie %s → template_variant %s', (categorie, expected) => {
-    const m = generateInitialMaquette(makeProspect({ categorie }))
-    expect(m.template_variant).toBe(expected)
-  })
-
+  // Depuis la généralisation Famille 2 → toutes catégories, chaque catégorie
+  // CRM dispose de son propre template (1:1 entre `ProspectCategorie` et
+  // `MaquetteTemplateVariant`). `UnsupportedCategoryError` reste exporté
+  // pour compat mais n'est plus jamais déclenché par cette fonction.
   it.each<ProspectCategorie>([
+    'boulangerie', 'boucherie', 'restaurant', 'pizzeria',
     'primeur', 'fromager', 'caviste',
     'coiffeur', 'esthetique', 'kine', 'cabinet',
     'menuisier', 'plombier', 'electricien', 'peintre', 'paysagiste',
     'photographe', 'autre',
-  ])('catégorie %s → UnsupportedCategoryError', (categorie) => {
-    expect(() => generateInitialMaquette(makeProspect({ categorie }))).toThrow(
-      UnsupportedCategoryError
-    )
+  ])('catégorie %s → template_variant identique', (categorie) => {
+    const m = generateInitialMaquette(makeProspect({ categorie }))
+    expect(m.template_variant).toBe(categorie)
   })
 
-  it('UnsupportedCategoryError expose la catégorie en cause', () => {
-    try {
-      generateInitialMaquette(makeProspect({ categorie: 'coiffeur' }))
-      expect.fail('expected UnsupportedCategoryError')
-    } catch (e) {
-      expect(e).toBeInstanceOf(UnsupportedCategoryError)
-      expect((e as UnsupportedCategoryError).categorie).toBe('coiffeur')
-    }
+  it('expose des défauts cohérents pour une catégorie non Famille 2', () => {
+    const m = generateInitialMaquette(makeProspect({ categorie: 'coiffeur', ville: 'Auch' }))
+    // Le preset coiffeur fournit son propre suptitle "Nos créations"
+    expect(m.univers_section_suptitle).toBe('NOS PRESTATIONS')
+    expect(m.univers_section_title).toContain('*')
+    // Le brand tagline est précisé via la table de mappings
+    expect(m.valeurs_items.length).toBe(4)
   })
 })
 
