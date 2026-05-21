@@ -122,14 +122,14 @@ export default async function ProspectDetailPage({ params }: Props) {
     <div className="space-y-6">
       {/* Breadcrumb + actions */}
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
+        <div className="flex w-full flex-col gap-1 lg:w-auto lg:flex-row lg:items-center lg:gap-3">
           <Link href="/admin/crm" className="font-body text-sm text-muted hover:text-primary">
             ← Prospects
           </Link>
-          <span className="text-muted">/</span>
-          <h1 className="font-heading text-2xl font-extrabold text-ink">{p.nom_commerce}</h1>
+          <span className="hidden text-muted lg:inline">/</span>
+          <h1 className="break-words font-heading text-2xl font-extrabold text-ink">{p.nom_commerce}</h1>
         </div>
-        <div className="flex flex-wrap items-start gap-3">
+        <div className="flex w-full flex-wrap items-start gap-3 lg:w-auto">
           {/* Groupe 1 — production de livrables */}
           <div className="flex flex-wrap items-start gap-3">
             <GenerateMaquetteButton
@@ -152,7 +152,7 @@ export default async function ProspectDetailPage({ params }: Props) {
             )}
           </div>
           {/* Séparateur visuel */}
-          <div className="mt-1 hidden h-8 w-px self-start bg-border sm:block" aria-hidden />
+          <div className="mt-1 hidden h-8 w-px self-start bg-border lg:block" aria-hidden />
           {/* Groupe 2 — gestion de la fiche */}
           <div className="flex flex-wrap items-start gap-3">
             <RefreshFromGoogleButton prospectId={p.id} hasPlaceId={!!p.google_place_id} />
