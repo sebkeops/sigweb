@@ -11,6 +11,7 @@ import type {
 import { Badge } from '@/components/ui/Badge'
 import { LinkButton } from '@/components/ui/Button'
 import ProspectFilters from '@/components/admin/ProspectFilters'
+import ProspectCard from '@/components/admin/ProspectCard'
 import BackfillGooglePhotosButton from './BackfillGooglePhotosButton'
 import BackfillGoogleReviewsButton from './BackfillGoogleReviewsButton'
 import MigrateMaquettesPhotosButton from './MigrateMaquettesPhotosButton'
@@ -223,7 +224,9 @@ export default async function AdminCrmPage({ searchParams }: Props) {
           )}
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-md border border-border bg-surface shadow-sm">
+        <>
+        {/* Tableau — desktop uniquement */}
+        <div className="hidden overflow-x-auto rounded-md border border-border bg-surface shadow-sm lg:block">
           <table className="w-full text-left">
             <thead className="border-b border-border bg-surface-soft">
               <tr>
@@ -316,6 +319,14 @@ export default async function AdminCrmPage({ searchParams }: Props) {
             </tbody>
           </table>
         </div>
+
+        {/* Cartes — mobile uniquement */}
+        <div className="flex flex-col gap-3 lg:hidden">
+          {prospects.map((p) => (
+            <ProspectCard key={p.id} prospect={p} />
+          ))}
+        </div>
+        </>
       )}
     </div>
   )

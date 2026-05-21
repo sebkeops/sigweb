@@ -56,13 +56,14 @@ export default function GenerateAfficheButton({ prospectId }: Props) {
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-end gap-1 max-lg:items-stretch">
       <Button
         type="button"
         variant="secondary"
         size="sm"
         onClick={handleDownload}
         loading={loading}
+        className="max-lg:min-h-[44px] max-lg:w-full"
       >
         Affiche A4
       </Button>

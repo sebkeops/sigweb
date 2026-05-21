@@ -4,6 +4,15 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import LogoutButton from './LogoutButton'
 import InactivityLogout from './InactivityLogout'
+import MobileNavDrawer from '@/components/admin/MobileNavDrawer'
+import Logo from '@/components/ui/Logo'
+
+/** Liens de navigation admin — partagés par la nav desktop et le drawer mobile. */
+const ADMIN_NAV_LINKS = [
+  { href: '/admin/projets', label: 'Projets' },
+  { href: '/admin/crm', label: 'CRM' },
+  { href: '/admin/contacts', label: 'Messages' },
+]
 
 export const metadata: Metadata = {
   robots: {
@@ -31,32 +40,50 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="min-h-screen bg-surface-soft">
       {/* Barre admin */}
-      <header className="border-b border-border bg-surface shadow-sm">
+      <header className="sticky top-0 z-40 border-b border-border bg-surface shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div className="flex items-center gap-8">
-            <Link href="/admin/projets" className="font-heading text-lg font-bold text-primary">
-              Sigweb Admin
+          <div className="flex items-center gap-3 lg:gap-8">
+            {/* Hamburger + drawer — visibles uniquement < lg */}
+            <MobileNavDrawer links={ADMIN_NAV_LINKS} unread={unread} userEmail={user.email ?? ''} />
+
+            {/* Logo : centre en absolu sur mobile (pattern du site public),
+                a gauche en flux normal sur desktop. */}
+            <Link
+              href="/admin/crm"
+              aria-label="Sigweb Admin"
+              className="absolute left-1/2 flex -translate-x-1/2 items-center gap-2 lg:static lg:translate-x-0"
+            >
+              <Logo size={30} uid="admin-logo" />
+              <span className="flex items-center gap-1.5">
+                <span className="font-heading text-lg font-bold text-primary">Sigweb</span>
+                <span className="rounded-md bg-cta px-1.5 py-0.5 font-body text-[10px] font-bold leading-none text-white">
+                  Admin
+                </span>
+              </span>
             </Link>
-            <nav className="flex items-center gap-6">
-              <Link href="/admin/projets" className="font-body text-sm font-medium text-muted hover:text-primary">
-                Projets
-              </Link>
-              <Link href="/admin/crm" className="font-body text-sm font-medium text-muted hover:text-primary">
-                CRM
-              </Link>
-              <Link href="/admin/contacts" className="relative font-body text-sm font-medium text-muted hover:text-primary">
-                Messages
-                {unread > 0 && (
-                  <span className="absolute -right-4 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-cta px-1 font-body text-[10px] font-bold text-white">
-                    {unread}
-                  </span>
-                )}
-              </Link>
+
+            {/* Nav desktop — figée au pixel, masquée < lg */}
+            <nav className="hidden items-center gap-6 lg:flex">
+              {ADMIN_NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="relative font-body text-sm font-medium text-muted hover:text-primary"
+                >
+                  {link.label}
+                  {link.href === '/admin/contacts' && unread > 0 && (
+                    <span className="absolute -right-4 -top-2 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-cta px-1 font-body text-[10px] font-bold text-white">
+                      {unread}
+                    </span>
+                  )}
+                </Link>
+              ))}
             </nav>
           </div>
 
-          <div className="flex items-center gap-4">
-            <span className="hidden font-body text-xs text-muted sm:block">{user.email}</span>
+          {/* Bloc droit desktop — masqué < lg (déconnexion accessible via le drawer) */}
+          <div className="hidden items-center gap-4 lg:flex">
+            <span className="font-body text-xs text-muted">{user.email}</span>
             <LogoutButton />
           </div>
         </div>

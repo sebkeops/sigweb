@@ -345,8 +345,14 @@ export default function ProspectForm({ prospect, initialData, enrichedToken, act
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-4 border-t border-border pt-6">
-        <Button type="submit" variant="primary" size="md" loading={pending}>
+      <div className="flex items-center gap-4 border-t border-border pt-6 max-lg:flex-col max-lg:items-stretch">
+        <Button
+          type="submit"
+          variant="primary"
+          size="md"
+          loading={pending}
+          className="max-lg:min-h-[44px] max-lg:w-full"
+        >
           {prospect ? 'Mettre à jour' : 'Enregistrer'}
         </Button>
         <Button
@@ -354,6 +360,7 @@ export default function ProspectForm({ prospect, initialData, enrichedToken, act
           variant="ghost"
           size="md"
           onClick={() => router.push(prospect ? `/admin/crm/${prospect.id}` : '/admin/crm')}
+          className="max-lg:min-h-[44px] max-lg:w-full"
         >
           Annuler
         </Button>

@@ -26,7 +26,7 @@ export default function AdminLoginPage() {
       return
     }
 
-    router.push('/admin/projets')
+    router.push('/admin/crm')
     router.refresh()
   }
 

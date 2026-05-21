@@ -30,10 +30,10 @@ export default function GenerateMaquetteButton({
   // L'éditeur arrive en Session 3, mais la route est posée dès maintenant.
   if (existingMaquette) {
     return (
-      <div className="flex flex-col items-end gap-2">
+      <div className="flex flex-col items-end gap-2 max-lg:items-stretch">
         <Link
           href={`/admin/crm/${prospectId}/maquette`}
-          className="inline-flex items-center justify-center rounded-md border border-primary bg-primary px-3 py-2 font-body text-sm font-semibold text-white shadow-sm transition hover:bg-primary-dark"
+          className="inline-flex items-center justify-center rounded-md border border-primary bg-primary px-3 py-2 font-body text-sm font-semibold text-white shadow-sm transition hover:bg-primary-dark max-lg:min-h-[44px] max-lg:w-full"
         >
           Ouvrir la maquette
         </Link>
@@ -54,8 +54,8 @@ export default function GenerateMaquetteButton({
   // Cas 2 : catégorie hors scope → bouton inactif + message clair.
   if (!supported) {
     return (
-      <div className="flex flex-col items-end gap-1">
-        <Button type="button" variant="secondary" size="sm" disabled>
+      <div className="flex flex-col items-end gap-1 max-lg:items-stretch">
+        <Button type="button" variant="secondary" size="sm" disabled className="max-lg:min-h-[44px] max-lg:w-full">
           Générer maquette
         </Button>
         <span className="font-body text-xs text-muted">
@@ -81,13 +81,14 @@ export default function GenerateMaquetteButton({
   }
 
   return (
-    <div className="flex flex-col items-end gap-2">
+    <div className="flex flex-col items-end gap-2 max-lg:items-stretch">
       <Button
         type="button"
         variant="secondary"
         size="sm"
         onClick={handleClick}
         loading={pending}
+        className="max-lg:min-h-[44px] max-lg:w-full"
       >
         Générer maquette
       </Button>

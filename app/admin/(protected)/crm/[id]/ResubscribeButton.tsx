@@ -51,13 +51,14 @@ export default function ResubscribeButton({
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-end gap-1 max-lg:items-stretch">
       <Button
         type="button"
         variant="secondary"
         size="sm"
         onClick={handleClick}
         loading={pending}
+        className="max-lg:min-h-[44px] max-lg:w-full"
       >
         Réabonner
       </Button>

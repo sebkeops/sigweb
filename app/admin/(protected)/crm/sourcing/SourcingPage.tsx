@@ -199,7 +199,7 @@ export default function SourcingPage({ baseCoords }: Props) {
           />
           <div className="mt-1 flex justify-between font-body text-xs text-muted">
             <span>1 km — quartier</span>
-            <span>15 km — agglo proche</span>
+            <span className="hidden sm:inline">15 km — agglo proche</span>
             <span>50 km — département</span>
           </div>
         </div>
@@ -220,7 +220,7 @@ export default function SourcingPage({ baseCoords }: Props) {
             return (
               <label
                 key={opt.value}
-                className={`flex cursor-pointer items-center gap-2 rounded-sm border px-3 py-2 font-body text-sm transition-colors ${
+                className={`flex cursor-pointer items-center gap-2 rounded-sm border px-3 py-2 font-body text-sm transition-colors max-lg:min-h-[44px] ${
                   checked
                     ? 'border-primary bg-primary-soft text-primary-dark'
                     : 'border-border bg-surface text-ink hover:border-primary/40'
@@ -309,16 +309,23 @@ export default function SourcingPage({ baseCoords }: Props) {
       </section>
 
       {/* Actions */}
-      <div className="flex flex-wrap items-center gap-4 border-t border-border pt-6">
+      <div className="flex flex-wrap items-center gap-4 border-t border-border pt-6 max-lg:flex-col max-lg:items-stretch">
         <Button
           type="submit"
           variant="primary"
           size="md"
           disabled={selectedCats.size === 0 || !baseCoords}
+          className="max-lg:min-h-[44px] max-lg:w-full"
         >
           Lancer le sourcing
         </Button>
-        <Button type="button" variant="ghost" size="md" onClick={() => router.push('/admin/crm')}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="md"
+          onClick={() => router.push('/admin/crm')}
+          className="max-lg:min-h-[44px] max-lg:w-full"
+        >
           Annuler
         </Button>
       </div>
@@ -373,14 +380,20 @@ function ImportSuccess({
         )}
       </div>
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap gap-3 max-lg:flex-col">
         <Link
           href="/admin/crm?source=sourcing"
-          className="inline-flex items-center justify-center rounded-sm bg-primary px-5 py-2.5 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90"
+          className="inline-flex items-center justify-center rounded-sm bg-primary px-5 py-2.5 font-heading text-sm font-bold text-white transition-opacity hover:opacity-90 max-lg:min-h-[44px] max-lg:w-full"
         >
           Voir mes prospects
         </Link>
-        <Button type="button" variant="ghost" size="md" onClick={onReset}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="md"
+          onClick={onReset}
+          className="max-lg:min-h-[44px] max-lg:w-full"
+        >
           Nouvelle session de sourcing
         </Button>
       </div>

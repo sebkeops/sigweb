@@ -38,7 +38,7 @@ export async function middleware(request: NextRequest) {
 
   if (user && isLoginPath) {
     const url = request.nextUrl.clone()
-    url.pathname = '/admin/projets'
+    url.pathname = '/admin/crm'
     return NextResponse.redirect(url)
   }
 
