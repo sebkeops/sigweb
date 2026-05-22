@@ -153,6 +153,7 @@ export const CANAL_OPTIONS: { value: ProspectCanal; label: string }[] = [
 export const STATUT_OPTIONS: { value: ProspectStatut; label: string }[] = [
   { value: 'a_qualifier', label: 'À qualifier' },
   { value: 'qualifie', label: 'Qualifié' },
+  { value: 'maquette_prete', label: 'Maquette prête' },
   { value: 'contacte', label: 'Contacté' },
   { value: 'relance_1', label: 'Relance 1' },
   { value: 'relance_2', label: 'Relance 2' },
@@ -215,6 +216,7 @@ export const CANAL_BADGE: Record<ProspectCanal, BadgeVariant> = {
 export const STATUT_BADGE: Record<ProspectStatut, BadgeVariant> = {
   a_qualifier: 'gray',
   qualifie: 'blue',
+  maquette_prete: 'purple',
   contacte: 'yellow',
   relance_1: 'orange',
   relance_2: 'orange',

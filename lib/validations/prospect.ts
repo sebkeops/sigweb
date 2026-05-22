@@ -21,7 +21,7 @@ const CATEGORIES = [
 const CANAUX = ['a_definir', 'terrain', 'email', 'reseaux', 'telephone', 'ecarte'] as const
 
 const STATUTS = [
-  'a_qualifier', 'qualifie', 'contacte', 'relance_1', 'relance_2', 'relance_3',
+  'a_qualifier', 'qualifie', 'maquette_prete', 'contacte', 'relance_1', 'relance_2', 'relance_3',
   'repondu', 'rdv_pris', 'devis_envoye', 'signe', 'perdu', 'ecarte',
 ] as const
 

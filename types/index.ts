@@ -83,7 +83,7 @@ export type ProspectCanal =
   | 'a_definir' | 'terrain' | 'email' | 'reseaux' | 'telephone' | 'ecarte'
 
 export type ProspectStatut =
-  | 'a_qualifier' | 'qualifie' | 'contacte'
+  | 'a_qualifier' | 'qualifie' | 'maquette_prete' | 'contacte'
   | 'relance_1' | 'relance_2' | 'relance_3'
   | 'repondu' | 'rdv_pris' | 'devis_envoye'
   | 'signe' | 'perdu' | 'ecarte'
