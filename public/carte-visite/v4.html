@@ -56,7 +56,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 5mm 6mm 0;
+    /* Zone de securite Vistaprint (~5mm depuis les bords) : on garde
+       tous les elements (logo, texte, url) bien a l'interieur du cadre
+       en pointilles vert affiche dans l'editeur Vistaprint. */
+    padding: 7mm 8mm 0;
   }
 
   .recto__brand {
@@ -104,7 +107,7 @@
 
   .recto__url {
     position: absolute;
-    bottom: 3.5mm;
+    bottom: 5.5mm;
     left: 0;
     right: 0;
     text-align: center;
@@ -128,9 +131,10 @@
 
   .verso__left {
     position: absolute;
-    top: 6mm;
-    left: 4mm;
-    width: 49mm;
+    /* Marges respectant la zone de securite Vistaprint (~5mm) */
+    top: 7mm;
+    left: 6mm;
+    width: 47mm;
     color: var(--white);
   }
 
@@ -221,14 +225,16 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 28mm;
+    width: 30mm;
     height: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
     gap: 2.5mm;
-    padding: 4mm 2.5mm 4mm;
+    /* Padding plus large pour rester dans la zone de securite Vistaprint
+       (logo SIGWEB en haut, sigweb.fr en bas, QR au milieu). */
+    padding: 6mm 4.5mm 6mm;
     text-align: center;
   }
 
