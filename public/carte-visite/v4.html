@@ -130,22 +130,26 @@
     position: absolute;
     top: 6mm;
     left: 6mm;
-    width: 47mm;
+    width: 49mm;
     color: var(--white);
   }
 
   .verso__header {
     display: flex;
     align-items: center;
-    gap: 2.5mm;
+    gap: 2mm;
   }
 
   .verso__photo {
-    width: 11mm;
-    height: 11mm;
+    width: 9.5mm;
+    height: 9.5mm;
     border-radius: 50%;
     border: 0.3mm solid rgba(255, 255, 255, 0.55);
     object-fit: cover;
+    /* Decale le crop vers le haut comme sur l'affiche A4 (config.ts:30)
+       pour ne pas couper le visage. La source est un portrait avec le
+       visage dans le tiers superieur. */
+    object-position: 50% 5%;
     flex-shrink: 0;
     box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.3);
   }
@@ -158,9 +162,10 @@
   .verso__name {
     font-family: 'Nunito', sans-serif;
     font-weight: 800;
-    font-size: 11.5pt;
+    font-size: 9.5pt;
     line-height: 1.1;
     letter-spacing: 0.01em;
+    white-space: nowrap;
   }
 
   .verso__name-first { color: var(--white); }
@@ -168,11 +173,12 @@
 
   .verso__role {
     font-family: 'Inter', sans-serif;
-    font-size: 6.5pt;
+    font-size: 5.8pt;
     font-weight: 500;
     color: rgba(255,255,255,0.85);
-    margin-top: 1.5mm;
-    letter-spacing: 0.05em;
+    margin-top: 1mm;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
   }
 
   .verso__contact {
