@@ -296,11 +296,23 @@
 
 <!-- ─── LOGO SVG plat (couleurs solides, sans halo) ─── -->
 <svg width="0" height="0" style="position:absolute" xmlns="http://www.w3.org/2000/svg">
-  <symbol id="sigweb-logo-flat" viewBox="0 -18 200 200">
+  <symbol id="sigweb-logo" viewBox="0 -18 200 200">
+    <defs>
+      <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#cc7018"/>
+        <stop offset="35%" stop-color="#c88a45"/>
+        <stop offset="70%" stop-color="#5c7c5f"/>
+        <stop offset="100%" stop-color="#2f6f4f"/>
+      </linearGradient>
+      <linearGradient id="g2" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#cc7018"/>
+        <stop offset="100%" stop-color="#2f6f4f"/>
+      </linearGradient>
+    </defs>
     <path d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100"
-          stroke="#CC7018" stroke-width="9" stroke-linecap="round" fill="none"/>
+          stroke="url(#g1)" stroke-width="5" stroke-linecap="round" fill="none"/>
     <path d="M 100 100 C 106 80, 126 55, 152 50 C 172 45, 186 58, 186 75 C 186 92, 172 108, 148 113 C 126 118, 106 112, 100 100"
-          stroke="#2F6F4F" stroke-width="9" stroke-linecap="round" fill="none"/>
+          stroke="url(#g2)" stroke-width="5" stroke-linecap="round" fill="none"/>
   </symbol>
 </svg>
 
@@ -327,7 +339,7 @@
     <div class="recto__content">
       <!-- Logo + wordmark sur une seule ligne -->
       <div class="recto__brand">
-        <svg class="recto__logo"><use href="#sigweb-logo-flat"/></svg>
+        <svg class="recto__logo"><use href="#sigweb-logo"/></svg>
         <div class="recto__wordmark">
           <span class="recto__wordmark-sig">SIG</span><span class="recto__wordmark-web">WEB</span>
         </div>
@@ -369,7 +381,7 @@
 
     <!-- ZONE GAUCHE (verte) — logo + nom + location + QR -->
     <div class="verso__left">
-      <svg class="verso__small-logo"><use href="#sigweb-logo-flat"/></svg>
+      <svg class="verso__small-logo"><use href="#sigweb-logo"/></svg>
       <div class="verso__name">
         Sébastien <span class="verso__name-last">SIGUENZA</span>
       </div>
