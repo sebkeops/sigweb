@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Carte de visite — Sigweb · v4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vert: #2F6F4F;
+    --vert-dark: #215139;
+    --creme: #F6F3EB;
+    --accent: #CC7018;
+    --ink: #243129;
+    --muted: #6D776F;
+    --white: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { font-family: 'Inter', sans-serif; color: var(--ink); }
+
+  body {
+    background: #d8d4cc;
+    padding: 32px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  /* Carte 85 x 55 mm — standard FR */
+  .card {
+    width: 85mm;
+    height: 55mm;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+    border-radius: 2mm;
+    background: var(--creme);
+  }
+
+  /* ─── RECTO ───────────────────────── */
+  .card--recto {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5mm 6mm 0;
+  }
+
+  .recto__brand {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 3mm;
+  }
+
+  .recto__logo {
+    width: 11mm;
+    height: 11mm;
+    filter: drop-shadow(0 1.5px 3px rgba(0, 0, 0, 0.18));
+  }
+
+  .recto__wordmark {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 18pt;
+    color: var(--vert);
+    letter-spacing: 0.15em;
+    line-height: 1;
+  }
+
+  .recto__tagline {
+    font-family: 'Inter', sans-serif;
+    font-size: 7.5pt;
+    font-style: italic;
+    text-align: center;
+    color: var(--ink);
+    margin-top: 3.5mm;
+    line-height: 1.4;
+    padding: 0 3mm;
+    max-width: 70mm;
+  }
+
+  .recto__wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 22mm;
+    display: block;
+  }
+
+  .recto__url {
+    position: absolute;
+    bottom: 3.5mm;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 10pt;
+    color: var(--white);
+    letter-spacing: 0.08em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+  }
+
+  /* ─── VERSO ───────────────────────── */
+  .card--verso { position: relative; }
+
+  .verso__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .verso__left {
+    position: absolute;
+    top: 6mm;
+    left: 6mm;
+    width: 47mm;
+    color: var(--white);
+  }
+
+  .verso__name {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 11.5pt;
+    line-height: 1.1;
+    letter-spacing: 0.01em;
+  }
+
+  .verso__name-first { color: var(--white); }
+  .verso__name-last  { color: var(--white); margin-left: 0.5mm; }
+
+  .verso__role {
+    font-family: 'Inter', sans-serif;
+    font-size: 6.5pt;
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    margin-top: 1.5mm;
+    letter-spacing: 0.05em;
+  }
+
+  .verso__contact {
+    margin-top: 3.5mm;
+    display: flex;
+    flex-direction: column;
+    gap: 1.8mm;
+  }
+
+  .contact-row {
+    display: flex;
+    align-items: center;
+    gap: 2.2mm;
+    font-family: 'Inter', sans-serif;
+    font-size: 7pt;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .icon-circle {
+    width: 4mm;
+    height: 4mm;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 1px 2.5px rgba(0, 0, 0, 0.28);
+  }
+
+  .icon-circle svg {
+    width: 2.4mm;
+    height: 2.4mm;
+    fill: var(--white);
+    display: block;
+  }
+
+  .verso__right {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 28mm;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5mm;
+    padding: 4mm 2.5mm;
+    text-align: center;
+  }
+
+  .verso__small-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4mm;
+  }
+
+  .verso__small-logo {
+    width: 5.5mm;
+    height: 5.5mm;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+  }
+
+  .verso__small-wordmark {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 800;
+    font-size: 6.5pt;
+    color: var(--vert);
+    letter-spacing: 0.16em;
+    line-height: 1;
+  }
+
+  .verso__qr {
+    width: 17mm;
+    height: 17mm;
+    background: var(--white);
+    padding: 0.8mm;
+    border-radius: 0.5mm;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+  }
+  .verso__qr svg { width: 100%; height: 100%; display: block; }
+
+  .verso__simu {
+    font-family: 'Inter', sans-serif;
+    font-size: 5.5pt;
+    color: var(--vert);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.15;
+  }
+
+  .verso__url {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 7.5pt;
+    color: var(--accent);
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── PRINT ───────────────────────── */
+  @media print {
+    body { background: var(--white); padding: 0; gap: 0; }
+    .label { display: none; }
+    .card { box-shadow: none; border-radius: 0; page-break-after: always; }
+    .card:last-of-type { page-break-after: auto; }
+    @page { size: 85mm 55mm; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── LOGO SVG (symbol partagé recto + verso) ─── -->
+<svg width="0" height="0" style="position:absolute" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="sigweb-logo" viewBox="0 -18 200 200">
+    <defs>
+      <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#cc7018"/>
+        <stop offset="35%" stop-color="#c88a45"/>
+        <stop offset="70%" stop-color="#5c7c5f"/>
+        <stop offset="100%" stop-color="#2f6f4f"/>
+      </linearGradient>
+      <linearGradient id="g2" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#cc7018"/>
+        <stop offset="100%" stop-color="#2f6f4f"/>
+      </linearGradient>
+    </defs>
+    <path d="M 100 100 C 88 80, 68 55, 48 50 C 28 45, 14 58, 14 75 C 14 92, 28 108, 52 113 C 74 118, 94 112, 100 100"
+          stroke="url(#g1)" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M 100 100 C 106 80, 126 55, 152 50 C 172 45, 186 58, 186 75 C 186 92, 172 108, 148 113 C 126 118, 106 112, 100 100"
+          stroke="url(#g2)" stroke-width="5" stroke-linecap="round" fill="none"/>
+  </symbol>
+</svg>
+
+<!-- ─── RECTO ─────────────────── -->
+<div>
+  <div class="label">Recto</div>
+  <div class="card card--recto">
+    <div class="recto__brand">
+      <svg class="recto__logo"><use href="#sigweb-logo"/></svg>
+      <div class="recto__wordmark">SIGWEB</div>
+    </div>
+    <div class="recto__tagline">
+      «&nbsp;J'aide les commerces locaux à être vus<br>et à gagner du temps&nbsp;»
+    </div>
+    <svg class="recto__wave" viewBox="0 0 850 160" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="g-r" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3a8762"/>
+          <stop offset="100%" stop-color="#1d4731"/>
+        </linearGradient>
+      </defs>
+      <!-- Couche d'ombre vert sombre, plus haute pour effet de profondeur -->
+      <path d="M 0 85 C 200 40, 400 115, 580 65 S 780 50, 850 75 L 850 160 L 0 160 Z" fill="#1d4731" opacity="0.55"/>
+      <!-- Couche principale avec gradient vertical -->
+      <path d="M 0 70 C 200 25, 400 100, 580 50 S 780 35, 850 60 L 850 160 L 0 160 Z" fill="url(#g-r)"/>
+      <!-- Trait accent terre -->
+      <path d="M 0 70 C 200 25, 400 100, 580 50 S 780 35, 850 60" stroke="#CC7018" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Fine surbrillance doree juste sous l'accent -->
+      <path d="M 0 76 C 200 31, 400 106, 580 56 S 780 41, 850 66" stroke="#e8a05a" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.6"/>
+    </svg>
+    <div class="recto__url">sigweb.fr</div>
+  </div>
+</div>
+
+<!-- ─── VERSO ─────────────────── -->
+<div>
+  <div class="label">Verso</div>
+  <div class="card card--verso">
+    <svg class="verso__bg" viewBox="0 0 850 550" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="g-v" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#3a8762"/>
+          <stop offset="70%" stop-color="#2F6F4F"/>
+          <stop offset="100%" stop-color="#215139"/>
+        </linearGradient>
+      </defs>
+      <!-- Couche d'ombre projetee a droite -->
+      <path d="M 0 0 L 660 0 C 545 150, 495 380, 465 550 L 0 550 Z" fill="#1d4731" opacity="0.5"/>
+      <!-- Couche principale vert avec gradient horizontal -->
+      <path d="M 0 0 L 620 0 C 500 150, 450 380, 420 550 L 0 550 Z" fill="url(#g-v)"/>
+      <!-- Liseret orange unique (style v1) -->
+      <path d="M 620 0 C 500 150, 450 380, 420 550" stroke="#CC7018" stroke-width="5" fill="none" stroke-linecap="round"/>
+    </svg>
+
+    <div class="verso__left">
+      <div class="verso__name">
+        <span class="verso__name-first">Sébastien</span><span class="verso__name-last">SIGUENZA</span>
+      </div>
+      <div class="verso__role">Sites internet · Outils sur mesure</div>
+      <div class="verso__contact">
+        <div class="contact-row">
+          <span class="icon-circle">
+            <svg viewBox="0 0 24 24"><path d="M20 15.5c-1.2 0-2.4-.2-3.6-.6-.3-.1-.7 0-1 .2l-2.2 2.2c-2.8-1.4-5.1-3.8-6.6-6.6l2.2-2.2c.3-.3.4-.7.2-1-.3-1.1-.5-2.3-.5-3.5 0-.6-.5-1-1-1H4c-.6 0-1 .4-1 1 0 9.4 7.6 17 17 17 .6 0 1-.4 1-1v-3.5c0-.5-.4-1-1-1z"/></svg>
+          </span>
+          <span>06 51 92 73 81</span>
+        </div>
+        <div class="contact-row">
+          <span class="icon-circle">
+            <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          </span>
+          <span>contact@sigweb.fr</span>
+        </div>
+        <div class="contact-row">
+          <span class="icon-circle">
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/></svg>
+          </span>
+          <span>Toulouse · Gers · Occitanie</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="verso__right">
+      <div class="verso__small-brand">
+        <svg class="verso__small-logo"><use href="#sigweb-logo"/></svg>
+        <div class="verso__small-wordmark">SIGWEB</div>
+      </div>
+      <div class="verso__qr" id="qr"></div>
+      <div class="verso__simu">Faites votre<br>simulation</div>
+      <div class="verso__url">sigweb.fr</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── QR code (généré au chargement, pointe vers sigweb.fr/simulations) ─── -->
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script>
+  const qr = qrcode(0, 'M');
+  qr.addData('https://sigweb.fr/simulations');
+  qr.make();
+  document.getElementById('qr').innerHTML = qr.createSvgTag({ scalable: true, margin: 0 });
+</script>
+
+</body>
+</html>
