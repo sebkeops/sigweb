@@ -134,6 +134,27 @@
     color: var(--white);
   }
 
+  .verso__header {
+    display: flex;
+    align-items: center;
+    gap: 2.5mm;
+  }
+
+  .verso__photo {
+    width: 11mm;
+    height: 11mm;
+    border-radius: 50%;
+    border: 0.3mm solid rgba(255, 255, 255, 0.55);
+    object-fit: cover;
+    flex-shrink: 0;
+    box-shadow: 0 1.5px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .verso__namebox {
+    min-width: 0;
+    flex: 1;
+  }
+
   .verso__name {
     font-family: 'Nunito', sans-serif;
     font-weight: 800;
@@ -199,9 +220,9 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     gap: 2.5mm;
-    padding: 4mm 2.5mm;
+    padding: 4mm 2.5mm 4mm;
     text-align: center;
   }
 
@@ -338,10 +359,15 @@
     </svg>
 
     <div class="verso__left">
-      <div class="verso__name">
-        <span class="verso__name-first">Sébastien</span><span class="verso__name-last">SIGUENZA</span>
+      <div class="verso__header">
+        <img class="verso__photo" src="https://www.sigweb.fr/images/sebastien.siguenza.png" alt="Sébastien Siguenza" />
+        <div class="verso__namebox">
+          <div class="verso__name">
+            <span class="verso__name-first">Sébastien</span><span class="verso__name-last">SIGUENZA</span>
+          </div>
+          <div class="verso__role">Sites internet · Outils sur mesure</div>
+        </div>
       </div>
-      <div class="verso__role">Sites internet · Outils sur mesure</div>
       <div class="verso__contact">
         <div class="contact-row">
           <span class="icon-circle">
