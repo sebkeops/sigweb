@@ -69,6 +69,7 @@
   .recto__logo {
     width: 13mm;
     height: 13mm;
+    filter: drop-shadow(0 1.5px 3px rgba(0, 0, 0, 0.18));
   }
 
   .recto__wordmark {
@@ -112,6 +113,7 @@
     font-size: 10pt;
     color: var(--white);
     letter-spacing: 0.08em;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
   }
 
   /* ─── VERSO ───────────────────────── */
@@ -140,7 +142,7 @@
     letter-spacing: 0.01em;
   }
 
-  .verso__name-first { color: var(--accent); }
+  .verso__name-first { color: var(--white); }
   .verso__name-last  { color: var(--white); margin-left: 0.5mm; }
 
   .verso__role {
@@ -178,6 +180,7 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    box-shadow: 0 1px 2.5px rgba(0, 0, 0, 0.28);
   }
 
   .icon-circle svg {
@@ -209,7 +212,11 @@
     margin-bottom: 2mm;
   }
 
-  .verso__small-logo { width: 5.5mm; height: 5.5mm; }
+  .verso__small-logo {
+    width: 5.5mm;
+    height: 5.5mm;
+    filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+  }
 
   .verso__small-wordmark {
     font-family: 'Nunito', sans-serif;
@@ -225,6 +232,8 @@
     height: 17mm;
     background: var(--white);
     padding: 0.8mm;
+    border-radius: 0.5mm;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
   }
   .verso__qr svg { width: 100%; height: 100%; display: block; }
 
@@ -293,8 +302,20 @@
       «&nbsp;J'aide les commerces locaux à être vus<br>et à gagner du temps&nbsp;»
     </div>
     <svg class="recto__wave" viewBox="0 0 850 160" preserveAspectRatio="none">
-      <path d="M 0 70 Q 220 10 430 50 T 850 35 L 850 160 L 0 160 Z" fill="#2F6F4F"/>
-      <path d="M 0 70 Q 220 10 430 50 T 850 35" stroke="#CC7018" stroke-width="3" fill="none"/>
+      <defs>
+        <linearGradient id="g-r" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#3a8762"/>
+          <stop offset="100%" stop-color="#1d4731"/>
+        </linearGradient>
+      </defs>
+      <!-- Couche d'ombre vert sombre, plus haute pour effet de profondeur -->
+      <path d="M 0 85 C 200 40, 400 115, 580 65 S 780 50, 850 75 L 850 160 L 0 160 Z" fill="#1d4731" opacity="0.55"/>
+      <!-- Couche principale avec gradient vertical -->
+      <path d="M 0 70 C 200 25, 400 100, 580 50 S 780 35, 850 60 L 850 160 L 0 160 Z" fill="url(#g-r)"/>
+      <!-- Trait accent terre -->
+      <path d="M 0 70 C 200 25, 400 100, 580 50 S 780 35, 850 60" stroke="#CC7018" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Fine surbrillance doree juste sous l'accent -->
+      <path d="M 0 76 C 200 31, 400 106, 580 56 S 780 41, 850 66" stroke="#e8a05a" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.6"/>
     </svg>
     <div class="recto__url">sigweb.fr</div>
   </div>
@@ -305,8 +326,21 @@
   <div class="label">Verso</div>
   <div class="card card--verso">
     <svg class="verso__bg" viewBox="0 0 850 550" preserveAspectRatio="none">
-      <path d="M 0 0 L 620 0 Q 490 275 430 550 L 0 550 Z" fill="#2F6F4F"/>
-      <path d="M 620 0 Q 490 275 430 550" stroke="#CC7018" stroke-width="6" fill="none"/>
+      <defs>
+        <linearGradient id="g-v" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#3a8762"/>
+          <stop offset="70%" stop-color="#2F6F4F"/>
+          <stop offset="100%" stop-color="#215139"/>
+        </linearGradient>
+      </defs>
+      <!-- Couche d'ombre projetee a droite -->
+      <path d="M 0 0 L 660 0 C 545 150, 495 380, 465 550 L 0 550 Z" fill="#1d4731" opacity="0.5"/>
+      <!-- Couche principale vert avec gradient horizontal -->
+      <path d="M 0 0 L 620 0 C 500 150, 450 380, 420 550 L 0 550 Z" fill="url(#g-v)"/>
+      <!-- Trait accent terre principal -->
+      <path d="M 620 0 C 500 150, 450 380, 420 550" stroke="#CC7018" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <!-- Fine surbrillance doree juste cote creme -->
+      <path d="M 632 0 C 512 150, 462 380, 432 550" stroke="#e8a05a" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.55"/>
     </svg>
 
     <div class="verso__left">
