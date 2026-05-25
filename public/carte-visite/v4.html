@@ -417,11 +417,15 @@
   </div>
 </div>
 
-<!-- ─── QR code (généré au chargement, pointe vers sigweb.fr/simulations) ─── -->
+<!-- ─── QR code ─────────────────────────────────────────────────
+  Pointe vers https://www.sigweb.fr/simulations (URL canonique
+  avec www, qui repond en 200 directement sans redirect 307).
+  ECC 'M' = 15% correction d'erreur (suffisant pour impression). -->
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
 <script>
+  const QR_TARGET = 'https://www.sigweb.fr/simulations';
   const qr = qrcode(0, 'M');
-  qr.addData('https://sigweb.fr/simulations');
+  qr.addData(QR_TARGET);
   qr.make();
   document.getElementById('qr').innerHTML = qr.createSvgTag({ scalable: true, margin: 0 });
 </script>
