@@ -131,10 +131,13 @@
 
   .verso__left {
     position: absolute;
-    /* Marges respectant la zone de securite Vistaprint (~5mm) */
+    /* Marges respectant la zone de securite Vistaprint (~5mm).
+       width 44mm : laisse une bande de respiration entre le rôle et
+       la courbe orange (qui passe a ~52mm du bord gauche au milieu
+       de la carte). */
     top: 7mm;
     left: 6mm;
-    width: 47mm;
+    width: 44mm;
     color: var(--white);
   }
 
@@ -177,11 +180,11 @@
 
   .verso__role {
     font-family: 'Inter', sans-serif;
-    font-size: 5.8pt;
+    font-size: 5.4pt;
     font-weight: 500;
     color: rgba(255,255,255,0.85);
     margin-top: 1mm;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     white-space: nowrap;
   }
 
@@ -230,10 +233,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* Groupe QR + texte + url regroupes dans le coin bas droit ; les
+       marges du padding correspondent a la zone de securite Vistaprint
+       (~5-6mm) et restent equivalentes au bloc gauche. */
     justify-content: flex-end;
-    gap: 2.5mm;
-    /* Padding plus large pour rester dans la zone de securite Vistaprint
-       (logo SIGWEB en haut, sigweb.fr en bas, QR au milieu). */
+    gap: 1.5mm;
     padding: 6mm 4.5mm 6mm;
     text-align: center;
   }
@@ -403,10 +407,9 @@
     </div>
 
     <div class="verso__right">
-      <div class="verso__small-brand">
-        <svg class="verso__small-logo"><use href="#sigweb-logo"/></svg>
-        <div class="verso__small-wordmark">SIGWEB</div>
-      </div>
+      <!-- SIGWEB retire ici : la marque est deja affirmee sur le recto.
+           La zone droite ne contient que l'appel a l'action (QR vers la
+           simulation + url), regroupe dans le coin bas droit. -->
       <div class="verso__qr" id="qr"></div>
       <div class="verso__simu">Demandez votre<br>simulation gratuite</div>
       <div class="verso__url">sigweb.fr</div>
