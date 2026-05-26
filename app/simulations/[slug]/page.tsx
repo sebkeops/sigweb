@@ -1,10 +1,25 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
-import { getAllSimulationSlugs, getSimulationBySlug } from '@/lib/data/simulations'
+import { getAllPublishedSimulationSlugs, getSimulationFromDb } from '@/lib/data/simulations/db'
 import SimulationPage from '@/components/simulations/SimulationPage'
 
-export function generateStaticParams() {
-  return getAllSimulationSlugs().map((slug) => ({ slug }))
+/**
+ * ISR : la page est statique mais revalidée toutes les heures.
+ *
+ * Compromis volontaire : un changement éditorial fait via l'admin
+ * (publication, dépublication, retouche d'une simulation) apparaît
+ * au plus tard 1 h plus tard côté front. À l'échelle du contenu
+ * statique d'un site vitrine, c'est largement acceptable et ça évite
+ * de payer un round-trip BDD à chaque requête anonyme.
+ *
+ * Pour forcer un rafraîchissement immédiat après édition admin :
+ * faire un déploiement (qui purge le cache ISR).
+ */
+export const revalidate = 3600
+
+export async function generateStaticParams() {
+  const slugs = await getAllPublishedSimulationSlugs()
+  return slugs.map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({
@@ -13,7 +28,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const data = getSimulationBySlug(slug)
+  const data = await getSimulationFromDb(slug)
   if (!data) return {}
   const title = data.seoTitle ?? `Exemple de site internet pour ${data.name} | SIGWEB`
   const description =
@@ -40,7 +55,7 @@ export default async function SimulationSlugPage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const data = getSimulationBySlug(slug)
+  const data = await getSimulationFromDb(slug)
   if (!data) notFound()
   return <SimulationPage data={data} />
 }
