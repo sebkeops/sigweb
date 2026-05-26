@@ -1,20 +1,26 @@
 import { createClient } from '@supabase/supabase-js'
-import { SimulationDataSchema } from '@/lib/validations/simulation'
+import { SimulationPayloadSchema, type SimulationPayload } from '@/lib/maquette/data-schema'
 
 /**
  * Helpers de lecture des simulations publiques depuis Supabase.
  *
- * Sont utilisés par `app/simulations/[slug]/page.tsx` (ISR 1h) à la
- * place des JSON locaux historiques. À terme (PR ultérieure), les
- * fichiers `lib/data/simulations/*.json` + leur barrel `index.ts`
- * seront supprimés ; ce module restera la seule source.
+ * Utilisés par `app/simulations/[slug]/page.tsx` (ISR 1h) pour alimenter
+ * le rendu unifié partagé avec `/demos/[slug]` (Header, Hero, Histoire,
+ * Univers, CtaBanner, Avis, Infos, Footer).
+ *
+ * Format du JSONB `projects.simulation_data` (cf. `lib/maquette/data-schema.ts`) :
+ *
+ *   {
+ *     maquette: MaquetteInitialData,
+ *     prospect: { nom_commerce, ville, google_*, ... }
+ *   }
  *
  * Choix du client : `@supabase/supabase-js` direct (clé anon publique),
- * pas `lib/supabase/server.ts` (SSR client basé sur les cookies).
- * Raison : `generateStaticParams()` est invoqué AU BUILD, hors contexte
- * requête — `cookies()` y est indisponible et ferait planter le build.
- * La clé anon suffit puisque la requête est en lecture publique sur des
- * lignes `published = true` (autorisées par RLS comme pour la page liste
+ * pas `lib/supabase/server.ts` (SSR client basé sur les cookies). Raison :
+ * `generateStaticParams()` est invoqué AU BUILD, hors contexte requête —
+ * `cookies()` y est indisponible et ferait planter le build. La clé anon
+ * suffit puisque la requête est en lecture publique sur des lignes
+ * `published = true` (autorisées par RLS comme pour la page liste
  * `/simulations`).
  */
 
@@ -41,14 +47,12 @@ function getReadClient(): ReadClient {
  * Slugs des simulations publiées — utilisé par `generateStaticParams()`.
  *
  * Retourne uniquement les slugs avec `published = true`. Une simulation
- * dépubliée ne sera pas pré-générée au build : son route servira un 404
+ * dépubliée ne sera pas pré-générée au build : sa route servira un 404
  * via `notFound()` côté page (cf. `getSimulationFromDb()` qui filtre
  * aussi sur `published`).
  */
 export async function getAllPublishedSimulationSlugs(): Promise<string[]> {
   const supabase = getReadClient()
-  // Cast manuel : pas de types BDD generes, le client renvoie `never` par
-  // defaut. Le shape est garanti par la requete `.select('slug')`.
   const { data, error } = await supabase
     .from('projects')
     .select('slug')
@@ -68,16 +72,16 @@ export async function getAllPublishedSimulationSlugs(): Promise<string[]> {
  *
  * Retourne `null` si :
  *   - le slug n'existe pas,
- *   - la simulation est dépubliée,
- *   - la colonne `simulation_data` est null (cas anormal : ligne créée
- *     sans payload — la PR Phase 1 garantit qu'elle est remplie pour
- *     les 4 simulations historiques),
- *   - le payload ne valide pas le schéma Zod (cas anormal : payload
- *     altéré manuellement en BDD).
+ *   - la simulation est dépubliée (`published = false`),
+ *   - la colonne `simulation_data` est null,
+ *   - le payload ne valide pas le schéma `SimulationPayloadSchema` (cas
+ *     anormal : payload altéré, ou ligne migrée Phase 1/2 avec l'ancien
+ *     format `SimulationData` — celles-ci sont passées en `published = false`
+ *     en fin de Phase 3, en attente de régénération en Phase 6).
  *
  * Le caller (`page.tsx`) appelle `notFound()` quand on reçoit `null`.
  */
-export async function getSimulationFromDb(slug: string) {
+export async function getSimulationFromDb(slug: string): Promise<SimulationPayload | null> {
   const supabase = getReadClient()
   const { data, error } = await supabase
     .from('projects')
@@ -94,7 +98,7 @@ export async function getSimulationFromDb(slug: string) {
   }
   if (!data?.simulation_data) return null
 
-  const parsed = SimulationDataSchema.safeParse(data.simulation_data)
+  const parsed = SimulationPayloadSchema.safeParse(data.simulation_data)
   if (!parsed.success) {
     console.error(
       '[simulations/db] simulation_data invalide pour',

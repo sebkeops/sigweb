@@ -1,32 +1,11 @@
 export type ProjectKind = 'simulation' | 'realisation'
 
-export interface SimulationFeaturedCard {
-  title: string
-  text: string
-  image: string
-}
-
-export interface SimulationData {
-  businessType: string
-  theme: string
-  name: string
-  tagline: string
-  description: string
-  heroImage: string
-  gallery: string[]
-  contact: {
-    address: string
-    city: string
-    phone: string
-  }
-  hours: string[]
-  highlights: string[]
-  featuredCards: SimulationFeaturedCard[]
-  reviews: string[]
-  seoTitle?: string
-  seoDescription?: string
-  intro?: string
-}
+// L'ancienne interface `SimulationData` + `SimulationFeaturedCard` a été
+// supprimée en Phase 3 (refonte rendu unifié). Les simulations publiques
+// utilisent désormais le même modèle que les maquettes prospects :
+// `lib/maquette/types.ts` → `MaquetteInitialData`, stocké dans
+// `projects.simulation_data` (JSONB) sous le wrapper `{ maquette, prospect }`
+// validé par `lib/maquette/data-schema.ts` → `SimulationPayloadSchema`.
 
 export interface Project {
   id: string

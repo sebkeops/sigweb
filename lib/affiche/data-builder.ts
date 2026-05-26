@@ -34,7 +34,21 @@ export async function buildAfficheData(
 ): Promise<AfficheData> {
   const variant = getProspectWebVariant(prospect)
   const config = getSigwebConfig()
-  const qrTargetUrl = resolveQRCodeUrl(prospect)
+
+  // Récupère les slugs des simulations publiées pour cibler le QR vers
+  // une simulation publique si une existe pour la catégorie du prospect
+  // (cf. `resolveQRCodeUrl`). Lecture publique RLS — pas de service role
+  // nécessaire ici puisque le client supabase passé peut être anon ou admin.
+  const { data: simRows } = await supabase
+    .from('projects')
+    .select('slug')
+    .eq('project_kind', 'simulation')
+    .eq('published', true)
+  const availableSimulationSlugs = new Set<string>(
+    (simRows as { slug: string }[] | null)?.map((r) => r.slug) ?? []
+  )
+
+  const qrTargetUrl = resolveQRCodeUrl(prospect, availableSimulationSlugs)
 
   // En parallèle : photo + QR (les 2 opérations async indépendantes)
   const [photoBuffer, qrDataUrl] = await Promise.all([

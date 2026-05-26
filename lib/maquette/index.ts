@@ -1,7 +1,12 @@
 // Public API du module maquette.
 // Le rendu HTML/CSS de la page publique vit dans app/demos/[slug]/ (Session 2).
 
-export { generateInitialMaquette, UnsupportedCategoryError } from './generate'
+export {
+  generateInitialMaquette,
+  generateInitialMaquetteFromProspect,
+  UnsupportedCategoryError,
+} from './generate'
+export type { GenerateMaquetteInput } from './generate'
 export { generateSlugBase, buildSuffixedSlug } from './slug'
 export { getLogoInitial } from './initials'
 export {

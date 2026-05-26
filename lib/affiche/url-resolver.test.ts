@@ -36,39 +36,44 @@ function makeProspect(overrides: Partial<Prospect>): Prospect {
 }
 
 describe('resolveQRCodeUrl', () => {
+  // Set partagé pour les tests "priorité 2" — mime l'état BDD post-Phase-6
+  // (simulations publiques publiées pour les 4 catégories historiques).
+  const SIMS = new Set(['boulangerie', 'boucherie', 'pizzeria', 'coiffure'])
+  const NO_SIMS = new Set<string>()
+
   it('priorité 1 — maquette publiée', () => {
     expect(resolveQRCodeUrl(makeProspect({
       maquette_url: 'https://www.sigweb.fr/demos/le-loup-gourmand',
       categorie: 'boulangerie',
-    }))).toBe('https://www.sigweb.fr/demos/le-loup-gourmand')
+    }), SIMS)).toBe('https://www.sigweb.fr/demos/le-loup-gourmand')
   })
 
   it('priorité 2 — simulation par catégorie (boulangerie existe)', () => {
     expect(resolveQRCodeUrl(makeProspect({
       maquette_url: null,
       categorie: 'boulangerie',
-    }))).toBe('https://www.sigweb.fr/simulations/boulangerie')
+    }), SIMS)).toBe('https://www.sigweb.fr/simulations/boulangerie')
   })
 
   it('priorité 2 — simulation pizzeria existe', () => {
-    expect(resolveQRCodeUrl(makeProspect({ categorie: 'pizzeria' })))
+    expect(resolveQRCodeUrl(makeProspect({ categorie: 'pizzeria' }), SIMS))
       .toBe('https://www.sigweb.fr/simulations/pizzeria')
   })
 
   it('priorité 2 — simulation boucherie existe', () => {
-    expect(resolveQRCodeUrl(makeProspect({ categorie: 'boucherie' })))
+    expect(resolveQRCodeUrl(makeProspect({ categorie: 'boucherie' }), SIMS))
       .toBe('https://www.sigweb.fr/simulations/boucherie')
   })
 
   it('priorité 3 — restaurant n\'a pas de simulation → fallback /simulateur', () => {
-    expect(resolveQRCodeUrl(makeProspect({ categorie: 'restaurant' })))
+    expect(resolveQRCodeUrl(makeProspect({ categorie: 'restaurant' }), SIMS))
       .toBe('https://www.sigweb.fr/simulateur')
   })
 
   it('priorité 3 — autres catégories sans simulation → fallback /simulateur', () => {
-    expect(resolveQRCodeUrl(makeProspect({ categorie: 'menuisier' })))
+    expect(resolveQRCodeUrl(makeProspect({ categorie: 'menuisier' }), SIMS))
       .toBe('https://www.sigweb.fr/simulateur')
-    expect(resolveQRCodeUrl(makeProspect({ categorie: 'autre' })))
+    expect(resolveQRCodeUrl(makeProspect({ categorie: 'autre' }), SIMS))
       .toBe('https://www.sigweb.fr/simulateur')
   })
 
@@ -76,14 +81,20 @@ describe('resolveQRCodeUrl', () => {
     expect(resolveQRCodeUrl(makeProspect({
       maquette_url: 'https://www.sigweb.fr/demos/abc',
       categorie: 'pizzeria',
-    }))).toBe('https://www.sigweb.fr/demos/abc')
+    }), SIMS)).toBe('https://www.sigweb.fr/demos/abc')
   })
 
   it('maquette_url chaîne vide → traité comme absent (fallback simulation)', () => {
     expect(resolveQRCodeUrl(makeProspect({
       maquette_url: '   ',
       categorie: 'boulangerie',
-    }))).toBe('https://www.sigweb.fr/simulations/boulangerie')
+    }), SIMS)).toBe('https://www.sigweb.fr/simulations/boulangerie')
+  })
+
+  it('Set vide (cas Phase 3 transitoire) → fallback /simulateur même pour boulangerie', () => {
+    expect(resolveQRCodeUrl(makeProspect({
+      categorie: 'boulangerie',
+    }), NO_SIMS)).toBe('https://www.sigweb.fr/simulateur')
   })
 })
 
