@@ -5,6 +5,7 @@ import { getTemplate } from '@/lib/maquette'
 import { getEffectivePalette, paletteToCssVars } from '@/lib/maquette/render/palette'
 import { stripItalicMarkers } from '@/lib/maquette/render/parseItalicMarkers'
 import { simulationPayloadToRenderProps } from '@/lib/data/simulations/render-adapter'
+import type { ProspectCategorie } from '@/types'
 import demoStyles from '@/app/demos/[slug]/styles.module.css'
 import Header from '@/app/demos/[slug]/components/Header'
 import Hero from '@/app/demos/[slug]/components/Hero'
@@ -15,6 +16,7 @@ import Avis from '@/app/demos/[slug]/components/Avis'
 import Infos from '@/app/demos/[slug]/components/Infos'
 import Footer from '@/app/demos/[slug]/components/Footer'
 import FictiveDataDisclaimer from '@/components/simulations/FictiveDataDisclaimer'
+import PedagogicalBanner from '@/components/simulations/PedagogicalBanner'
 
 /**
  * Rendu unifié des simulations publiques /simulations/[slug].
@@ -85,8 +87,16 @@ export default async function SimulationSlugPage({
   const cssVars = paletteToCssVars(palette)
 
   return (
-    <div className={demoStyles.demoRoot} style={cssVars}>
-      <Header
+    <>
+      {/* Bandeau pédagogique en haut de page, AVANT le Header sticky de
+          la simulation. Non sticky : il défile avec la page. Volontairement
+          HORS du `.demoRoot` (donc hors palette dynamique de la simulation)
+          pour rester sur les tokens globaux sigweb.fr (primary vert, etc.). */}
+      <PedagogicalBanner
+        categoryId={maquette.template_variant as ProspectCategorie}
+      />
+      <div className={demoStyles.demoRoot} style={cssVars}>
+        <Header
         maquette={maquette}
         prospect={prospect}
         brandTagline={template.defaults.brandTagline}
@@ -129,9 +139,10 @@ export default async function SimulationSlugPage({
         defaultFooterColonneLabel={template.defaults.footerColonneLabel}
         overrides={maquette.infos_overrides}
       />
-      {/* Bandeau légal/éthique : uniquement sur /simulations/[slug], pas
-          sur /demos/[slug] (vrais commerces — pas de disclaimer là-bas). */}
-      <FictiveDataDisclaimer />
-    </div>
+        {/* Bandeau légal/éthique : uniquement sur /simulations/[slug], pas
+            sur /demos/[slug] (vrais commerces — pas de disclaimer là-bas). */}
+        <FictiveDataDisclaimer />
+      </div>
+    </>
   )
 }

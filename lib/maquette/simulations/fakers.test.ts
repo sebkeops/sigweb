@@ -119,11 +119,10 @@ describe('generateFakeReviews — structure et reproductibilité', () => {
     expect(a).toEqual(b)
   })
 
-  it('produit 4 à 6 avis', () => {
+  it('produit exactement 3 avis (constante NB_REVIEWS)', () => {
     const r = generateFakeReviews('restaurant', FIXED_DATE, makePrng('rs-2'))
-    expect(r.maquetteAvis.length).toBeGreaterThanOrEqual(4)
-    expect(r.maquetteAvis.length).toBeLessThanOrEqual(6)
-    expect(r.googleReviews.length).toBe(r.maquetteAvis.length)
+    expect(r.maquetteAvis).toHaveLength(3)
+    expect(r.googleReviews).toHaveLength(3)
   })
 
   it('notes 4 ou 5 uniquement', () => {
@@ -165,10 +164,10 @@ describe('generateFakeReviews — structure et reproductibilité', () => {
     expect(Number((r.averageRating * 10).toFixed(0)) / 10).toBe(r.averageRating)
   })
 
-  it('produit des avis valides pour les 34 catégories', () => {
+  it('produit 3 avis valides pour les 34 catégories', () => {
     for (const cat of ALL_CATEGORIES) {
       const r = generateFakeReviews(cat, FIXED_DATE, makePrng(`c-${cat}`))
-      expect(r.maquetteAvis.length).toBeGreaterThanOrEqual(4)
+      expect(r.maquetteAvis).toHaveLength(3)
     }
   })
 })
@@ -194,11 +193,16 @@ describe('generateFakeHours — couverture catégories', () => {
 })
 
 describe('UNSPLASH_KEYWORDS_BY_CATEGORIE — couverture', () => {
-  it('expose au moins 3 mots-clés pour les 34 catégories', () => {
+  it('expose hero + histoire + tuple univers (5) pour les 34 catégories', () => {
     for (const cat of ALL_CATEGORIES) {
-      const pool = UNSPLASH_KEYWORDS_BY_CATEGORIE[cat]
-      expect(pool).toBeDefined()
-      expect(pool.length).toBeGreaterThanOrEqual(3)
+      const entry = UNSPLASH_KEYWORDS_BY_CATEGORIE[cat]
+      expect(entry).toBeDefined()
+      expect(entry.hero.length).toBeGreaterThanOrEqual(2)
+      expect(entry.histoire.length).toBeGreaterThanOrEqual(2)
+      expect(entry.univers).toHaveLength(5)
+      for (const pool of entry.univers) {
+        expect(pool.length).toBeGreaterThanOrEqual(2)
+      }
     }
   })
 })

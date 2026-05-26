@@ -1,6 +1,9 @@
 import 'server-only'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import { getUnsplashKeyword } from './unsplashKeywords'
+import {
+  UNSPLASH_KEYWORDS_BY_CATEGORIE,
+  type CategoryUnsplashKeywords,
+} from './unsplashKeywords'
 import type { Prng } from './prng'
 import type { ProspectCategorie } from '@/types'
 
@@ -8,18 +11,26 @@ import type { ProspectCategorie } from '@/types'
  * Module Unsplash + upload Supabase Storage pour le générateur de
  * simulations publiques (Phase 5).
  *
- * Pipeline pour une simulation donnée :
- *   1. `searchUnsplash(keyword)` → l'API Unsplash retourne ~10 photos
- *   2. On en sélectionne 7 (hero + histoire + 5 univers) en variant les
- *      mots-clés pour avoir de la diversité visuelle
- *   3. Pour chaque photo : `fetch(urls.regular)` puis `upload` dans le
- *      bucket Supabase `project-images` au chemin
- *      `simulations/{slug}/{hero,gallery-N}.jpg`
- *   4. On stocke aussi un `credits.json` avec la liste des photographes
+ * Pipeline pour une simulation donnée — **un appel Unsplash par bloc**
+ * (cf. UNSPLASH_KEYWORDS_BY_CATEGORIE structuré par destination) :
+ *   1. Pour chacun des 7 slots (hero, histoire, univers_1..5), on prend
+ *      un mot-clé aléatoire (PRNG) dans le pool dédié au slot
+ *   2. `searchUnsplash(keyword)` → l'API Unsplash retourne ~5 photos
+ *   3. On en prend 1 (la 1ère du résultat aléatoirement parmi 5) pour
+ *      le slot ciblé
+ *   4. `fetch(urls.regular)` puis upload dans le bucket Supabase
+ *      `project-images` au chemin `simulations/{slug}/{hero,gallery-N}.jpg`
+ *   5. On stocke aussi un `credits.json` avec la liste des photographes
  *      + liens Unsplash, pour traçabilité légale
- *   5. Retourne les URLs publiques Supabase ordonnées (hero d'abord, puis
+ *   6. Retourne les URLs publiques Supabase ordonnées (hero d'abord, puis
  *      gallery-1..6, prêtes à alimenter `available_photos` côté
  *      `generateInitialMaquette`)
+ *
+ * Coût en quota Unsplash : **7 requêtes /search/photos par simulation**
+ * (1 par slot). À 50 req/h pour le plan Demo, cela autorise ~7 simulations
+ * uniques par heure en mode unitaire. Pour batcher les 34 catégories en
+ * Phase 6, prévoir un délai de 15-20s entre générations (~30 min pour
+ * tout générer).
  *
  * `server-only` : ce module utilise `UNSPLASH_ACCESS_KEY` qui ne doit
  * jamais être exposé côté client.
@@ -29,11 +40,12 @@ const BUCKET = 'project-images'
 const SUB_FOLDER = 'simulations'
 const UNSPLASH_BASE = 'https://api.unsplash.com'
 
-/** Nombre total de photos cible par simulation (hero + 6 galerie). */
-const PHOTO_COUNT = 7
-
 /** Largeur de resize côté Unsplash (max). */
 const TARGET_WIDTH = 1600
+
+/** Slots de rendu, ordonnés pour matcher l'attribution `available_photos`. */
+const SLOTS = ['hero', 'histoire', 'univers_1', 'univers_2', 'univers_3', 'univers_4', 'univers_5'] as const
+type Slot = (typeof SLOTS)[number]
 
 export interface UnsplashPhotoCredit {
   /** Nom du photographe (depuis `user.name`). */
@@ -141,17 +153,42 @@ async function uploadToStorage(
 }
 
 /**
- * Pipeline complet : récupère N photos Unsplash, les upload dans le
- * bucket `project-images/simulations/{slug}/`, écrit `credits.json` à
- * côté, et retourne les URLs publiques.
+ * Retourne le pool de mots-clés à utiliser pour un slot donné.
+ * Centralisé pour qu'un éventuel fallback (slot inconnu) soit géré ici.
+ */
+function poolForSlot(cat: CategoryUnsplashKeywords, slot: Slot): readonly string[] {
+  if (slot === 'hero') return cat.hero
+  if (slot === 'histoire') return cat.histoire
+  // univers_N → cat.univers[N-1]
+  const idx = parseInt(slot.split('_')[1] as string, 10) - 1
+  return cat.univers[idx] ?? cat.histoire
+}
+
+/**
+ * Détermine le nom du fichier dans le bucket en fonction du slot.
+ * Convention validée user :
+ *   - slot 'hero'        → 'hero.jpg'
+ *   - slot 'histoire'    → 'gallery-1.jpg'
+ *   - slot 'univers_N'   → 'gallery-{N+1}.jpg'
+ */
+function filenameForSlot(slot: Slot): string {
+  if (slot === 'hero') return 'hero.jpg'
+  if (slot === 'histoire') return 'gallery-1.jpg'
+  const idx = parseInt(slot.split('_')[1] as string, 10)
+  return `gallery-${idx + 1}.jpg`
+}
+
+/**
+ * Pipeline complet : pour chacun des 7 slots de la maquette (hero,
+ * histoire, univers_1..5), interroge Unsplash avec un mot-clé ciblé
+ * sur le slot, sélectionne 1 photo, l'upload dans Supabase Storage.
+ * Écrit aussi un `credits.json` à côté pour traçabilité légale.
  *
- * @param supabase Client Supabase authentifié (admin ou service role) —
- *                 requis pour les uploads dans le bucket.
- * @param categoryId Catégorie pour piocher dans `UNSPLASH_KEYWORDS_BY_CATEGORIE`.
+ * @param supabase Client Supabase authentifié (admin ou service role).
+ * @param categoryId Catégorie — pilote le pool de mots-clés par slot.
  * @param slug Slug de la simulation, utilisé comme sous-dossier Storage.
- * @param prng PRNG seedable pour reproductibilité — sert à choisir
- *             quels mots-clés on enchaîne et quelles photos on retient
- *             dans le set retourné par l'API.
+ * @param prng PRNG seedable pour reproductibilité (choix du mot-clé
+ *             dans le pool + sélection de la photo dans le résultat API).
  */
 export async function fetchAndStoreUnsplashPhotos(
   supabase: SupabaseClient,
@@ -164,56 +201,59 @@ export async function fetchAndStoreUnsplashPhotos(
     throw new Error('[unsplash] UNSPLASH_ACCESS_KEY manquant dans l\'environnement')
   }
 
-  // Stratégie de keywords : on choisit 2 mots-clés distincts dans le pool
-  // (le pool en a 4 à 6 par catégorie). 1ʳᵉ requête → 5 photos, 2ᵉ requête
-  // → 5 photos, on prend 7 sur les 10 mélangés. Réduit la monotonie
-  // visuelle d'avoir 7 photos sur le même keyword.
-  const keyword1 = getUnsplashKeyword(categoryId, prng.intBetween(0, 5))
-  const keyword2 = getUnsplashKeyword(categoryId, prng.intBetween(0, 5))
+  const cat = UNSPLASH_KEYWORDS_BY_CATEGORIE[categoryId]
 
-  const [batch1, batch2] = await Promise.all([
-    searchUnsplash(accessKey, keyword1, 5),
-    searchUnsplash(accessKey, keyword2, 5),
-  ])
+  // 1. Pour chaque slot, choisit un mot-clé du pool dédié (PRNG → repro).
+  //    Lance les 7 requêtes Unsplash en parallèle pour gagner du temps.
+  const searches = SLOTS.map((slot) => {
+    const pool = poolForSlot(cat, slot)
+    const keyword = pool[prng.intBetween(0, pool.length - 1)] as string
+    return { slot, keyword, results: searchUnsplash(accessKey, keyword, 5) }
+  })
 
-  const pool = [...batch1, ...batch2]
-  if (pool.length < PHOTO_COUNT) {
-    // Fallback : ressayer avec un mot-clé plus générique du pool.
-    const keyword3 = getUnsplashKeyword(categoryId, prng.intBetween(0, 5))
-    const batch3 = await searchUnsplash(accessKey, keyword3, PHOTO_COUNT)
-    pool.push(...batch3)
-  }
-  if (pool.length < PHOTO_COUNT) {
-    throw new Error(
-      `[unsplash] résultats insuffisants pour ${categoryId} (${pool.length}/${PHOTO_COUNT}). Keywords : "${keyword1}", "${keyword2}"`
-    )
-  }
+  const resolved = await Promise.all(
+    searches.map(async (s) => ({ ...s, results: await s.results }))
+  )
 
-  // Mélange déterministe + selection des 7 premières
-  const shuffled = prng.pickN(pool, PHOTO_COUNT)
-
-  // Téléchargement parallèle + upload séquentiel (parallèle aussi possible
-  // mais le séquentiel limite le risque de rate-limit Storage)
+  // 2. Sélectionne 1 photo par slot, en prenant la 1ère du résultat
+  //    aléatoirement parmi les 5 (PRNG → repro).
   const credits: UnsplashPhotoCredit[] = []
-  const urls: string[] = []
+  const heroUrlContainer: { url?: string } = {}
+  const galleryUrls: string[] = new Array(6)
 
-  for (let i = 0; i < shuffled.length; i++) {
-    const photo = shuffled[i] as UnsplashApiPhoto
-    const filename = i === 0 ? 'hero.jpg' : `gallery-${i}.jpg`
+  for (const s of resolved) {
+    if (s.results.length === 0) {
+      throw new Error(
+        `[unsplash] aucun résultat pour slot=${s.slot} keyword="${s.keyword}" cat=${categoryId}. ` +
+          'Mots-clés du pool peut-être trop spécifiques — à enrichir dans UNSPLASH_KEYWORDS_BY_CATEGORIE.'
+      )
+    }
+    const photo = s.results[prng.intBetween(0, s.results.length - 1)] as UnsplashApiPhoto
+    const filename = filenameForSlot(s.slot)
     const buffer = await downloadPhoto(photo.urls.regular)
     const publicUrl = await uploadToStorage(supabase, slug, filename, buffer, 'image/jpeg')
 
-    urls.push(publicUrl)
     credits.push({
       name: photo.user.name,
       link: photo.user.links.html,
       filename,
     })
+
+    if (s.slot === 'hero') {
+      heroUrlContainer.url = publicUrl
+    } else {
+      // gallery-1..6 → galleryUrls[0..5]
+      const idx = parseInt(filename.match(/gallery-(\d+)\.jpg/)?.[1] ?? '1', 10) - 1
+      galleryUrls[idx] = publicUrl
+    }
   }
 
-  // credits.json — pour traçabilité légale (chaque photo a son photographe
-  // crédité). Stocké à côté des images, accessible publiquement (donnée
-  // non-sensible, c'est même mieux que ce soit publique).
+  if (!heroUrlContainer.url) {
+    throw new Error('[unsplash] hero URL absente après pipeline — incohérence interne')
+  }
+
+  // 3. credits.json — pour traçabilité légale (chaque photo a son photographe
+  //    crédité). Stocké à côté des images, accessible publiquement.
   const creditsJson = JSON.stringify(
     {
       generated_at: new Date().toISOString(),
@@ -232,8 +272,8 @@ export async function fetchAndStoreUnsplashPhotos(
   )
 
   return {
-    heroUrl: urls[0] as string,
-    galleryUrls: urls.slice(1),
+    heroUrl: heroUrlContainer.url,
+    galleryUrls,
     credits,
   }
 }

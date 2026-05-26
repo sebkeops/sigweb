@@ -7,31 +7,47 @@
  * pour ne pas induire en erreur, et obligatoire vu qu'on attribue des
  * photos Unsplash à un commerce inexistant.
  *
- * Placement volontairement HORS du composant `Footer` de
- * `app/demos/[slug]/components/` : le footer reste partagé tel quel avec
- * les vraies maquettes prospects (qui présentent un vrai commerce — pas
- * de disclaimer là-bas). Le bandeau est juste accolé en dessous, dans la
- * page `/simulations/[slug]/page.tsx`.
+ * Placement : à l'INTÉRIEUR du `<div className={demoStyles.demoRoot}>`
+ * de `app/simulations/[slug]/page.tsx`, immédiatement après le `<Footer />`.
+ * Cela garantit que les CSS variables de palette (`--ink`, `--cream`, ...)
+ * définies par le `cssVars` du demoRoot sont accessibles → le bandeau
+ * hérite des mêmes couleurs que le footer juste au-dessus, sans cassure
+ * visuelle. Sans cette imbrication, `var(--ink)` ne résout pas.
  *
- * Style discret : fond gris très clair, texte gris foncé, padding modeste,
- * font-size réduite — l'utilisateur peut le lire mais ça ne mange pas la
- * scène visuelle de la simulation.
+ * Style : prolonge visuellement le footer (même fond `var(--ink)`, même
+ * couleur de texte `var(--cream)` à 70 % d'opacité), séparé par un fin
+ * trait pour signaler qu'il s'agit d'un encart distinct. Aligné sur la
+ * grille 1280px du footer pour la cohérence horizontale.
+ *
+ * Volontairement HORS du composant `Footer` partagé avec `/demos/[slug]` :
+ * les vraies maquettes prospects ne doivent jamais voir ce bandeau.
  */
 export default function FictiveDataDisclaimer() {
   return (
     <aside
       role="contentinfo"
       aria-label="Avertissement données fictives"
-      className="border-t border-border bg-surface-soft py-6"
+      style={{
+        background: 'var(--ink)',
+        color: 'color-mix(in srgb, var(--cream) 65%, transparent)',
+        borderTop: '1px solid color-mix(in srgb, var(--cream) 15%, transparent)',
+        padding: '24px 32px',
+      }}
     >
-      <div className="container-wide">
-        <p className="text-center font-body text-xs leading-relaxed text-muted sm:text-sm">
-          <em>
-            Cette page est une démonstration. L&apos;ensemble des informations
-            présentées (nom du commerce, adresse, horaires, avis clients,
-            photographies) sont fictives et n&apos;ont qu&apos;une valeur
-            illustrative. Photos : Unsplash.
-          </em>
+      <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+        <p
+          style={{
+            fontSize: '0.82rem',
+            lineHeight: 1.6,
+            textAlign: 'center',
+            fontStyle: 'italic',
+            margin: 0,
+          }}
+        >
+          Cette page est une démonstration. L&apos;ensemble des informations
+          présentées (nom du commerce, adresse, horaires, avis clients,
+          photographies) sont fictives et n&apos;ont qu&apos;une valeur
+          illustrative. Photos : Unsplash.
         </p>
       </div>
     </aside>

@@ -290,8 +290,18 @@ export interface FakeReviewsResult {
 }
 
 /**
- * Construit 4 à 6 avis fictifs avec une distribution réaliste de notes
- * et de dates. La sortie est déterministe pour un même PRNG.
+ * Nombre fixe d'avis générés par simulation publique.
+ *
+ * Choisi à 3 pour tenir sur une seule ligne en desktop/tablette (grille
+ * 3 colonnes du composant Avis). Une valeur variable 4-6 cassait la
+ * symétrie visuelle.
+ */
+const NB_REVIEWS = 3
+
+/**
+ * Construit exactement `NB_REVIEWS` avis fictifs avec une distribution
+ * réaliste de notes et de dates. La sortie est déterministe pour un
+ * même PRNG.
  *
  * Distribution :
  *   - Notes : 70% 5 étoiles, 30% 4 étoiles (la majorité de "5" donnerait
@@ -310,7 +320,7 @@ export function generateFakeReviews(
   now: Date,
   prng: Prng
 ): FakeReviewsResult {
-  const nbAvis = prng.intBetween(4, 6)
+  const nbAvis = NB_REVIEWS
   const bodiesPool = BODIES_BY_CATEGORIE[categoryId] ?? DEFAULT_BODIES
 
   // PickN d'openings + auteurs pour éviter les répétitions dans la
