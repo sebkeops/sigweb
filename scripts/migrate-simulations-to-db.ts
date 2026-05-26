@@ -21,15 +21,45 @@
 
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
-import { createAdminClient } from '../lib/supabase/admin'
+import { createClient } from '@supabase/supabase-js'
 import { SimulationDataSchema } from '../lib/validations/simulation'
 
+// On NE PAS importer lib/supabase/admin.ts ici : il porte `import
+// 'server-only'` (guard de securite runtime pour l'app Next), ce qui
+// fait crasher tout script Node lance hors du contexte Next. On
+// reconstruit un client admin minimal directement avec
+// @supabase/supabase-js + SUPABASE_SERVICE_ROLE_KEY.
+//
 // On utilise le type infere du schema Zod (et non `SimulationData` de
 // `types/index.ts`) car le schema porte des `.default([])` qui rendent
 // certaines proprietes optionnelles en sortie de parse — incompatible
 // avec l'interface qui les declare requises. La validation Zod garantit
 // la presence des valeurs au runtime, le typage TS suit la sortie reelle
 // du parse.
+
+/**
+ * Client Supabase admin dedie au script (hors contexte Next).
+ *
+ * Utilise SUPABASE_SERVICE_ROLE_KEY pour bypass RLS — ne JAMAIS reutiliser
+ * cette factory dans le code applicatif (`lib/supabase/admin.ts` est la
+ * pour ca, avec son guard server-only).
+ */
+function createMigrationClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+  if (!url || !serviceRoleKey) {
+    throw new Error(
+      'createMigrationClient: NEXT_PUBLIC_SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY ' +
+        'manquant. Verifier .env.local et que la commande est lancee avec ' +
+        '--env-file=.env.local (cf. npm run migrate:simulations).'
+    )
+  }
+
+  return createClient(url, serviceRoleKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  })
+}
 
 /**
  * Mapping slug simulation → famille éditoriale.
@@ -52,7 +82,7 @@ const SIMULATIONS_DIR = resolve(process.cwd(), 'lib/data/simulations')
 type Outcome = { slug: string; action: 'updated' | 'inserted' | 'skipped'; reason?: string }
 
 async function main(): Promise<void> {
-  const supabase = createAdminClient()
+  const supabase = createMigrationClient()
   const results: Outcome[] = []
 
   for (const slug of Object.keys(SLUG_TO_FAMILY)) {
