@@ -14,6 +14,7 @@ import CtaBanner from '@/app/demos/[slug]/components/CtaBanner'
 import Avis from '@/app/demos/[slug]/components/Avis'
 import Infos from '@/app/demos/[slug]/components/Infos'
 import Footer from '@/app/demos/[slug]/components/Footer'
+import FictiveDataDisclaimer from '@/components/simulations/FictiveDataDisclaimer'
 
 /**
  * Rendu unifié des simulations publiques /simulations/[slug].
@@ -128,6 +129,9 @@ export default async function SimulationSlugPage({
         defaultFooterColonneLabel={template.defaults.footerColonneLabel}
         overrides={maquette.infos_overrides}
       />
+      {/* Bandeau légal/éthique : uniquement sur /simulations/[slug], pas
+          sur /demos/[slug] (vrais commerces — pas de disclaimer là-bas). */}
+      <FictiveDataDisclaimer />
     </div>
   )
 }

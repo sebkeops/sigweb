@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
+import type { Project } from '@/types'
 import { SimulationPayloadSchema, type SimulationPayload } from '@/lib/maquette/data-schema'
 
 /**
@@ -41,6 +42,61 @@ function getReadClient(): ReadClient {
     auth: { persistSession: false, autoRefreshToken: false },
   })
   return cachedClient
+}
+
+/**
+ * Type minimal pour le listing /simulations : pas besoin du JSONB complet
+ * (`simulation_data`) côté grille, juste les champs affichés par les cartes
+ * + le `category_family` pour le filtre.
+ */
+export type SimulationListItem = Pick<
+  Project,
+  | 'id'
+  | 'title'
+  | 'slug'
+  | 'business_type'
+  | 'short_description'
+  | 'cover_image_url'
+  | 'external_url'
+  | 'project_kind'
+  | 'published'
+  | 'featured_home'
+  | 'created_at'
+  | 'updated_at'
+  | 'category_family'
+> & {
+  // Champs de Project non lus dans la grille, à null pour rester compatible
+  // avec le type `Project` consommé par `ProjectCard`.
+  content: null
+}
+
+/**
+ * Liste paginée et triée de toutes les simulations publiées avec leur
+ * famille — alimente la grille filtrable de `/simulations`.
+ *
+ * Ordre : `created_at DESC` pour matcher le comportement historique de
+ * la page. Le filtre famille est appliqué côté client (les ~34 simulations
+ * tiennent largement en mémoire, pas de pagination).
+ */
+export async function getAllPublishedSimulationsForList(): Promise<SimulationListItem[]> {
+  const supabase = getReadClient()
+  const { data, error } = await supabase
+    .from('projects')
+    .select(
+      'id, title, slug, business_type, short_description, cover_image_url, external_url, project_kind, published, featured_home, created_at, updated_at, category_family'
+    )
+    .eq('project_kind', 'simulation')
+    .eq('published', true)
+    .order('created_at', { ascending: false })
+    .returns<Omit<SimulationListItem, 'content'>[]>()
+
+  if (error) {
+    console.error('[simulations/db] getAllPublishedSimulationsForList', error)
+    return []
+  }
+  // ProjectCard consomme aussi `content` (jamais affiché sur la grille) :
+  // on l'ajoute à null pour respecter le contrat Project.
+  return (data ?? []).map((row) => ({ ...row, content: null }))
 }
 
 /**

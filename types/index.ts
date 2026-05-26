@@ -21,6 +21,13 @@ export interface Project {
   featured_home: boolean
   created_at: string
   updated_at: string
+  /**
+   * Famille éditoriale (6 valeurs alignées sur `CATEGORIE_FAMILIES` —
+   * cf. `lib/crm/constants.ts`). Renseigné uniquement pour les simulations
+   * publiques, sert au filtre famille sur /simulations. Nullable pour les
+   * réalisations.
+   */
+  category_family: string | null
 }
 
 export interface Contact {

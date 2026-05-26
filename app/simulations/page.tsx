@@ -1,12 +1,12 @@
+import { Suspense } from 'react'
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
-import ProjectCard from '@/components/sections/ProjectCard'
 import PageHero from '@/components/ui/PageHero'
 import { LinkButton } from '@/components/ui/Button'
-import { createClient } from '@/lib/supabase/server'
-import type { Project } from '@/types'
+import SimulationsGallery from '@/components/simulations/SimulationsGallery'
+import { getAllPublishedSimulationsForList } from '@/lib/data/simulations/db'
 
 export const metadata: Metadata = {
   title: 'Exemples de sites internet pour commerces locaux et artisans',
@@ -14,19 +14,8 @@ export const metadata: Metadata = {
     'Découvrez des exemples concrets de sites internet pour boulangeries, boucheries, pizzerias, coiffeurs et artisans. Visualisez ce que je peux créer pour votre commerce, entre Toulouse et le Gers.',
 }
 
-async function getSimulations(): Promise<Project[]> {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('published', true)
-    .eq('project_kind', 'simulation')
-    .order('created_at', { ascending: false })
-  return data ?? []
-}
-
 export default async function SimulationsPage() {
-  const projects = await getSimulations()
+  const projects = await getAllPublishedSimulationsForList()
 
   return (
     <>
@@ -40,22 +29,22 @@ export default async function SimulationsPage() {
           imageAlt="Création de site web sur ordinateur"
         />
 
-        {/* Grille */}
+        {/* Grille + filtres famille (composant client — gère le filtrage et
+            la sync URL ?famille=... sans round-trip serveur). Wrappé dans
+            Suspense car SimulationsGallery utilise `useSearchParams()`, ce
+            qui sinon bascule toute la page en CSR (Next.js 15). Le fallback
+            est statique et identique au layout final pour éviter tout flash. */}
         <section className="section-pad bg-surface">
           <div className="container-wide">
-            {projects.length > 0 ? (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {projects.map((project) => (
-                  <ProjectCard key={project.id} project={project} />
-                ))}
-              </div>
-            ) : (
-              <div className="rounded-md border border-border bg-surface-soft py-20 text-center">
-                <p className="font-body text-base text-muted">
-                  Les simulations arrivent bientôt. Revenez nous voir !
-                </p>
-              </div>
-            )}
+            <Suspense
+              fallback={
+                <div className="rounded-md border border-border bg-surface-soft py-20 text-center">
+                  <p className="font-body text-base text-muted">Chargement…</p>
+                </div>
+              }
+            >
+              <SimulationsGallery simulations={projects} />
+            </Suspense>
           </div>
         </section>
 
