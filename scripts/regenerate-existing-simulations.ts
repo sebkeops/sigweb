@@ -61,6 +61,19 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
+/**
+ * Parse l'argument optionnel `--only=slug1,slug2` du script.
+ * Si fourni, on ne régénère que les slugs listés (utile après un fix
+ * de keyword pour ne pas re-générer les catégories qui marchaient déjà).
+ * Si absent : on régénère les 4 historiques.
+ */
+function parseOnlyFilter(): Set<string> | null {
+  const arg = process.argv.find((a) => a.startsWith('--only='))
+  if (!arg) return null
+  const slugs = arg.slice('--only='.length).split(',').map((s) => s.trim()).filter(Boolean)
+  return slugs.length > 0 ? new Set(slugs) : null
+}
+
 async function main() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -76,24 +89,41 @@ async function main() {
     auth: { autoRefreshToken: false, persistSession: false },
   })
 
-  // ── 1. Cleanup la simulation test 'la-mie-authentique' ──
-  console.log('🧹 Suppression de la simulation test la-mie-authentique…')
-  const { error: deleteErr, count: deletedCount } = await supabase
-    .from('projects')
-    .delete({ count: 'exact' })
-    .eq('slug', 'la-mie-authentique')
-    .eq('project_kind', 'simulation')
-  if (deleteErr) {
-    console.warn(`   ⚠️  Échec suppression : ${deleteErr.message}`)
-  } else {
-    console.log(`   → ${deletedCount ?? 0} ligne(s) supprimée(s)`)
-  }
-  console.log('')
+  const onlyFilter = parseOnlyFilter()
+  const todoList = onlyFilter
+    ? HISTORIC_SIMULATIONS.filter((s) => onlyFilter.has(s.slug))
+    : HISTORIC_SIMULATIONS
 
-  // ── 2. Régénère les 4 historiques ──
+  if (onlyFilter && todoList.length === 0) {
+    throw new Error(
+      `--only=${[...onlyFilter].join(',')} ne matche aucun slug historique. ` +
+        `Slugs disponibles : ${HISTORIC_SIMULATIONS.map((s) => s.slug).join(', ')}`
+    )
+  }
+
+  // ── 1. Cleanup la simulation test 'la-mie-authentique' ──
+  //     Skip si --only est passé (filtre chirurgical, l'utilisateur sait
+  //     ce qu'il veut régénérer et on ne touche pas au reste).
+  if (!onlyFilter) {
+    console.log('🧹 Suppression de la simulation test la-mie-authentique…')
+    const { error: deleteErr, count: deletedCount } = await supabase
+      .from('projects')
+      .delete({ count: 'exact' })
+      .eq('slug', 'la-mie-authentique')
+      .eq('project_kind', 'simulation')
+    if (deleteErr) {
+      console.warn(`   ⚠️  Échec suppression : ${deleteErr.message}`)
+    } else {
+      console.log(`   → ${deletedCount ?? 0} ligne(s) supprimée(s)`)
+    }
+    console.log('')
+  }
+
+  // ── 2. Régénère les simulations cibles ──
   // Resilient : une erreur sur 1 catégorie ne stoppe pas les suivantes,
   // on accumule les résultats et on affiche un récap final clair.
-  console.log('🔁 Régénération des 4 simulations historiques…')
+  const scope = onlyFilter ? `${todoList.length} slug(s) ciblé(s) via --only` : '4 historiques'
+  console.log(`🔁 Régénération (${scope})…`)
   console.log('')
 
   type Outcome =
@@ -101,11 +131,11 @@ async function main() {
     | { slug: string; status: 'fail'; error: string }
   const outcomes: Outcome[] = []
 
-  for (let i = 0; i < HISTORIC_SIMULATIONS.length; i++) {
-    const { slug, categoryId, family } = HISTORIC_SIMULATIONS[i] as (typeof HISTORIC_SIMULATIONS)[number]
+  for (let i = 0; i < todoList.length; i++) {
+    const { slug, categoryId, family } = todoList[i] as (typeof todoList)[number]
     const startedAt = Date.now()
 
-    console.log(`▶ [${i + 1}/${HISTORIC_SIMULATIONS.length}] slug='${slug}' categoryId='${categoryId}'`)
+    console.log(`▶ [${i + 1}/${todoList.length}] slug='${slug}' categoryId='${categoryId}'`)
 
     try {
       // Génération — seed = slug pour stabilité dans le temps
@@ -154,7 +184,7 @@ async function main() {
     console.log('')
 
     // Délai avant la prochaine génération (sauf la dernière)
-    if (i < HISTORIC_SIMULATIONS.length - 1) {
+    if (i < todoList.length - 1) {
       console.log(`⏳ Pause ${DELAY_BETWEEN_GENERATIONS_MS / 1000}s pour ménager le quota Unsplash…`)
       console.log('')
       await sleep(DELAY_BETWEEN_GENERATIONS_MS)
