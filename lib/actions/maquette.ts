@@ -7,7 +7,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/server'
 import {
   buildSuffixedSlug,
-  generateInitialMaquette,
+  generateInitialMaquetteFromProspect,
   generateSlugBase,
   UnsupportedCategoryError,
 } from '@/lib/maquette'
@@ -110,7 +110,7 @@ export async function createMaquetteFromProspect(
   // 3) Générer le contenu initial (peut throw UnsupportedCategoryError)
   let initial
   try {
-    initial = generateInitialMaquette(p)
+    initial = generateInitialMaquetteFromProspect(p)
   } catch (e) {
     if (e instanceof UnsupportedCategoryError) {
       return {

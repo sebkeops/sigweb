@@ -1,4 +1,4 @@
-import type { Prospect } from '@/types'
+import type { Prospect, ProspectCategorie } from '@/types'
 import { getLogoInitial } from './initials'
 import { buildInitialPhotoData } from './photos'
 import { categorieToVariant, getTemplate } from './templates'
@@ -19,14 +19,39 @@ export class UnsupportedCategoryError extends Error {
 }
 
 /**
- * Génère le contenu initial d'une maquette à partir d'un prospect.
+ * Input minimal pour `generateInitialMaquette`.
+ *
+ * Extrait des 5 seuls champs de `Prospect` réellement consommés par le
+ * générateur. Cette signature découplée permet d'alimenter le générateur
+ * depuis n'importe quelle source — un vrai prospect (via le wrapper
+ * `generateInitialMaquetteFromProspect`) ou des données fictives (pour
+ * les simulations publiques générées en Phase 5/6).
+ */
+export interface GenerateMaquetteInput {
+  /**
+   * Identifiant injecté tel quel dans `MaquetteInitialData.prospect_id`.
+   * Pour un vrai prospect : `prospect.id`. Pour une simulation publique :
+   * un UUID factice (`randomUUID()`) — le JSONB `projects.simulation_data`
+   * n'a pas de FK vers `prospects`.
+   */
+  prospect_id: string
+  categorie: ProspectCategorie
+  nom_commerce: string
+  ville: string | null
+  /** Refs photos Google ou URLs absolues. Null/vide → pool vide. */
+  google_photo_refs: string[] | null
+}
+
+/**
+ * Génère le contenu initial d'une maquette à partir d'un input minimal.
  *
  * Pure et déterministe : à entrée équivalente, sortie identique. Pas
- * d'appel BDD, pas d'appel API. Le slug et le `prospect_id` sont gérés
- * en amont (server action), et les avis (`avis_items`) restent à null
- * — la sélection se fait manuellement en Session 4.
+ * d'appel BDD, pas d'appel API. Le slug est géré en amont (server action),
+ * et les avis (`avis_items`) restent à null — la sélection se fait
+ * manuellement en Session 4 pour les vrais prospects (en Phase 6 pour les
+ * simulations publiques, avec des avis fictifs templated).
  *
- * Photos (Session 3.0) : on stocke les refs Google dans le **pool**
+ * Photos (Session 3.0) : on stocke les refs dans le **pool**
  * `available_photos` + un mapping initial `photo_assignments` (hero ←
  * photo[0], histoire ← photo[1], univers_1..5 ← photo[2..6]). L'admin
  * réajustera dans l'éditeur via drag & drop.
@@ -35,27 +60,27 @@ export class UnsupportedCategoryError extends Error {
  * parallèle pendant la transition (cf. CLEANUP-TODO.md). Ce double-fill
  * sera retiré une fois le nouveau modèle validé sur quelques maquettes.
  *
- * Si `prospect.google_photo_refs` est null/vide, le pool est vide et tous
+ * Si `google_photo_refs` est null/vide, le pool est vide et tous
  * les slots ont `photo_id: null` — la page publique affiche un placeholder
  * neutre (cf. Session 3.1).
  */
 export function generateInitialMaquette(
-  prospect: Prospect,
+  input: GenerateMaquetteInput,
   /**
    * Source d'IDs injectable, principalement pour les tests déterministes.
    * En production, omettre — `randomUUID()` est utilisé par défaut.
    */
   idGen?: () => string
 ): MaquetteInitialData {
-  const variant = categorieToVariant(prospect.categorie)
+  const variant = categorieToVariant(input.categorie)
   if (!variant) {
-    throw new UnsupportedCategoryError(prospect.categorie)
+    throw new UnsupportedCategoryError(input.categorie)
   }
 
   const template = getTemplate(variant)
   const { defaults, universItems, valeursItems } = template
 
-  const photoRefs = prospect.google_photo_refs ?? []
+  const photoRefs = input.google_photo_refs ?? []
 
   // Nouveau modèle : pool + assignations
   const photoData = buildInitialPhotoData(photoRefs, idGen)
@@ -70,10 +95,10 @@ export function generateInitialMaquette(
     universPhotos.length > 0 ? universPhotos : null
 
   return {
-    prospect_id: prospect.id,
+    prospect_id: input.prospect_id,
     template_variant: variant,
 
-    hero_eyebrow:        defaults.heroEyebrow(prospect.ville),
+    hero_eyebrow:        defaults.heroEyebrow(input.ville),
     hero_title:          defaults.heroTitle,
     hero_lead:           defaults.heroLead,
     hero_quote:          defaults.heroQuote,
@@ -102,7 +127,7 @@ export function generateInitialMaquette(
     footer_colonne_label: defaults.footerColonneLabel,
 
     logo_url:            null,
-    logo_initial:        getLogoInitial(prospect.nom_commerce),
+    logo_initial:        getLogoInitial(input.nom_commerce),
     palette_mode:        'category',
     palette_primary:     null,
     palette_accent:      null,
@@ -118,4 +143,30 @@ export function generateInitialMaquette(
     valeurs_items:  valeursItems,
     avis_items:     null,
   }
+}
+
+/**
+ * Wrapper de compatibilité — extrait les 5 champs `GenerateMaquetteInput`
+ * d'un `Prospect` et appelle `generateInitialMaquette`.
+ *
+ * Préserve l'API précédente (`generateInitialMaquette(prospect)`) pour les
+ * appelants existants côté CRM (server action `lib/actions/maquette.ts`),
+ * sans imposer aux nouveaux appelants — typiquement le générateur de
+ * simulations publiques en Phase 5 — de fabriquer un faux `Prospect`
+ * complet avec 25 champs.
+ */
+export function generateInitialMaquetteFromProspect(
+  prospect: Prospect,
+  idGen?: () => string
+): MaquetteInitialData {
+  return generateInitialMaquette(
+    {
+      prospect_id: prospect.id,
+      categorie: prospect.categorie,
+      nom_commerce: prospect.nom_commerce,
+      ville: prospect.ville,
+      google_photo_refs: prospect.google_photo_refs,
+    },
+    idGen
+  )
 }
