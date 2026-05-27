@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import type { ProspectCategorie } from '@/types'
 import { buildFictiveSimulation } from '@/lib/maquette/simulations/buildFictiveSimulation'
 import { CATEGORIES_EXPOSED_IN_ADMIN, CATEGORIE_FAMILIES } from '@/lib/crm/constants'
@@ -68,11 +69,14 @@ export async function generateFictiveSimulationAction(
   _prev: GenerateSimulationActionState | null,
   formData: FormData
 ): Promise<GenerateSimulationActionState> {
-  // 1. Auth admin
-  const supabase = await createClient()
+  // 1. Auth admin — client SSR cookies-based (source d'IDENTITÉ).
+  //    Sert uniquement à vérifier qu'un admin est connecté. Soumis aux
+  //    policies RLS (rôle `authenticated`), n'a pas le droit d'écrire
+  //    dans le bucket Storage `project-images` (réservé service_role).
+  const userClient = await createClient()
   const {
     data: { user },
-  } = await supabase.auth.getUser()
+  } = await userClient.auth.getUser()
   if (!user) return { success: false, error: 'Non autorisé.' }
 
   // 2. Rate limit (clé par user.id pour ne pas bloquer un autre admin)
@@ -98,7 +102,21 @@ export async function generateFictiveSimulationAction(
   }
   const categoryId = parsed.data.categoryId
 
-  // 4. Pipeline générateur (7 req Unsplash + upload Storage)
+  // 4. Client service_role (source de POUVOIR) — bypass RLS, requis
+  //    pour :
+  //      - l'upload Storage `project-images/simulations/{slug}/...`
+  //        (le bucket est public en lecture mais l'écriture est réservée
+  //        au service_role par les policies RLS du bucket),
+  //      - l'INSERT dans `projects` (cohérence avec le reste du pipeline,
+  //        et anticipe l'éventualité où on durcirait RLS sur la table).
+  //
+  //    Création APRÈS le check d'auth admin pour qu'aucun chemin ne
+  //    puisse créer ce client sans être passé par l'authentification.
+  //    `createAdminClient` est `server-only` (cf. lib/supabase/admin.ts) —
+  //    safe à importer ici, on est dans un fichier 'use server'.
+  const adminClient = createAdminClient()
+
+  // 5. Pipeline générateur (7 req Unsplash + upload Storage)
   let result: Awaited<ReturnType<typeof buildFictiveSimulation>>
   try {
     // Pour éviter la collision de slug à la régénération via admin (un
@@ -106,7 +124,7 @@ export async function generateFictiveSimulationAction(
     // brouillon pour comparer), on injecte un seed avec le timestamp.
     result = await buildFictiveSimulation({
       categoryId,
-      supabase,
+      supabase: adminClient,
       options: { seed: `${categoryId}-${Date.now()}` },
     })
   } catch (err) {
@@ -120,15 +138,16 @@ export async function generateFictiveSimulationAction(
     }
   }
 
-  // 5. INSERT ligne projects. Si collision de slug (rarissime vu le
-  //    PRNG seedé sur timestamp), on suffixe-numérote.
+  // 6. INSERT ligne projects (via adminClient pour cohérence). Si
+  //    collision de slug (rarissime vu le PRNG seedé sur timestamp),
+  //    on suffixe-numérote.
   const baseSlug = result.slug
   let finalSlug = baseSlug
   let attempt = 0
   let insertedId: string | null = null
 
   while (attempt < 5) {
-    const { data: inserted, error: insertErr } = await supabase
+    const { data: inserted, error: insertErr } = await adminClient
       .from('projects')
       .insert({
         title: result.business.nom_commerce,
@@ -170,7 +189,7 @@ export async function generateFictiveSimulationAction(
     }
   }
 
-  // 6. Revalidate les pages publiques + admin (la nouvelle simulation
+  // 7. Revalidate les pages publiques + admin (la nouvelle simulation
   //    n'est pas published donc /simulations ne change pas, mais la
   //    liste admin si)
   revalidatePath('/admin/projets')

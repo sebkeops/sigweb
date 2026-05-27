@@ -197,32 +197,6 @@ export async function fetchAndStoreUnsplashPhotos(
   prng: Prng
 ): Promise<UnsplashFetchResult> {
   const accessKey = process.env.UNSPLASH_ACCESS_KEY
-
-  // ── 🔍 Diagnostic temporaire (à retirer une fois le problème
-  //    UNSPLASH_ACCESS_KEY résolu en preview/prod Vercel) ──
-  //
-  // Liste toutes les env vars commençant par "UNSPLASH" pour repérer
-  // un éventuel typo dans le nom (UNSPLASH_KEY, UNSPLASH_API_KEY,
-  // _UNSPLASH_ACCESS_KEY avec espace, etc.). Affiche aussi le runtime
-  // et la présence des autres clés (Supabase) pour confirmer que le
-  // process.env est bien peuplé en général.
-  const unsplashKeys = Object.keys(process.env).filter((k) =>
-    k.toUpperCase().includes('UNSPLASH')
-  )
-  console.log('[unsplash:diag]', {
-    UNSPLASH_ACCESS_KEY_exists: !!accessKey,
-    UNSPLASH_ACCESS_KEY_length: accessKey?.length ?? 0,
-    UNSPLASH_ACCESS_KEY_first8: accessKey?.slice(0, 8) ?? null,
-    all_unsplash_env_vars: unsplashKeys,
-    NEXT_RUNTIME: process.env.NEXT_RUNTIME ?? '(unset)',
-    NODE_ENV: process.env.NODE_ENV ?? '(unset)',
-    VERCEL_ENV: process.env.VERCEL_ENV ?? '(unset)',
-    VERCEL_REGION: process.env.VERCEL_REGION ?? '(unset)',
-    has_SUPABASE_URL: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
-    has_SUPABASE_SERVICE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
-    total_env_keys: Object.keys(process.env).length,
-  })
-
   if (!accessKey) {
     throw new Error('[unsplash] UNSPLASH_ACCESS_KEY manquant dans l\'environnement')
   }
