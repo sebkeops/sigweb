@@ -91,45 +91,66 @@ async function main() {
   console.log('')
 
   // ── 2. Régénère les 4 historiques ──
+  // Resilient : une erreur sur 1 catégorie ne stoppe pas les suivantes,
+  // on accumule les résultats et on affiche un récap final clair.
   console.log('🔁 Régénération des 4 simulations historiques…')
   console.log('')
 
+  type Outcome =
+    | { slug: string; status: 'ok'; nomCommerce: string; ville: string; durationMs: number }
+    | { slug: string; status: 'fail'; error: string }
+  const outcomes: Outcome[] = []
+
   for (let i = 0; i < HISTORIC_SIMULATIONS.length; i++) {
     const { slug, categoryId, family } = HISTORIC_SIMULATIONS[i] as (typeof HISTORIC_SIMULATIONS)[number]
+    const startedAt = Date.now()
 
     console.log(`▶ [${i + 1}/${HISTORIC_SIMULATIONS.length}] slug='${slug}' categoryId='${categoryId}'`)
 
-    // Génération — seed = slug pour stabilité dans le temps
-    const { payload, business } = await buildFictiveSimulation({
-      categoryId,
-      supabase,
-      options: { seed: slug },
-    })
-    console.log(`   business : ${business.nom_commerce} — ${business.ville}`)
-    console.log(`   avis     : ${payload.maquette.avis_items?.length ?? 0} fictifs`)
-    console.log(`   photos   : ${payload.maquette.available_photos.length} dans le pool`)
-
-    // UPDATE — on conserve le slug historique pour préserver l'URL,
-    // mais on met à jour tout le reste avec le nouveau payload.
-    const { error: updateErr } = await supabase
-      .from('projects')
-      .update({
-        title: business.nom_commerce,
-        business_type: categoryId,
-        short_description: payload.maquette.brand_tagline,
-        cover_image_url: payload.maquette.hero_photo_url,
-        published: true,
-        category_family: family,
-        simulation_data: payload,
+    try {
+      // Génération — seed = slug pour stabilité dans le temps
+      const { payload, business } = await buildFictiveSimulation({
+        categoryId,
+        supabase,
+        options: { seed: slug },
       })
-      .eq('slug', slug)
-      .eq('project_kind', 'simulation')
+      console.log(`   business : ${business.nom_commerce} — ${business.ville}`)
+      console.log(`   avis     : ${payload.maquette.avis_items?.length ?? 0} fictifs`)
+      console.log(`   photos   : ${payload.maquette.available_photos.length} dans le pool`)
 
-    if (updateErr) {
-      console.error(`   ❌ UPDATE échec : ${updateErr.message}`)
-      throw new Error(`Régénération de '${slug}' interrompue.`)
+      // UPDATE — on conserve le slug historique pour préserver l'URL,
+      // mais on met à jour tout le reste avec le nouveau payload.
+      const { error: updateErr } = await supabase
+        .from('projects')
+        .update({
+          title: business.nom_commerce,
+          business_type: categoryId,
+          short_description: payload.maquette.brand_tagline,
+          cover_image_url: payload.maquette.hero_photo_url,
+          published: true,
+          category_family: family,
+          simulation_data: payload,
+        })
+        .eq('slug', slug)
+        .eq('project_kind', 'simulation')
+
+      if (updateErr) throw new Error(`UPDATE BDD échec : ${updateErr.message}`)
+
+      const durationMs = Date.now() - startedAt
+      console.log(`   ✅ UPDATE OK, published = true (${(durationMs / 1000).toFixed(1)}s)`)
+      outcomes.push({
+        slug,
+        status: 'ok',
+        nomCommerce: business.nom_commerce,
+        ville: business.ville,
+        durationMs,
+      })
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err)
+      console.error(`   ❌ Échec : ${msg}`)
+      outcomes.push({ slug, status: 'fail', error: msg })
     }
-    console.log(`   ✅ UPDATE OK, published = true`)
+
     console.log('')
 
     // Délai avant la prochaine génération (sauf la dernière)
@@ -140,11 +161,31 @@ async function main() {
     }
   }
 
-  console.log('🎉 Régénération terminée.')
+  // ── 3. Récap final ──
+  const ok = outcomes.filter((o) => o.status === 'ok')
+  const failed = outcomes.filter((o) => o.status === 'fail')
+
+  console.log('═══════════════════════════════════════════════════════════')
+  console.log(`🎯 Récapitulatif final : ${ok.length}/${outcomes.length} succès`)
+  console.log('═══════════════════════════════════════════════════════════')
+  for (const o of outcomes) {
+    if (o.status === 'ok') {
+      const sec = (o.durationMs / 1000).toFixed(1)
+      console.log(`   ✅ ${o.slug.padEnd(13)} → ${o.nomCommerce} (${o.ville}) — ${sec}s`)
+    } else {
+      console.log(`   ❌ ${o.slug.padEnd(13)} → ${o.error}`)
+    }
+  }
   console.log('')
-  console.log('URLs publiques (preview ou prod selon où le SQL a tourné) :')
-  for (const { slug } of HISTORIC_SIMULATIONS) {
-    console.log(`   • /simulations/${slug}`)
+
+  if (failed.length === 0) {
+    console.log('🎉 Régénération complète. URLs publiques actives :')
+    for (const o of ok) {
+      console.log(`   • /simulations/${o.slug}`)
+    }
+  } else {
+    console.log(`⚠️  ${failed.length} catégorie(s) en échec — relancer le script ou corriger les pools.`)
+    process.exit(1)
   }
 }
 

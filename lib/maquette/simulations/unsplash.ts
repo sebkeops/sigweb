@@ -203,39 +203,64 @@ export async function fetchAndStoreUnsplashPhotos(
 
   const cat = UNSPLASH_KEYWORDS_BY_CATEGORIE[categoryId]
 
-  // 1. Pour chaque slot, choisit un mot-clé du pool dédié (PRNG → repro).
-  //    Lance les 7 requêtes Unsplash en parallèle pour gagner du temps.
-  const searches = SLOTS.map((slot) => {
+  // 1. Plan déterministe par slot : on précalcule l'ordre seedé du pool
+  //    + un sélecteur de photo (valeur [0, 1)) APPELÉS SYNCHRONIQUEMENT
+  //    dans l'ordre des SLOTS pour que le PRNG reste reproductible
+  //    indépendamment de l'ordre de résolution des Promesses parallèles
+  //    qui suivent.
+  const slotsPlans = SLOTS.map((slot) => {
     const pool = poolForSlot(cat, slot)
-    const keyword = pool[prng.intBetween(0, pool.length - 1)] as string
-    return { slot, keyword, results: searchUnsplash(accessKey, keyword, 5) }
+    // Tout le pool, mélangé de manière seedée. On itère dans cet ordre
+    // jusqu'à trouver un keyword qui retourne ≥ 1 résultat Unsplash —
+    // fallback naturel sur les autres keywords sans changer de slot.
+    const shuffled = prng.pickN(pool, pool.length)
+    // Sélecteur de photo dans le tableau de résultats du keyword retenu
+    // — calculé maintenant pour rester déterministe.
+    const photoSelector = prng.next()
+    return { slot, shuffled, photoSelector }
   })
 
-  const resolved = await Promise.all(
-    searches.map(async (s) => ({ ...s, results: await s.results }))
+  // 2. Pour chaque slot, on itère sur le pool seedé jusqu'à obtenir un
+  //    résultat non vide. Throw uniquement si TOUS les keywords du pool
+  //    retournent 0 (cas pathologique — devrait être prévenu par l'audit
+  //    régulier des pools dans UNSPLASH_KEYWORDS_BY_CATEGORIE).
+  //    Les 7 slots tournent en parallèle, chacun avec son propre fallback.
+  const slotResults = await Promise.all(
+    slotsPlans.map(async (plan) => {
+      for (const keyword of plan.shuffled) {
+        const results = await searchUnsplash(accessKey, keyword, 5)
+        if (results.length > 0) {
+          const idx = Math.floor(plan.photoSelector * results.length)
+          return {
+            slot: plan.slot,
+            keyword,
+            photo: results[idx] as UnsplashApiPhoto,
+          }
+        }
+        console.warn(
+          `[unsplash] slot=${plan.slot} keyword="${keyword}" 0 résultat, fallback sur le keyword suivant…`
+        )
+      }
+      throw new Error(
+        `[unsplash] tous les keywords du pool sont vides pour slot=${plan.slot} cat=${categoryId}. ` +
+          'Cas pathologique — élargir/réviser le pool correspondant dans UNSPLASH_KEYWORDS_BY_CATEGORIE.'
+      )
+    })
   )
 
-  // 2. Sélectionne 1 photo par slot, en prenant la 1ère du résultat
-  //    aléatoirement parmi les 5 (PRNG → repro).
+  // 3. Download + upload séquentiel (limite la pression sur Supabase Storage)
   const credits: UnsplashPhotoCredit[] = []
   const heroUrlContainer: { url?: string } = {}
   const galleryUrls: string[] = new Array(6)
 
-  for (const s of resolved) {
-    if (s.results.length === 0) {
-      throw new Error(
-        `[unsplash] aucun résultat pour slot=${s.slot} keyword="${s.keyword}" cat=${categoryId}. ` +
-          'Mots-clés du pool peut-être trop spécifiques — à enrichir dans UNSPLASH_KEYWORDS_BY_CATEGORIE.'
-      )
-    }
-    const photo = s.results[prng.intBetween(0, s.results.length - 1)] as UnsplashApiPhoto
+  for (const s of slotResults) {
     const filename = filenameForSlot(s.slot)
-    const buffer = await downloadPhoto(photo.urls.regular)
+    const buffer = await downloadPhoto(s.photo.urls.regular)
     const publicUrl = await uploadToStorage(supabase, slug, filename, buffer, 'image/jpeg')
 
     credits.push({
-      name: photo.user.name,
-      link: photo.user.links.html,
+      name: s.photo.user.name,
+      link: s.photo.user.links.html,
       filename,
     })
 
