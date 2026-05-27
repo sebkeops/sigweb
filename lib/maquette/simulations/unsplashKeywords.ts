@@ -84,10 +84,10 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     histoire: ['chef cooking', 'restaurant kitchen team', 'chef plating dish'],
     univers: [
       ['plated french dish', 'gourmet dish restaurant', 'seasonal menu plate'],     // 1. Notre carte
-      ['daily special blackboard', 'restaurant chalkboard menu', 'plat du jour'],   // 2. Plat du jour
+      ['daily special menu', 'restaurant chalkboard', 'lunch special plate'],       // 2. Plat du jour
       ['business lunch plate', 'lunch menu bistro', 'quick lunch dish'],            // 3. Menu midi
-      ['restaurant private event', 'wine tasting dinner', 'themed dinner'],         // 4. Soirées spéciales
-      ['takeaway food box', 'restaurant takeout container', 'food to go'],          // 5. À emporter
+      ['restaurant private event', 'wine tasting dinner', 'romantic dinner'],       // 4. Soirées spéciales
+      ['takeaway food box', 'restaurant takeout', 'food to go'],                    // 5. À emporter
     ],
   },
 
@@ -119,11 +119,11 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     hero:     ['cheese shop interior', 'cheese counter display', 'fromager storefront'],
     histoire: ['cheese affineur at work', 'aging cheese cellar', 'cheesemonger'],
     univers: [
-      ['aged cheese wheel', 'cheese cave aging', 'comte gruyere'],                     // 1. Fromages affinés sur place
-      ['farm cheese goat', 'artisan cheese maker', 'fresh chevre'],                    // 2. Fromages fermiers
+      ['aged cheese wheel', 'cheese cave aging', 'comte cheese'],                      // 1. Fromages affinés sur place
+      ['farm cheese goat', 'artisan cheese maker', 'goat cheese'],                     // 2. Fromages fermiers
       ['cheese platter', 'cheese board assortment', 'cheese tasting plate'],           // 3. Plateaux de fromages
-      ['wine and cheese pairing', 'bread cheese honey', 'cheese accompaniment'],       // 4. Vins & accompagnements
-      ['cheese tasting counter', 'cheesemonger advising', 'cheese sampling'],          // 5. Conseil & dégustation
+      ['wine and cheese pairing', 'bread and cheese', 'cheese with wine'],             // 4. Vins & accompagnements
+      ['cheese tasting counter', 'cheese sampling', 'cheese degustation'],             // 5. Conseil & dégustation
     ],
   },
 
@@ -169,9 +169,9 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     univers: [
       ['chocolate gift box', 'pralines assortment', 'chocolate ballotin'],             // 1. Ballotins & assortiments
       ['easter chocolate eggs', 'christmas chocolate', 'seasonal chocolate'],          // 2. Collections saisonnières
-      ['caramel candy artisan', 'marshmallow nougat', 'french confectionery'],         // 3. Confiseries maison
-      ['personalized chocolate', 'chocolate sculpture', 'custom chocolate logo'],      // 4. Pièces personnalisées
-      ['chocolate tasting flight', 'chocolatier advising', 'cocoa tasting'],           // 5. Conseil & dégustation
+      ['caramel candy', 'french candy artisan', 'confectionery sweets'],               // 3. Confiseries maison
+      ['personalized chocolate', 'chocolate sculpture', 'custom chocolate'],           // 4. Pièces personnalisées
+      ['chocolate tasting flight', 'chocolate tasting board', 'cocoa tasting'],        // 5. Conseil & dégustation
     ],
   },
 
@@ -193,11 +193,11 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     hero:     ['hair salon interior', 'modern hair salon', 'salon styling chair'],
     histoire: ['hairdresser at work', 'hair stylist cutting', 'salon hairdresser'],
     univers: [
-      ['haircut woman man', 'hair styling client', 'salon haircut scissors'],          // 1. Coupes femme & homme
-      ['hair coloring foil', 'hair highlights', 'hair dye salon'],                     // 2. Coloration & mèches
-      ['hair treatment mask', 'hair care products', 'shampoo bowl salon'],             // 3. Soins capillaires
+      ['haircut salon', 'hair styling client', 'salon scissors'],                      // 1. Coupes femme & homme
+      ['hair color salon', 'hair highlights', 'balayage hair', 'hair dye'],            // 2. Coloration & mèches
+      ['hair treatment mask', 'hair care products', 'shampoo salon'],                  // 3. Soins capillaires
       ['bridal hairstyle', 'wedding hair updo', 'elegant hair styling'],               // 4. Coiffures mariage & cérémonie
-      ['salon appointment booking', 'salon receptionist', 'hair salon waiting'],       // 5. Rendez-vous & infos
+      ['salon reception desk', 'hair salon waiting', 'salon front desk'],              // 5. Rendez-vous & infos
     ],
   },
 
@@ -241,11 +241,11 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     hero:     ['wellness studio', 'meditation room', 'holistic wellness space'],
     histoire: ['wellness practitioner', 'therapist welcoming client', 'holistic guide'],
     univers: [
-      ['one on one therapy session', 'individual coaching', 'personal wellness session'], // 1. Séances individuelles
-      ['first meeting consultation', 'introductory wellness session', 'client welcome'],   // 2. Première rencontre
-      ['ongoing therapy support', 'regular wellness practice', 'mindfulness routine'],     // 3. Accompagnement régulier
-      ['group meditation', 'wellness workshop circle', 'yoga group studio'],               // 4. Groupes & ateliers
-      ['wellness pricing brochure', 'practitioner schedule', 'session calendar'],          // 5. Modalités
+      ['therapy session', 'individual coaching', 'wellness session'],                      // 1. Séances individuelles
+      ['consultation meeting', 'wellness consultation', 'client welcome'],                 // 2. Première rencontre
+      ['ongoing therapy', 'mindfulness practice', 'meditation routine'],                   // 3. Accompagnement régulier
+      ['group meditation', 'yoga group studio', 'wellness workshop'],                      // 4. Groupes & ateliers
+      ['wellness brochure', 'practitioner schedule', 'appointment calendar'],              // 5. Modalités
     ],
   },
 
@@ -402,22 +402,22 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     histoire: ['jeweler at work', 'jewelry maker', 'goldsmith crafting'],
     univers: [
       ['gold silver rings', 'fine jewelry display', 'gemstone necklace'],                       // 1. Bijoux or & argent
-      ['luxury watch display', 'watchmaker repair', 'wristwatch fine'],                         // 2. Montres & entretien
+      ['luxury watch display', 'watchmaker repair', 'luxury wristwatch'],                       // 2. Montres & entretien
       ['custom jewelry making', 'bespoke ring design', 'goldsmith bench'],                      // 3. Créations personnalisées
-      ['jewelry repair workshop', 'jeweler restoring ring', 'jewelry polishing'],               // 4. Réparations & rénovations
-      ['jeweler advising customer', 'jewelry appraisal', 'jeweler appointment'],                // 5. Rendez-vous & estimation
+      ['jewelry repair workshop', 'jewelry polishing', 'ring restoration'],                     // 4. Réparations & rénovations
+      ['jeweler advising customer', 'jewelry consultation', 'jeweler appointment'],             // 5. Rendez-vous & estimation
     ],
   },
 
   librairie: {
-    hero:     ['bookstore interior', 'independent bookshop', 'library shelves books'],
+    hero:     ['bookstore interior', 'independent bookshop', 'library shelves'],
     histoire: ['bookseller in library', 'librarian advising reader', 'bookstore owner'],
     univers: [
       ['novel literature stack', 'fiction book display', 'literary classics'],                  // 1. Romans & littérature
-      ['nonfiction books history', 'philosophy books shelf', 'science books library'],          // 2. Essais & sciences humaines
+      ['history books', 'philosophy books shelf', 'science books shelf'],                       // 2. Essais & sciences humaines
       ['children books picture', 'kids reading library', 'children bookshelf'],                 // 3. Albums, romans, BD jeunesse
       ['regional history books', 'local author writing', 'travel guide books'],                 // 4. Livres du terroir & auteurs locaux
-      ['author book signing', 'literary reading event', 'bookstore event'],                     // 5. Commandes & événements
+      ['author book signing', 'bookstore event', 'public reading event'],                       // 5. Commandes & événements
     ],
   },
 
@@ -436,14 +436,14 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
   // ── Hébergement ───────────────────────────────────────────────────
 
   gite: {
-    hero:     ['french countryside cottage', 'rural guesthouse exterior', 'gite gite stone house'],
+    hero:     ['french countryside cottage', 'rural guesthouse exterior', 'french stone cottage'],
     histoire: ['cottage owner welcoming', 'innkeeper hosting', 'guesthouse host'],
     univers: [
       ['cozy cottage interior', 'rustic stone house bedroom', 'charming guest room'],           // 1. L'hébergement
-      ['cottage kitchen amenities', 'guesthouse common room', 'rural retreat amenities'],      // 2. Équipements & services
-      ['french countryside landscape', 'occitanie rural village', 'rural french hills'],        // 3. Le coin & ses richesses
-      ['romantic weekend retreat', 'family vacation house', 'getaway cottage stay'],            // 4. Formules & séjours
-      ['cottage check in welcome', 'guesthouse arrival', 'booking innkeeper'],                  // 5. Réservation & arrivée
+      ['cottage kitchen', 'guesthouse common room', 'rustic cottage living room'],              // 2. Équipements & services
+      ['french countryside landscape', 'rural french village', 'rural french hills'],           // 3. Le coin & ses richesses
+      ['romantic weekend retreat', 'family vacation house', 'cottage rental stay'],             // 4. Formules & séjours
+      ['guesthouse arrival', 'cottage welcome key', 'cottage check in'],                        // 5. Réservation & arrivée
     ],
   },
 
@@ -452,10 +452,10 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     histoire: ['campsite owner welcoming', 'camping host', 'campsite manager'],
     univers: [
       ['tent pitch camping', 'mobile home camping', 'glamping cabin'],                          // 1. Emplacements & hébergements
-      ['campsite facilities pool', 'campsite shower block', 'campsite reception'],              // 2. Services & équipements
-      ['campsite swimming pool', 'campsite kids playground', 'camping activities summer'],      // 3. Activités en saison
-      ['hiking trail nature', 'cycling countryside', 'tourism rural france'],                   // 4. À découvrir autour
-      ['camping reception booking', 'campsite check in', 'camping reservation'],                // 5. Réservation & saison
+      ['campsite facilities pool', 'campsite amenities', 'campsite reception desk'],            // 2. Services & équipements
+      ['campsite swimming pool', 'campsite playground', 'camping summer activities'],           // 3. Activités en saison
+      ['hiking trail nature', 'cycling countryside', 'rural france tourism'],                   // 4. À découvrir autour
+      ['campsite check in', 'campsite booking', 'campground reception'],                        // 5. Réservation & saison
     ],
   },
 
