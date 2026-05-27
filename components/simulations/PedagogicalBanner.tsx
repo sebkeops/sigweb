@@ -42,7 +42,11 @@ export default function PedagogicalBanner({ categoryId }: Props) {
       aria-label="Contexte de la simulation"
       className="border-b border-border bg-surface"
     >
-      <div className="container-wide py-4 sm:py-5">
+      {/* px-4 sm:px-6 lg:px-8 : `container-wide` ne définit que `max-w` +
+          `mx-auto` (cf. globals.css), il faut donc apporter le padding
+          horizontal localement pour éviter que le texte colle aux bords
+          de l'écran sur mobile. */}
+      <div className="container-wide px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-8">
           {/* Texte pédagogique */}
           <p className="font-body text-sm leading-relaxed text-ink lg:text-[0.95rem]">
