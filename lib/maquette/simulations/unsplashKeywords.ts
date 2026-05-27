@@ -71,11 +71,11 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     hero:     ['butcher shop storefront', 'butcher shop interior', 'meat display counter'],
     histoire: ['butcher at work', 'butcher cutting meat', 'butcher artisan'],
     univers: [
-      ['aged beef steak', 'beef cuts ribeye', 'matured meat'],               // 1. Bœuf maturé
-      ['free range chicken', 'poultry farm', 'roast duck'],                  // 2. Volaille fermière
-      ['homemade charcuterie', 'sausages terrine', 'pate rillettes'],        // 3. Charcuterie maison
-      ['bbq platter meat', 'meat assortment platter', 'barbecue selection'], // 4. Lots & plateaux
-      ['cooked stew dish', 'beef bourguignon', 'lasagna home cooking'],      // 5. Plats préparés
+      ['aged beef steak', 'beef cuts ribeye', 'matured meat'],                              // 1. Bœuf maturé
+      ['whole raw chicken', 'rotisserie chicken golden', 'butcher poultry display'],        // 2. Volaille fermière
+      ['cured meats display', 'french charcuterie board', 'sliced ham platter'],            // 3. Charcuterie maison
+      ['meat platter sharing', 'butcher meat assortment', 'cured meats board'],             // 4. Lots & plateaux
+      ['cooked stew dish', 'beef bourguignon', 'lasagna home cooking'],                     // 5. Plats préparés
     ],
   },
 
@@ -159,7 +159,7 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['wedding catering table', 'wedding buffet elegant', 'reception food'],          // 2. Mariages & cérémonies
       ['corporate lunch boxes', 'business buffet', 'seminar catering'],                // 3. Repas pro & séminaires
       ['gourmet meal box', 'catering lunch box', 'food platter delivery'],             // 4. Plateaux & box
-      ['caterer planning event', 'catering quote meeting', 'event consultation'],      // 5. Devis & rendez-vous
+      ['caterer client tasting', 'caterer chef talking', 'wedding food tasting'],      // 5. Devis & rendez-vous
     ],
   },
 
@@ -209,7 +209,7 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['body massage spa', 'relaxing massage', 'spa body treatment'],                  // 2. Soins corps & massages
       ['manicure pedicure salon', 'nail polish salon', 'waxing salon'],                // 3. Mains, pieds, épilations
       ['beauty gift box', 'spa gift card', 'beauty products gift'],                    // 4. Coffrets & bons cadeaux
-      ['spa booking calendar', 'beauty salon reception', 'spa membership'],            // 5. Rendez-vous & abonnements
+      ['beauty salon reception', 'spa welcome lounge', 'esthetician welcoming'],       // 5. Rendez-vous & abonnements
     ],
   },
 
@@ -233,7 +233,7 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['pregnancy massage', 'infant osteopathy', 'pediatric therapy'],                  // 2. Suivi périnatal & nourrissons
       ['sports therapy session', 'athlete recovery', 'sports injury treatment'],        // 3. Ostéopathie du sport
       ['relaxation therapy session', 'tension release treatment', 'wellness session'],  // 4. Troubles fonctionnels
-      ['practitioner appointment', 'healthcare booking calendar', 'medical reception'], // 5. Rendez-vous & tarifs
+      ['clinic welcome reception', 'practitioner welcoming patient', 'medical front desk'], // 5. Rendez-vous & tarifs
     ],
   },
 
@@ -245,7 +245,7 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['consultation meeting', 'wellness consultation', 'client welcome'],                 // 2. Première rencontre
       ['ongoing therapy', 'mindfulness practice', 'meditation routine'],                   // 3. Accompagnement régulier
       ['group meditation', 'yoga group studio', 'wellness workshop'],                      // 4. Groupes & ateliers
-      ['wellness brochure', 'practitioner schedule', 'appointment calendar'],              // 5. Modalités
+      ['wellness studio entrance', 'practitioner welcoming', 'zen space reception'],       // 5. Modalités
     ],
   },
 
@@ -271,7 +271,7 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['custom kitchen wood', 'wooden cabinets installation', 'built in wardrobe'],             // 2. Cuisines & rangements
       ['wooden staircase', 'wood and glass interior', 'custom staircase'],                      // 3. Escaliers & verrières
       ['wooden deck terrace', 'wood cladding facade', 'timber deck'],                           // 4. Terrasses & bardages
-      ['carpenter blueprint workshop', 'wood project plan', 'craftsman estimating'],            // 5. Devis & atelier
+      ['carpenter workshop tools', 'craftsman workshop interior', 'carpenter measuring wood'],  // 5. Devis & atelier
     ],
   },
 
@@ -283,7 +283,7 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['modern bathroom installation', 'bathtub installation', 'shower installation'],          // 2. Sanitaires & salles d'eau
       ['water heater installation', 'gas boiler', 'home heating system'],                       // 3. Chaudières & chauffe-eau
       ['copper pipes plumbing', 'plumbing network install', 'pipe fittings work'],              // 4. Réseaux & raccordements
-      ['plumber writing quote', 'emergency plumber call', 'plumber estimating job'],            // 5. Devis & urgence
+      ['plumber van service', 'plumber service uniform', 'plumber handshake customer'],         // 5. Devis & urgence
     ],
   },
 
@@ -294,8 +294,8 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['home electrical wiring', 'new electrical install', 'electrician working wires'],        // 1. Installation électrique
       ['electrical compliance check', 'circuit breaker panel', 'electrical inspection'],        // 2. Mise aux normes
       ['electrical fault repair', 'emergency electrical work', 'electrician troubleshooting'],  // 3. Pannes & urgences
-      ['home automation system', 'smart home device install', 'modern lighting design'],        // 4. Domotique & éclairage
-      ['electrician writing quote', 'electrical project plan', 'wiring blueprint'],             // 5. Devis & garantie
+      ['home automation system', 'smart home device', 'modern lighting design'],                // 4. Domotique & éclairage
+      ['electrician van service', 'electrician handshake customer', 'electrician explaining'],  // 5. Devis & garantie
     ],
   },
 
@@ -319,7 +319,7 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['outdoor terrace patio', 'garden pathway stones', 'wooden garden deck'],                 // 2. Terrasses & extérieurs
       ['garden flower planting', 'planting flowers landscape', 'plant nursery'],                // 3. Plantations sur mesure
       ['lawn mowing service', 'hedge trimming', 'garden maintenance'],                          // 4. Entretien & contrats
-      ['garden planning blueprint', 'landscape consultation', 'garden design sketch'],          // 5. Conseil & devis
+      ['gardener showing garden', 'landscaper outdoor meeting', 'gardener client outdoor'],     // 5. Conseil & devis
     ],
   },
 
@@ -328,10 +328,10 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     histoire: ['mason laying bricks', 'stonemason crafting', 'mason building wall'],
     univers: [
       ['masonry brick wall', 'concrete construction', 'stone wall building'],                   // 1. Maçonnerie générale
-      ['house extension construction', 'home addition build', 'second floor addition'],         // 2. Extensions & surélévations
+      ['house extension construction', 'home extension build', 'home addition'],                // 2. Extensions & surélévations
       ['stone patio construction', 'paving stones installation', 'concrete patio'],             // 3. Terrasses & dallages
       ['foundation repair structural', 'load bearing wall', 'structural masonry'],              // 4. Reprise structure
-      ['mason blueprint planning', 'construction site estimate', 'mason quote'],                // 5. Devis & accompagnement
+      ['mason showing site', 'mason measuring construction', 'mason talking client'],           // 5. Devis & accompagnement
     ],
   },
 
@@ -342,8 +342,8 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['roof tile installation', 'metal roofing zinc', 'roof gutters install'],                 // 1. Couverture & zinguerie
       ['wooden roof framing', 'traditional timber frame', 'roof beams construction'],           // 2. Charpente traditionnelle
       ['new roof installation', 'roof renovation', 'complete roof replacement'],                // 3. Réfection complète
-      ['roof leak repair', 'storm damage roof', 'roofer emergency'],                            // 4. Dépannage toiture
-      ['roof inspection report', 'roof assessment', 'roofer estimating job'],                   // 5. Diagnostic & devis
+      ['roof leak repair', 'storm damage roof', 'roof emergency tarp'],                         // 4. Dépannage toiture
+      ['roofer inspecting roof', 'roofer ladder check', 'roofer on ladder'],                    // 5. Diagnostic & devis
     ],
   },
 
@@ -355,7 +355,7 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['modern bathroom tiles', 'walk in shower tiles', 'bathroom renovation'],                 // 2. Salles de bains complètes
       ['outdoor tiled terrace', 'patio tile installation', 'stone tile patio'],                 // 3. Terrasses & dallages
       ['mosaic tile floor', 'subway tile pattern', 'ceramic tile design'],                      // 4. Faïences & mosaïques
-      ['tile samples palette', 'tile catalog selection', 'tile shop consultation'],             // 5. Conseil & devis
+      ['tile samples palette', 'tile showroom display', 'tiler showing samples'],               // 5. Conseil & devis
     ],
   },
 
@@ -364,10 +364,10 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     histoire: ['pool builder at work', 'pool installation crew', 'pool craftsman'],
     univers: [
       ['new swimming pool construction', 'pool installation', 'inground pool build'],           // 1. Construction neuve
-      ['pool renovation cleaning', 'pool refurbishment', 'pool equipment upgrade'],             // 2. Rénovation & rééquipement
-      ['pool maintenance service', 'pool cleaning technician', 'pool care annual'],             // 3. Forfaits annuels
-      ['pool repair technician', 'pool pump repair', 'pool service call'],                      // 4. Interventions ponctuelles
-      ['pool design blueprint', 'pool quote estimate', 'pool planning meeting'],                // 5. Devis & accompagnement
+      ['pool renovation cleaning', 'pool refurbishment', 'pool equipment'],                     // 2. Rénovation & rééquipement
+      ['pool maintenance service', 'pool cleaning technician', 'pool care worker'],             // 3. Forfaits annuels
+      ['pool repair technician', 'pool pump repair', 'pool technician inspecting'],             // 4. Interventions ponctuelles
+      ['pool builder showing site', 'pool design showroom', 'pool builder talking client'],     // 5. Devis & accompagnement
     ],
   },
 
@@ -381,7 +381,7 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
       ['wedding photographer', 'wedding ceremony photo', 'bride groom photo'],                  // 2. Mariages & cérémonies
       ['pregnancy maternity photo', 'newborn baby photoshoot', 'child portrait'],               // 3. Grossesse, naissance, enfance
       ['corporate headshot', 'product photography setup', 'commercial photography'],            // 4. Photographie professionnelle
-      ['photo album book', 'photo printing service', 'photographer pricing brochure'],          // 5. Tarifs & livraison
+      ['photo album book', 'photo print delivery', 'framed photo print'],                       // 5. Tarifs & livraison
     ],
   },
 
