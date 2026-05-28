@@ -24,6 +24,14 @@
 
 ---
 
+## 🧑‍💼 CRM — Évolutions
+
+| Statut | Priorité | Tâche | Fichier(s) |
+|--------|----------|-------|------------|
+| 🔴 | 💡 P3 | Historique des changements de statut prospects — nouvelle table `prospects_statut_history` (`prospect_id`, `statut`, `changed_at`, `changed_by`) alimentée par un trigger Postgres `BEFORE UPDATE` sur `prospects.statut`. Timeline à afficher sur la fiche admin (durée par statut, dates de transition). Mise en place rétroactive impossible : on part de l'état actuel. | `supabase/migrations/` (nouveau) · `app/admin/(protected)/crm/[id]/page.tsx` |
+
+---
+
 ## 🌱 Évolutions futures
 
 | Statut | Priorité | Tâche |
