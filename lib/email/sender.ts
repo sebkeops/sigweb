@@ -1,9 +1,13 @@
 import 'server-only'
 import { Resend } from 'resend'
 import type { SupabaseClient } from '@supabase/supabase-js'
-import type { EmailSend, Prospect, WebVariant } from '@/types'
+import type { EmailSend, Prospect, ProspectStatut, WebVariant } from '@/types'
 import { getProspectWebVariant } from '@/lib/web-variant'
 import { getCategorieLabel } from '@/lib/affiche/categories'
+import {
+  isTestEmailRecipient,
+  nextStatutAfterEmailSent,
+} from '@/lib/crm/statut-progression'
 import {
   generateMaquettePreview,
   ScreenshotProviderError,
@@ -345,6 +349,50 @@ export async function sendProspectEmail(
     .eq('id', insertedRow.id)
     .select('*')
     .single<EmailSend>()
+
+  // 5. CRM v3 — Progression automatique du statut prospect.
+  //
+  // Règles validées (cf. lib/crm/statut-progression.ts) :
+  //   - 1er envoi à un prospect non encore contacté → 'contacte'
+  //   - Envois suivants → relance_1 → relance_2 → relance_3
+  //   - Plafond ou statut avancé → pas de changement
+  //   - Email vers un domaine "test" (@sigweb.fr) → pas de changement
+  //     (ne doit pas polluer le funnel)
+  //
+  // On effectue la mise à jour ICI plutôt que dans le webhook 'sent' Resend
+  // pour 2 raisons :
+  //   - Le webhook peut arriver avec retard (jusqu'à plusieurs minutes)
+  //   - Le webhook 'sent' n'est pas toujours envoyé par Resend (selon plan)
+  //   - L'envoi confirmé par l'API Resend est suffisamment fiable
+  //
+  // Best-effort : un échec ici ne fait PAS rollback l'email_sends, on log
+  // et on continue (le statut peut être ajusté manuellement après).
+  if (!isTestEmailRecipient(finalTo)) {
+    const { data: prospectRow } = await supabase
+      .from('prospects')
+      .select('statut')
+      .eq('id', params.prospectId)
+      .maybeSingle<{ statut: ProspectStatut }>()
+
+    if (prospectRow) {
+      const next = nextStatutAfterEmailSent(prospectRow.statut)
+      if (next !== null && next !== prospectRow.statut) {
+        const { error: progressionErr } = await supabase
+          .from('prospects')
+          .update({
+            statut: next,
+            statut_updated_at: new Date().toISOString(),
+          })
+          .eq('id', params.prospectId)
+        if (progressionErr) {
+          console.error(
+            '[sendProspectEmail] progression statut échec (best-effort, email parti) :',
+            progressionErr.message
+          )
+        }
+      }
+    }
+  }
 
   return updatedRow ?? insertedRow
 }

@@ -158,6 +158,11 @@ export function simulationPayloadToRenderProps(
     maquette_url: null,
     email_unsubscribed: false,
     email_unsubscribed_at: null,
+    // Métadonnées CRM v3 — valeurs neutres pour le rendu d'une simulation
+    // publique fictive (pas de vrai prospect derrière, ces champs ne sont
+    // pas lus par les sous-composants /demos).
+    statut_updated_at: FAKE_ISO,
+    is_test: false,
   }
 
   return { maquette, prospect }

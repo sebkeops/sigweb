@@ -10,9 +10,8 @@ import {
   CANAL_LABELS,
   CATEGORIE_BADGE,
   displayCategorie,
-  STATUT_BADGE,
-  STATUT_LABELS,
 } from '@/lib/crm/constants'
+import StatusDropdown from '@/components/admin/StatusDropdown'
 import DeleteProspectButton from './DeleteProspectButton'
 import EmailHistorySection from './EmailHistorySection'
 import GenerateAfficheButton from './GenerateAfficheButton'
@@ -186,8 +185,16 @@ export default async function ProspectDetailPage({ params }: Props) {
           </div>
           <div>
             <p className={labelClass}>Statut</p>
-            <p className="mt-2">
-              <Badge variant={STATUT_BADGE[p.statut]}>{STATUT_LABELS[p.statut]}</Badge>
+            <div className="mt-2">
+              <StatusDropdown prospectId={p.id} currentStatut={p.statut} />
+            </div>
+            <p className="mt-1.5 font-body text-[11px] text-muted">
+              Dernière transition :{' '}
+              {new Date(p.statut_updated_at).toLocaleDateString('fr-FR', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })}
             </p>
           </div>
         </div>

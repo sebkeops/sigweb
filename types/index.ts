@@ -148,6 +148,23 @@ export interface Prospect {
   // jamais d'email, même via campagne manuelle.
   email_unsubscribed: boolean
   email_unsubscribed_at: string | null
+
+  // ── Pilotage commercial CRM v3 (Phase 1) ──
+  /**
+   * Horodatage de la dernière transition de statut. Mis à jour par la
+   * Server Action `updateProspectStatut` ET par la progression automatique
+   * dans `sendProspectEmail` (envoi d'email = `contacte` ou progression
+   * de relance). Source unique de vérité pour les métriques de durée.
+   */
+  statut_updated_at: string
+
+  /**
+   * Flag de test — un prospect avec `is_test = true` n'apparaît pas dans
+   * les KPIs dashboard et ne déclenche pas les transitions automatiques
+   * de statut (cf. Phase 5 du chantier CRM v3). Permet à l'admin de créer
+   * des prospects de bac à sable sans polluer les vraies stats.
+   */
+  is_test: boolean
 }
 
 // ─── Maquettes (générateur de maquettes ultra-personnalisées) ────────────────

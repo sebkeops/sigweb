@@ -9,6 +9,7 @@ import type {
   ProspectStatut,
 } from '@/types'
 import { Badge } from '@/components/ui/Badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import { LinkButton } from '@/components/ui/Button'
 import ProspectFilters from '@/components/admin/ProspectFilters'
 import ProspectCard from '@/components/admin/ProspectCard'
@@ -23,8 +24,6 @@ import {
   displayCategorie,
   SOURCE_ICONS,
   SOURCE_LABELS,
-  STATUT_BADGE,
-  STATUT_LABELS,
 } from '@/lib/crm/constants'
 
 export const metadata: Metadata = { title: 'CRM | Admin Sigweb' }
@@ -292,7 +291,7 @@ export default async function AdminCrmPage({ searchParams }: Props) {
                     <Badge variant={CANAL_BADGE[p.canal]}>{CANAL_LABELS[p.canal]}</Badge>
                   </td>
                   <td className="px-5 py-4">
-                    <Badge variant={STATUT_BADGE[p.statut]}>{STATUT_LABELS[p.statut]}</Badge>
+                    <StatusBadge statut={p.statut} />
                   </td>
                   <td className="hidden px-5 py-4 xl:table-cell">
                     <span className="font-body text-sm text-muted">{formatDate(p.date_dernier_contact)}</span>
