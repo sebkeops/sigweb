@@ -1,12 +1,11 @@
 import Link from 'next/link'
 import type { Prospect } from '@/types'
 import { Badge } from '@/components/ui/Badge'
+import { StatusBadge } from '@/components/ui/StatusBadge'
 import {
   CANAL_BADGE,
   CANAL_LABELS,
   displayCategorie,
-  STATUT_BADGE,
-  STATUT_LABELS,
 } from '@/lib/crm/constants'
 
 interface ProspectCardProps {
@@ -44,7 +43,7 @@ export default function ProspectCard({ prospect: p }: ProspectCardProps) {
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <Badge variant={CANAL_BADGE[p.canal]}>{CANAL_LABELS[p.canal]}</Badge>
-        <Badge variant={STATUT_BADGE[p.statut]}>{STATUT_LABELS[p.statut]}</Badge>
+        <StatusBadge statut={p.statut} />
       </div>
 
       <div className="mt-4 flex items-center gap-2 border-t border-border pt-3">

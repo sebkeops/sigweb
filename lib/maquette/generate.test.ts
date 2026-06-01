@@ -51,6 +51,8 @@ function makeProspect(overrides: Partial<Prospect> = {}): Prospect {
     maquette_url: null,
     email_unsubscribed: false,
     email_unsubscribed_at: null,
+    statut_updated_at: '2026-01-01T00:00:00Z',
+    is_test: false,
     ...overrides,
   }
 }

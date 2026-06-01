@@ -10,7 +10,8 @@ import {
   relevantSnapshot,
   toScoringInput,
 } from '@/lib/scoring/apply'
-import type { Prospect } from '@/types'
+import { STATUT_OPTIONS } from '@/lib/crm/constants'
+import type { Prospect, ProspectStatut } from '@/types'
 
 async function assertAuthenticated() {
   const supabase = await createClient()
@@ -141,6 +142,13 @@ export async function updateProspect(
       )
       Object.assign(newPayload, scoreFields)
     }
+
+    // CRM v3 — Si le statut a changé via le formulaire complet d'édition,
+    // on horodate la transition. Cohérence avec `updateProspectStatut`
+    // appelé depuis le `<StatusDropdown>` qui fait la même mise à jour.
+    if ((oldRow as Prospect).statut !== parsed.data.statut) {
+      newPayload.statut_updated_at = new Date().toISOString()
+    }
   }
 
   const { error } = await supabase
@@ -156,6 +164,55 @@ export async function updateProspect(
   revalidatePath('/admin/crm')
   revalidatePath(`/admin/crm/${id}`)
 
+  return { success: true }
+}
+
+/**
+ * Liste des valeurs valides pour `ProspectStatut`, dérivée des constantes
+ * exposées dans l'admin — garantit que cette server action accepte
+ * exactement les 13 statuts qui peuvent être affichés dans l'UI.
+ */
+const VALID_STATUTS = new Set<ProspectStatut>(
+  STATUT_OPTIONS.map((o) => o.value)
+)
+
+/**
+ * Change rapidement le statut d'un prospect — utilisé par le composant
+ * `<StatusDropdown>` (CRM v3 Phase 1) sur la fiche prospect.
+ *
+ * Plus léger que `updateProspect` qui ré-évalue tout le scoring : ici on
+ * met juste à jour `statut` + `statut_updated_at` atomiquement.
+ *
+ * Renvoie `{ success: false, error }` plutôt que throw : le composant
+ * client peut afficher le message à l'utilisateur et revenir à l'état
+ * précédent.
+ */
+export async function updateProspectStatut(
+  prospectId: string,
+  newStatut: ProspectStatut
+): Promise<{ success: boolean; error?: string }> {
+  const supabase = await assertAuthenticated().catch(() => null)
+  if (!supabase) return { success: false, error: 'Non autorisé.' }
+
+  if (!VALID_STATUTS.has(newStatut)) {
+    return { success: false, error: 'Statut invalide.' }
+  }
+
+  const { error } = await supabase
+    .from('prospects')
+    .update({
+      statut: newStatut,
+      statut_updated_at: new Date().toISOString(),
+    })
+    .eq('id', prospectId)
+
+  if (error) {
+    console.error('[updateProspectStatut]', error)
+    return { success: false, error: 'Erreur lors du changement de statut.' }
+  }
+
+  revalidatePath('/admin/crm')
+  revalidatePath(`/admin/crm/${prospectId}`)
   return { success: true }
 }
 
