@@ -156,7 +156,7 @@ export interface Prospect {
    * dans `sendProspectEmail` (envoi d'email = `contacte` ou progression
    * de relance). Source unique de vérité pour les métriques de durée.
    */
-  statut_updated_at: string
+  statut_updated_at: string  // ISO
 
   /**
    * Flag de test — un prospect avec `is_test = true` n'apparaît pas dans
@@ -465,4 +465,55 @@ export interface EmailSend {
   bounced_at: string | null
   bounce_reason: string | null
   unsubscribed_at: string | null
+}
+
+// ─── Pilotage commercial CRM v3 — Timeline (Phase 2) ─────────────────────────
+
+/**
+ * Types d'événements stockés dans `prospect_timeline_events`. Les events
+ * email ne sont PAS dans cette liste : ils sont dérivés à la volée de
+ * `email_sends` par l'aggregator (cf. `lib/crm/timeline-aggregator.ts`).
+ */
+export type ProspectTimelineEventType =
+  // Phase 2
+  | 'status_changed'
+  // Phase 3
+  | 'maquette_visited'
+  // Phase 4
+  | 'phone_call'
+  | 'affiche_deposited'
+  | 'terrain_visit'
+  | 'dm_sent'
+  | 'meeting_scheduled'
+  | 'note'
+
+export type ProspectTimelineEventSource = 'automatic' | 'manual'
+
+/**
+ * Ligne brute de `prospect_timeline_events`. Le `metadata` est typé en
+ * `unknown` ici — chaque code consommateur (composant, server action)
+ * narrowe le type selon le `event_type` qu'il manipule.
+ */
+export interface ProspectTimelineEvent {
+  id: string
+  created_at: string
+  prospect_id: string
+  event_type: ProspectTimelineEventType
+  event_subtype: string | null
+  source: ProspectTimelineEventSource
+  occurred_at: string
+  metadata: unknown
+  notes: string | null
+  created_by_user_id: string | null
+  is_test: boolean
+}
+
+/**
+ * Metadata d'un event `status_changed` — l'ancien et le nouveau statut
+ * sont conservés pour reconstituer l'historique complet sans avoir à
+ * joindre des lignes consécutives.
+ */
+export interface StatusChangedMetadata {
+  from: ProspectStatut | null  // null = initialisation / pas d'ancien connu
+  to: ProspectStatut
 }

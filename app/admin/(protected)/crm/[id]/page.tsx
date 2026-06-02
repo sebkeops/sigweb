@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import type { EmailSend, Prospect } from '@/types'
+import type { Prospect } from '@/types'
 import { Badge } from '@/components/ui/Badge'
 import { LinkButton } from '@/components/ui/Button'
 import {
@@ -12,8 +12,9 @@ import {
   displayCategorie,
 } from '@/lib/crm/constants'
 import StatusDropdown from '@/components/admin/StatusDropdown'
+import Timeline from '@/components/admin/timeline/Timeline'
+import type { TimelineItem } from '@/lib/crm/timeline-aggregator'
 import DeleteProspectButton from './DeleteProspectButton'
-import EmailHistorySection from './EmailHistorySection'
 import GenerateAfficheButton from './GenerateAfficheButton'
 import GenerateMaquetteButton from './GenerateMaquetteButton'
 import RefreshFromGoogleButton from './RefreshFromGoogleButton'
@@ -25,6 +26,7 @@ export const metadata: Metadata = { title: 'Fiche prospect | Admin Sigweb' }
 
 interface Props {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ canal?: string }>
 }
 
 async function getProspect(id: string): Promise<Prospect | null> {
@@ -51,14 +53,25 @@ async function getExistingMaquette(prospectId: string): Promise<ExistingMaquette
   return (data as ExistingMaquette | null) ?? null
 }
 
-async function getEmailsForProspect(prospectId: string): Promise<EmailSend[]> {
-  const supabase = await createClient()
-  const { data } = await supabase
-    .from('email_sends')
-    .select('*')
-    .eq('prospect_id', prospectId)
-    .order('created_at', { ascending: false })
-  return (data ?? []) as EmailSend[]
+/**
+ * Whitelist des canaux acceptés en query string `?canal=`. La Timeline
+ * filtre côté serveur uniquement sur ces valeurs ; toute autre valeur
+ * fait retomber sur "Tout" (aucun filtre).
+ */
+const VALID_CHANNELS: ReadonlySet<TimelineItem['channel']> = new Set([
+  'email',
+  'statut',
+  'maquette',
+  'telephone',
+  'terrain',
+  'note',
+])
+
+function parseChannelParam(raw: string | undefined): TimelineItem['channel'] | null {
+  if (!raw) return null
+  return VALID_CHANNELS.has(raw as TimelineItem['channel'])
+    ? (raw as TimelineItem['channel'])
+    : null
 }
 
 function formatDate(dateStr: string | null) {
@@ -104,12 +117,14 @@ const sectionClass = 'rounded-md border border-border bg-surface p-6 shadow-sm'
 const labelClass = 'font-body text-xs font-semibold uppercase tracking-wider text-muted'
 const valueClass = 'font-body text-sm text-ink'
 
-export default async function ProspectDetailPage({ params }: Props) {
+export default async function ProspectDetailPage({ params, searchParams }: Props) {
   const { id } = await params
-  const [p, existingMaquette, emails] = await Promise.all([
+  const { canal } = await searchParams
+  const activeChannel = parseChannelParam(canal)
+
+  const [p, existingMaquette] = await Promise.all([
     getProspect(id),
     getExistingMaquette(id),
-    getEmailsForProspect(id),
   ])
   if (!p) notFound()
 
@@ -327,8 +342,10 @@ export default async function ProspectDetailPage({ params }: Props) {
         </div>
       </div>
 
-      {/* Historique emails */}
-      <EmailHistorySection emails={emails} />
+      {/* Timeline d'événements — fusionne emails (groupés) + transitions
+          de statut (Phase 2). Phase 3 ajoutera les visites maquette,
+          Phase 4 les events manuels (téléphone, terrain, notes…). */}
+      <Timeline prospectId={p.id} activeChannel={activeChannel} />
 
       {/* Données Google — visible uniquement si la fiche est liée */}
       {p.google_place_id && (

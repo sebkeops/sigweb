@@ -8,6 +8,7 @@ import {
   isTestEmailRecipient,
   nextStatutAfterEmailSent,
 } from '@/lib/crm/statut-progression'
+import { insertStatusChangedEvent } from '@/lib/crm/timeline'
 import {
   generateMaquettePreview,
   ScreenshotProviderError,
@@ -370,9 +371,9 @@ export async function sendProspectEmail(
   if (!isTestEmailRecipient(finalTo)) {
     const { data: prospectRow } = await supabase
       .from('prospects')
-      .select('statut')
+      .select('statut, is_test')
       .eq('id', params.prospectId)
-      .maybeSingle<{ statut: ProspectStatut }>()
+      .maybeSingle<{ statut: ProspectStatut; is_test: boolean }>()
 
     if (prospectRow) {
       const next = nextStatutAfterEmailSent(prospectRow.statut)
@@ -389,6 +390,18 @@ export async function sendProspectEmail(
             '[sendProspectEmail] progression statut échec (best-effort, email parti) :',
             progressionErr.message
           )
+        } else {
+          // CRM v3 Phase 2 — Trace la transition automatique dans la
+          // timeline. Source = 'automatic' pour distinguer des changements
+          // manuels admin. Best-effort comme pour le UPDATE.
+          await insertStatusChangedEvent({
+            supabase,
+            prospectId: params.prospectId,
+            from: prospectRow.statut,
+            to: next,
+            source: 'automatic',
+            isTest: prospectRow.is_test,
+          })
         }
       }
     }

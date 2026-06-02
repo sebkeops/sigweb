@@ -11,6 +11,7 @@ import {
   toScoringInput,
 } from '@/lib/scoring/apply'
 import { STATUT_OPTIONS } from '@/lib/crm/constants'
+import { insertStatusChangedEvent } from '@/lib/crm/timeline'
 import type { Prospect, ProspectStatut } from '@/types'
 
 async function assertAuthenticated() {
@@ -161,6 +162,21 @@ export async function updateProspect(
     return { success: false, error: 'Erreur lors de la mise à jour.' }
   }
 
+  // CRM v3 Phase 2 — Si le statut a effectivement changé, on trace
+  // l'événement dans la timeline. Best-effort : un échec ici ne rollback
+  // pas l'update du prospect (la timeline est un journal, pas la source
+  // de vérité du statut).
+  if (oldRow && (oldRow as Prospect).statut !== parsed.data.statut) {
+    await insertStatusChangedEvent({
+      supabase,
+      prospectId: id,
+      from: (oldRow as Prospect).statut,
+      to: parsed.data.statut,
+      source: 'manual',
+      isTest: (oldRow as Prospect).is_test,
+    })
+  }
+
   revalidatePath('/admin/crm')
   revalidatePath(`/admin/crm/${id}`)
 
@@ -198,6 +214,16 @@ export async function updateProspectStatut(
     return { success: false, error: 'Statut invalide.' }
   }
 
+  // On lit l'ancien statut AVANT l'UPDATE pour pouvoir tracer la
+  // transition dans la timeline. Aussi `is_test` pour propager le flag
+  // au timeline event (un changement de statut sur un prospect test
+  // ne doit pas polluer les KPIs).
+  const { data: oldRow } = await supabase
+    .from('prospects')
+    .select('statut, is_test')
+    .eq('id', prospectId)
+    .maybeSingle<{ statut: ProspectStatut; is_test: boolean }>()
+
   const { error } = await supabase
     .from('prospects')
     .update({
@@ -209,6 +235,20 @@ export async function updateProspectStatut(
   if (error) {
     console.error('[updateProspectStatut]', error)
     return { success: false, error: 'Erreur lors du changement de statut.' }
+  }
+
+  // CRM v3 Phase 2 — Trace la transition dans la timeline si le statut
+  // a effectivement changé. Best-effort (cf. comment dans
+  // `insertStatusChangedEvent`).
+  if (oldRow && oldRow.statut !== newStatut) {
+    await insertStatusChangedEvent({
+      supabase,
+      prospectId,
+      from: oldRow.statut,
+      to: newStatut,
+      source: 'manual',
+      isTest: oldRow.is_test,
+    })
   }
 
   revalidatePath('/admin/crm')
