@@ -9,6 +9,7 @@ import {
 import StatusChangedCard from './StatusChangedCard'
 import EmailCardGrouped from './EmailCardGrouped'
 import MaquetteVisitedCard from './MaquetteVisitedCard'
+import ManualEventCard, { MANUAL_EVENT_TYPES } from './ManualEventCard'
 import TimelineFilter from './TimelineFilter'
 
 interface Props {
@@ -97,7 +98,11 @@ export default async function Timeline({ prospectId, activeChannel }: Props) {
                 <MaquetteVisitedCard item={item} />
               ) : item.event.event_type === 'status_changed' ? (
                 <StatusChangedCard item={item} />
-              ) : null /* types Phase 4 (phone_call, etc.) — cartes a venir */}
+              ) : MANUAL_EVENT_TYPES.includes(
+                  item.event.event_type as (typeof MANUAL_EVENT_TYPES)[number]
+                ) ? (
+                <ManualEventCard item={item} />
+              ) : null}
             </li>
           ))}
         </ol>
