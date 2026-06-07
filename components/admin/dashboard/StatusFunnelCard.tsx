@@ -29,28 +29,32 @@ export default function StatusFunnelCard({ rows, total }: Props) {
         </span>
       </header>
 
-      <ul className="space-y-2">
+      <ul className="space-y-3">
         {rows.map((row) => (
           <li key={row.statut}>
             <Link
               href={`/admin/crm?statut=${row.statut}`}
-              className="flex items-center gap-3 rounded-sm px-1 py-1 transition hover:bg-surface-soft"
+              className="block rounded-sm px-1 py-1 transition hover:bg-surface-soft"
             >
-              <div className="min-w-[110px] shrink-0">
-                <StatusBadge statut={row.statut} />
-              </div>
-              <div className="flex-1">
-                <div className="h-1.5 overflow-hidden rounded-full bg-surface-strong">
-                  <div
-                    className="h-full bg-primary transition-all"
-                    style={{ width: `${row.pct}%` }}
-                    aria-hidden="true"
-                  />
+              {/* Ligne 1 : badge + compteur. Badge se redimensionne
+                  naturellement (pas de min-w fixe qui ferait deborder
+                  sur 'Maquette prete' + 'Devis envoye'). */}
+              <div className="flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <StatusBadge statut={row.statut} />
                 </div>
+                <span className="shrink-0 font-body text-sm font-semibold tabular-nums text-ink">
+                  {row.count}
+                </span>
               </div>
-              <span className="w-10 shrink-0 text-right font-body text-sm font-semibold tabular-nums text-ink">
-                {row.count}
-              </span>
+              {/* Ligne 2 : barre de proportion pleine largeur */}
+              <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-strong">
+                <div
+                  className="h-full bg-primary transition-all"
+                  style={{ width: `${row.pct}%` }}
+                  aria-hidden="true"
+                />
+              </div>
             </Link>
           </li>
         ))}

@@ -44,41 +44,46 @@ export default function RelancesPendingCard({ rows }: Props) {
               <li key={row.prospectId}>
                 <Link
                   href={`/admin/crm/${row.prospectId}`}
-                  className={`flex min-h-[44px] items-center gap-3 rounded-sm border px-3 py-2 transition hover:bg-surface-soft ${
+                  className={`block rounded-sm border px-3 py-2 transition hover:bg-surface-soft ${
                     isOverdue
                       ? 'border-red-200 bg-red-50/60 hover:border-red-300'
                       : 'border-orange-200 bg-orange-50/40 hover:border-orange-300'
                   }`}
                 >
-                  <span
-                    aria-hidden="true"
-                    className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                      isOverdue ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
-                    }`}
-                  >
-                    {isOverdue ? '!' : '·'}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-body text-sm font-semibold text-ink">
-                      {row.prospectName}
-                    </p>
-                    <p className="font-body text-xs text-muted">
-                      {isOverdue ? (
-                        <>
-                          En retard de{' '}
-                          <span className="font-medium text-red-700">
-                            {row.daysOverdue} jour{row.daysOverdue > 1 ? 's' : ''}
+                  <div className="flex min-h-[44px] items-center gap-2">
+                    <span
+                      aria-hidden="true"
+                      className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                        isOverdue ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'
+                      }`}
+                    >
+                      {isOverdue ? '!' : '·'}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-body text-sm font-semibold text-ink">
+                        {row.prospectName}
+                      </p>
+                      <p className="truncate font-body text-xs text-muted">
+                        {isOverdue ? (
+                          <>
+                            En retard de{' '}
+                            <span className="font-medium text-red-700">
+                              {row.daysOverdue}j
+                            </span>
+                          </>
+                        ) : (
+                          <span className="font-medium text-orange-700">
+                            Aujourd'hui
                           </span>
-                        </>
-                      ) : (
-                        <span className="font-medium text-orange-700">
-                          Aujourd'hui
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="shrink-0">
-                    <StatusBadge statut={row.statut} />
+                        )}
+                      </p>
+                    </div>
+                    {/* Badge statut : caché < sm pour laisser respirer le
+                        nom du commerçant. Cliquer sur la ligne ouvre la
+                        fiche où le statut est très visible. */}
+                    <div className="hidden shrink-0 sm:block">
+                      <StatusBadge statut={row.statut} />
+                    </div>
                   </div>
                 </Link>
               </li>
