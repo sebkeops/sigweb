@@ -12,8 +12,7 @@ import {
   displayCategorie,
 } from '@/lib/crm/constants'
 import StatusDropdown from '@/components/admin/StatusDropdown'
-import Timeline from '@/components/admin/timeline/Timeline'
-import type { TimelineItem } from '@/lib/crm/timeline-aggregator'
+
 import DeleteProspectButton from './DeleteProspectButton'
 import GenerateAfficheButton from './GenerateAfficheButton'
 import GenerateMaquetteButton from './GenerateMaquetteButton'

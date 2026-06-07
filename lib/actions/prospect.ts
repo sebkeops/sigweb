@@ -11,7 +11,7 @@ import {
   toScoringInput,
 } from '@/lib/scoring/apply'
 import { STATUT_OPTIONS } from '@/lib/crm/constants'
-import { insertStatusChangedEvent } from '@/lib/crm/timeline'
+
 import type { Prospect, ProspectStatut } from '@/types'
 
 async function assertAuthenticated() {
@@ -237,19 +237,6 @@ export async function updateProspectStatut(
     return { success: false, error: 'Erreur lors du changement de statut.' }
   }
 
-  // CRM v3 Phase 2 — Trace la transition dans la timeline si le statut
-  // a effectivement changé. Best-effort (cf. comment dans
-  // `insertStatusChangedEvent`).
-  if (oldRow && oldRow.statut !== newStatut) {
-    await insertStatusChangedEvent({
-      supabase,
-      prospectId,
-      from: oldRow.statut,
-      to: newStatut,
-      source: 'manual',
-      isTest: oldRow.is_test,
-    })
-  }
 
   revalidatePath('/admin/crm')
   revalidatePath(`/admin/crm/${prospectId}`)

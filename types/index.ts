@@ -156,7 +156,7 @@ export interface Prospect {
    * dans `sendProspectEmail` (envoi d'email = `contacte` ou progression
    * de relance). Source unique de vérité pour les métriques de durée.
    */
-  statut_updated_at: string  // ISO
+
 
   /**
    * Flag de test — un prospect avec `is_test = true` n'apparaît pas dans
