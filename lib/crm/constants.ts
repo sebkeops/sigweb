@@ -234,7 +234,9 @@ export const CATEGORIE_BADGE: BadgeVariant = 'gray'
 export const SOURCE_OPTIONS: { value: ProspectSource; label: string }[] = [
   { value: 'manuel', label: 'Saisi manuellement' },
   { value: 'enrichissement', label: 'Enrichissement Google' },
-  { value: 'sourcing', label: 'Sourcing batch' },
+  { value: 'sourcing', label: 'Sourcing Google' },
+  { value: 'sirene', label: 'Sourcing Sirene' },
+  { value: 'both', label: 'Google + Sirene' },
 ]
 
 export const SOURCE_LABELS: Record<ProspectSource, string> = Object.fromEntries(
@@ -245,6 +247,8 @@ export const SOURCE_ICONS: Record<ProspectSource, string> = {
   manuel: '🖋️',
   enrichissement: '🔍',
   sourcing: '🌐',
+  sirene: '🏛️',
+  both: '🔗',
 }
 
 /**

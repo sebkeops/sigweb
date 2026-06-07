@@ -74,7 +74,28 @@ export type ProspectStatut =
   | 'repondu' | 'rdv_pris' | 'devis_envoye'
   | 'signe' | 'perdu' | 'ecarte'
 
-export type ProspectSource = 'manuel' | 'enrichissement' | 'sourcing'
+export type ProspectSource =
+  | 'manuel'
+  | 'enrichissement'
+  | 'sourcing'
+  | 'sirene'  // sourcé via API Sirene (data.gouv.fr ou INSEE)
+  | 'both'    // fusion à l'import : connu de Google ET Sirene (match SIRET)
+
+/**
+ * État administratif d'une entreprise selon Sirene :
+ *   - 'A' (Active), 'F' (Fermée), 'C' (Cessée)
+ *   - null si l'info n'a pas encore été récupérée (prospect non enrichi Sirene)
+ */
+export type EtatAdministratif = 'A' | 'F' | 'C' | null
+
+/**
+ * Statut d'analyse PageSpeed pour le site existant d'un prospect.
+ *   - null : pas encore demandé (ou prospect sans site)
+ *   - 'pending' : en queue pour le cron PageSpeed batch
+ *   - 'done' : analysé, scores stockés
+ *   - 'error' : échec API (quota, URL invalide, timeout)
+ */
+export type PageSpeedStatus = 'pending' | 'done' | 'error' | null
 
 export type GoogleBusinessStatus = 'OPERATIONAL' | 'CLOSED_TEMPORARILY' | 'CLOSED_PERMANENTLY'
 
@@ -165,6 +186,43 @@ export interface Prospect {
    * des prospects de bac à sable sans polluer les vraies stats.
    */
   is_test: boolean
+
+  // ── Données légales Sirene (intégration data.gouv.fr / INSEE) ──
+
+  /** SIRET 14 chiffres — clé naturelle de dédup à l'import (cross-sources). */
+  siret: string | null
+  /** Code NAF rev2 (ex: '1071C' pour boulangerie artisanale). */
+  code_naf: string | null
+  /** Libellé lisible du code NAF (ex: 'Cuisson de produits de boulangerie'). */
+  libelle_naf: string | null
+  /** Date de création légale de l'établissement. */
+  date_creation: string | null  // ISO date (YYYY-MM-DD)
+  /** Tranche d'effectif salarié Sirene (codes '00' à '53', ex: '11' = 10-19 salariés). */
+  tranche_effectif: string | null
+  etat_administratif: EtatAdministratif
+  /** Payload brut Sirene (jsonb) pour ré-extraction ultérieure sans rappel API. */
+  sirene_raw: unknown
+  sirene_enriched_at: string | null  // ISO
+
+  // ── Performance site existant (PageSpeed Insights v5) ──
+
+  /** Score de performance (0..100), null si non analysé ou prospect sans site. */
+  pagespeed_score_perf: number | null
+  /** Score performance mobile, null si non analysé ou si API n'a renvoyé qu'un score global. */
+  pagespeed_score_mobile: number | null
+  pagespeed_analyzed_at: string | null  // ISO
+  pagespeed_status: PageSpeedStatus
+  /** Payload brut PageSpeed pour audit ultérieur. */
+  pagespeed_raw: unknown
+
+  // ── Dédup ──
+
+  /**
+   * Avertissement de doublon potentiel posé à l'import quand un match
+   * nom+CP a été détecté SANS SIRET commun (dédup conservatrice).
+   * L'admin peut filtrer pour fusionner manuellement. Null = pas de doute.
+   */
+  dedup_warning: string | null
 }
 
 // ─── Maquettes (générateur de maquettes ultra-personnalisées) ────────────────

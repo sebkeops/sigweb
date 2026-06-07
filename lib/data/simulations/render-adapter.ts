@@ -163,6 +163,25 @@ export function simulationPayloadToRenderProps(
     // pas lus par les sous-composants /demos).
     statut_updated_at: FAKE_ISO,
     is_test: false,
+
+    // ── Sirene + PageSpeed (intégration data.gouv.fr / Google v5) ──
+    // Tous null sur une simulation publique : pas d'enrichissement légal
+    // ni d'analyse perf sur un faux prospect. Les composants /demos ne
+    // lisent pas ces champs.
+    siret: null,
+    code_naf: null,
+    libelle_naf: null,
+    date_creation: null,
+    tranche_effectif: null,
+    etat_administratif: null,
+    sirene_raw: null,
+    sirene_enriched_at: null,
+    pagespeed_score_perf: null,
+    pagespeed_score_mobile: null,
+    pagespeed_analyzed_at: null,
+    pagespeed_status: null,
+    pagespeed_raw: null,
+    dedup_warning: null,
   }
 
   return { maquette, prospect }
