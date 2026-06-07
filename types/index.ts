@@ -584,3 +584,46 @@ export interface MaquetteVisitedMetadata {
   /** Slug de la maquette concernee (utile cote rendu UI). */
   slug: string
 }
+
+// ─── Événements manuels timeline (CRM v3 Phase 4) ─────────────────────────────
+
+/**
+ * Sous-type d'un événement `phone_call` — résultat de l'appel.
+ * - `sans_reponse` : a sonné, pas de décroché
+ * - `parle` : conversation aboutie
+ * - `message_vocal` : laissé un message sur répondeur
+ */
+export type PhoneCallSubtype = 'sans_reponse' | 'parle' | 'message_vocal'
+
+/**
+ * Plateforme sur laquelle un DM `dm_sent` a été envoyé. Volontairement
+ * restreint aux 2 réseaux ciblés (artisans/commerçants locaux).
+ */
+export type DmSentPlatform = 'facebook' | 'instagram'
+
+export interface DmSentMetadata {
+  plateforme: DmSentPlatform
+}
+
+/**
+ * Metadata d'un event `meeting_scheduled` — date du RDV programmé.
+ * Le lieu (cabinet / chez le commerçant / Zoom / etc.) reste libre dans
+ * `notes` pour ne pas multiplier les champs au moment de la saisie.
+ */
+export interface MeetingScheduledMetadata {
+  date_rdv: string  // ISO
+}
+
+/**
+ * Types d'events Phase 4 qui se saisissent à la main via la modale/
+ * bottom-sheet « Ajouter un événement ». `status_changed` et
+ * `maquette_visited` ne sont PAS dans cette liste — ils sont créés
+ * automatiquement par le système.
+ */
+export type ManualTimelineEventType =
+  | 'phone_call'
+  | 'affiche_deposited'
+  | 'terrain_visit'
+  | 'dm_sent'
+  | 'meeting_scheduled'
+  | 'note'
