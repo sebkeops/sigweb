@@ -57,7 +57,7 @@ export const terrainVisitSchema = z.object({
 export const dmSentSchema = z.object({
   event_type: z.literal('dm_sent'),
   occurred_at: occurredAtSchema,
-  plateforme: z.enum(['facebook', 'instagram']),
+  plateforme: z.enum(['facebook', 'instagram', 'linkedin']),
   notes: notesOptional,
 })
 

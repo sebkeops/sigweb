@@ -182,6 +182,7 @@ function EventFormFields({ type }: { type: ManualTimelineEventType }) {
         <Field label="Plateforme" name="plateforme" type="select" required>
           <option value="facebook">Facebook</option>
           <option value="instagram">Instagram</option>
+          <option value="linkedin">LinkedIn</option>
         </Field>
       )}
 

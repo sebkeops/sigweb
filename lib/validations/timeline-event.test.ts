@@ -77,11 +77,20 @@ describe('manualTimelineEventSchema — dm_sent', () => {
     expect(result.success).toBe(true)
   })
 
-  it('rejette une plateforme inconnue', () => {
+  it('valide avec plateforme linkedin', () => {
     const result = manualTimelineEventSchema.safeParse({
       event_type: 'dm_sent',
       occurred_at: '2026-06-07T10:00:00Z',
       plateforme: 'linkedin',
+    })
+    expect(result.success).toBe(true)
+  })
+
+  it('rejette une plateforme inconnue', () => {
+    const result = manualTimelineEventSchema.safeParse({
+      event_type: 'dm_sent',
+      occurred_at: '2026-06-07T10:00:00Z',
+      plateforme: 'tiktok',
     })
     expect(result.success).toBe(false)
   })

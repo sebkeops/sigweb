@@ -94,7 +94,7 @@ function renderMeta(
   }
 
   if (type === 'dm_sent' && meta && typeof meta.plateforme === 'string') {
-    const platLabel = meta.plateforme === 'facebook' ? 'Facebook' : 'Instagram'
+    const platLabel = DM_PLATFORM_LABEL[meta.plateforme] ?? meta.plateforme
     return (
       <p className="mt-1 font-body text-xs text-muted">
         Plateforme : <span className="font-medium text-ink">{platLabel}</span>
@@ -119,6 +119,12 @@ const PHONE_CALL_LABEL: Record<PhoneCallSubtype, string> = {
   sans_reponse: 'Sans réponse',
   parle: 'Conversation aboutie',
   message_vocal: 'Message vocal laissé',
+}
+
+const DM_PLATFORM_LABEL: Record<string, string> = {
+  facebook: 'Facebook',
+  instagram: 'Instagram',
+  linkedin: 'LinkedIn',
 }
 
 function formatRdv(iso: string): string {

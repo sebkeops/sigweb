@@ -596,10 +596,11 @@ export interface MaquetteVisitedMetadata {
 export type PhoneCallSubtype = 'sans_reponse' | 'parle' | 'message_vocal'
 
 /**
- * Plateforme sur laquelle un DM `dm_sent` a été envoyé. Volontairement
- * restreint aux 2 réseaux ciblés (artisans/commerçants locaux).
+ * Plateforme sur laquelle un DM `dm_sent` a été envoyé. Restreint aux 3
+ * réseaux utilisés en prospection : Facebook + Instagram pour les commerces
+ * locaux, LinkedIn pour les artisans/professions liberales avec page pro.
  */
-export type DmSentPlatform = 'facebook' | 'instagram'
+export type DmSentPlatform = 'facebook' | 'instagram' | 'linkedin'
 
 export interface DmSentMetadata {
   plateforme: DmSentPlatform
