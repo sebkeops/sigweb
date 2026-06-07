@@ -40,10 +40,13 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const unread = unreadCount ?? 0
 
   return (
-    <div className="min-h-screen bg-surface-soft">
+    // overflow-x-hidden = filet de securite global : si un descendant
+    // depasse en largeur sur mobile, on coupe net plutot que de laisser
+    // apparaitre un scroll horizontal qui decale aussi la BottomNav fixed.
+    <div className="min-h-screen overflow-x-hidden bg-surface-soft">
       {/* Barre admin */}
       <header className="sticky top-0 z-40 border-b border-border bg-surface shadow-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <div className="flex items-center gap-3 lg:gap-8">
             {/* Hamburger + drawer — visibles uniquement < lg */}
             <MobileNavDrawer links={ADMIN_NAV_LINKS} unread={unread} userEmail={user.email ?? ''} />
@@ -91,9 +94,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </header>
 
-      {/* Contenu — pb-24 sur mobile pour ne pas etre masque par la BottomNav.
-          Sur desktop (lg+) la BottomNav est cachee, le padding standard reste. */}
-      <main className="mx-auto max-w-7xl px-6 py-10 pb-24 lg:pb-10">{children}</main>
+      {/* Contenu — px-4 mobile (gagne 16px utiles vs px-6) puis px-6 a partir
+          de sm. py reduit aussi sur mobile. pb-24 reserve la place de la
+          BottomNav (cachee lg+). */}
+      <main className="mx-auto max-w-7xl px-4 py-6 pb-24 sm:px-6 sm:py-10 lg:pb-10">{children}</main>
       <AdminBottomNav unread={unread} />
       <InactivityLogout />
     </div>

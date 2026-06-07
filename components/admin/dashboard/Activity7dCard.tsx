@@ -51,9 +51,12 @@ export default function Activity7dCard({ data }: Props) {
         </span>
       </header>
 
-      {/* Histogramme */}
+      {/* Histogramme — min-w-0 sur chaque colonne pour autoriser le
+          shrink en dessous de la largeur du contenu (sinon le nombre
+          a 2 chiffres + lettre du jour imposent une largeur min qui
+          fait deborder la rangee). */}
       <div
-        className="flex h-32 items-end justify-between gap-1.5"
+        className="flex h-32 items-end justify-between gap-1"
         role="list"
         aria-label="Activité par jour, 7 derniers jours"
       >
@@ -63,7 +66,7 @@ export default function Activity7dCard({ data }: Props) {
             <div
               key={day.date}
               role="listitem"
-              className="flex flex-1 flex-col items-center justify-end gap-1"
+              className="flex min-w-0 flex-1 flex-col items-center justify-end gap-1"
               title={`${formatDayShort(day.date)} : ${day.total} événement${day.total > 1 ? 's' : ''}`}
             >
               <div className="flex w-full flex-col justify-end" style={{ height: '100%' }}>
