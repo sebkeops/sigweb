@@ -5,10 +5,12 @@ import { redirect } from 'next/navigation'
 import LogoutButton from './LogoutButton'
 import InactivityLogout from './InactivityLogout'
 import MobileNavDrawer from '@/components/admin/MobileNavDrawer'
+import AdminBottomNav from '@/components/admin/AdminBottomNav'
 import Logo from '@/components/ui/Logo'
 
 /** Liens de navigation admin — partagés par la nav desktop et le drawer mobile. */
 const ADMIN_NAV_LINKS = [
+  { href: '/admin/dashboard', label: 'Dashboard' },
   { href: '/admin/projets', label: 'Projets' },
   { href: '/admin/crm', label: 'CRM' },
   { href: '/admin/contacts', label: 'Messages' },
@@ -89,8 +91,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
       </header>
 
-      {/* Contenu */}
-      <main className="mx-auto max-w-7xl px-6 py-10">{children}</main>
+      {/* Contenu — pb-24 sur mobile pour ne pas etre masque par la BottomNav.
+          Sur desktop (lg+) la BottomNav est cachee, le padding standard reste. */}
+      <main className="mx-auto max-w-7xl px-6 py-10 pb-24 lg:pb-10">{children}</main>
+      <AdminBottomNav unread={unread} />
       <InactivityLogout />
     </div>
   )
