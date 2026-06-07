@@ -5,6 +5,12 @@ import { usePathname } from 'next/navigation'
 
 interface Props {
   unread: number
+  /**
+   * Nombre d'actions du jour (relances pending + RDV du jour). Affiche un
+   * badge rouge sur l'item Dashboard si > 0. Sert d'incitatif visuel
+   * quand l'admin ouvre l'app : « tu as N trucs à traiter ». CRM v3 Phase 7.
+   */
+  actionCount?: number
 }
 
 interface NavItem {
@@ -28,7 +34,7 @@ interface NavItem {
  * Pas d'animation d'apparition — la nav doit toujours être là, pas
  * surgir, pour ne pas désorienter.
  */
-export default function AdminBottomNav({ unread }: Props) {
+export default function AdminBottomNav({ unread, actionCount = 0 }: Props) {
   const pathname = usePathname()
 
   const items: NavItem[] = [
@@ -147,6 +153,9 @@ export default function AdminBottomNav({ unread }: Props) {
             active ? 'text-primary' : 'text-muted hover:text-ink'
           }`
 
+          // Badge actions du jour : sur l'item Dashboard si actionCount > 0.
+          const showActionBadge = item.href === '/admin/dashboard' && actionCount > 0
+
           return (
             <li key={item.label} className="relative">
               {isMore ? (
@@ -170,6 +179,14 @@ export default function AdminBottomNav({ unread }: Props) {
                   className="absolute right-3 top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-cta px-1 font-body text-[10px] font-bold leading-none text-white"
                 >
                   {unread > 9 ? '9+' : unread}
+                </span>
+              )}
+              {showActionBadge && (
+                <span
+                  aria-label={`${actionCount} action${actionCount > 1 ? 's' : ''} à mener aujourd'hui`}
+                  className="absolute right-3 top-1.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-cta px-1 font-body text-[10px] font-bold leading-none text-white"
+                >
+                  {actionCount > 9 ? '9+' : actionCount}
                 </span>
               )}
             </li>
