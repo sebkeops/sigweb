@@ -22,9 +22,12 @@ export default function MaquetteTracker({ slug }: MaquetteTrackerProps) {
   useEffect(() => {
     // 1. Source : lecture de `?src=...` cote client (le SC tourne avec
     //    des URL parametres mais Next met en cache la page, donc on
-    //    relit cote browser pour avoir la vraie URL du visiteur)
+    //    relit cote browser pour avoir la vraie URL du visiteur).
+    //    Retrocompat : accepte `?source=email` pour les emails Resend
+    //    deja partis avec l'ancien nom de parametre (avant le fix
+    //    `?src=email` du fix-up Phase 3).
     const url = new URL(window.location.href)
-    const src = url.searchParams.get('src')
+    const src = url.searchParams.get('src') ?? url.searchParams.get('source')
     const referrer = document.referrer || null
 
     let visitId: string | null = null

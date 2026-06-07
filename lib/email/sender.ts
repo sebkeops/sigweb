@@ -144,7 +144,10 @@ export async function renderEmailContent(
   // 6. Construit le set de variables de substitution
   const siteUrl = process.env.SIGWEB_SITE_URL ?? 'https://www.sigweb.fr'
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? siteUrl
-  const maquetteUrl = `${baseUrl}/demos/${maquette.slug}?source=email`
+  // CRM v3 Phase 3 — `?src=email` (standard) pour que le tracker
+  // identifie la source 'email'. Le tracker accepte aussi `?source=email`
+  // en rétrocompat pour les emails Resend déjà partis avec l'ancien nom.
+  const maquetteUrl = `${baseUrl}/demos/${maquette.slug}?src=email`
   const unsubscribeUrl = `${baseUrl}/unsubscribe?token=${encodeURIComponent(
     generateUnsubscribeToken(params.prospectId)
   )}`
