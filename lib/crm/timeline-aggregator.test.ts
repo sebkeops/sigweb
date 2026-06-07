@@ -40,6 +40,7 @@ function makeEmail(overrides: Partial<EmailSend> = {}): EmailSend {
     bounced_at: null,
     bounce_reason: null,
     unsubscribed_at: null,
+    is_test: false,
     ...overrides,
   }
 }

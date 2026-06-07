@@ -310,6 +310,7 @@ export async function sendProspectEmail(
       preview_image_url: rendered.previewImageUrl,
       maquette_url: rendered.maquetteUrl,
       status: 'pending',
+      is_test: isTestEmailRecipient(finalTo),
     })
     .select('*')
     .single<EmailSend>()
