@@ -15,6 +15,7 @@ import StatusDropdown from '@/components/admin/StatusDropdown'
 import Timeline from '@/components/admin/timeline/Timeline'
 import MaquetteVisitsStats from '@/components/admin/MaquetteVisitsStats'
 import type { TimelineItem } from '@/lib/crm/timeline-aggregator'
+import AddEventButton from './AddEventButton'
 import DeleteProspectButton from './DeleteProspectButton'
 import GenerateAfficheButton from './GenerateAfficheButton'
 import GenerateMaquetteButton from './GenerateMaquetteButton'
@@ -349,8 +350,12 @@ export default async function ProspectDetailPage({ params, searchParams }: Props
       <MaquetteVisitsStats prospectId={p.id} />
 
       {/* Timeline d'événements — fusionne emails (groupés) + transitions
-          de statut + visites maquette (CRM v3 Phase 3). Phase 4 ajoutera
-          les events manuels (téléphone, terrain, notes…). */}
+          de statut + visites maquette + events manuels (Phase 4). Le
+          bouton « + Ajouter un événement » ouvre un bottom-sheet pour
+          créer un phone_call, terrain_visit, dm_sent, etc. */}
+      <div className="flex justify-end">
+        <AddEventButton prospectId={p.id} />
+      </div>
       <Timeline prospectId={p.id} activeChannel={activeChannel} />
 
       {/* Données Google — visible uniquement si la fiche est liée */}
