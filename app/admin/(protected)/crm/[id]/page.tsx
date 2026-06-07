@@ -13,6 +13,7 @@ import {
 } from '@/lib/crm/constants'
 import StatusDropdown from '@/components/admin/StatusDropdown'
 import Timeline from '@/components/admin/timeline/Timeline'
+import MaquetteVisitsStats from '@/components/admin/MaquetteVisitsStats'
 import type { TimelineItem } from '@/lib/crm/timeline-aggregator'
 import DeleteProspectButton from './DeleteProspectButton'
 import GenerateAfficheButton from './GenerateAfficheButton'
@@ -342,9 +343,14 @@ export default async function ProspectDetailPage({ params, searchParams }: Props
         </div>
       </div>
 
+      {/* CRM v3 Phase 3 — Encadré "Maquette consultée" avec stats
+          agrégées (compteur, première/dernière, sources, durée moyenne).
+          Affiché uniquement si au moins 1 visite (sinon null). */}
+      <MaquetteVisitsStats prospectId={p.id} />
+
       {/* Timeline d'événements — fusionne emails (groupés) + transitions
-          de statut (Phase 2). Phase 3 ajoutera les visites maquette,
-          Phase 4 les events manuels (téléphone, terrain, notes…). */}
+          de statut + visites maquette (CRM v3 Phase 3). Phase 4 ajoutera
+          les events manuels (téléphone, terrain, notes…). */}
       <Timeline prospectId={p.id} activeChannel={activeChannel} />
 
       {/* Données Google — visible uniquement si la fiche est liée */}
