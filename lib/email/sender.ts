@@ -421,6 +421,13 @@ export async function sendProspectEmail(
           .update({
             statut: next,
             statut_updated_at: new Date().toISOString(),
+            // CRM v3 Phase 7 fix — la relance a ete faite (= envoi d'email),
+            // donc on consomme la date prevue. Sans ca, un prospect dont
+            // on relance r1 → r2 reste affiche dans le dashboard 'Relances
+            // a faire' avec l'ancienne date r1 (overdue qui grimpe a chaque
+            // envoi). L'admin reprogramme manuellement une nouvelle date
+            // depuis la fiche prospect s'il veut prevoir une r3.
+            date_relance_prevue: null,
           })
           .eq('id', params.prospectId)
         if (progressionErr) {

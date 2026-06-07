@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { StatusBadge } from '@/components/ui/StatusBadge'
 import type { RelancePendingRow } from '@/lib/admin/dashboard-stats'
+import IgnoreRelanceButton from './IgnoreRelanceButton'
 
 interface Props {
   rows: RelancePendingRow[]
@@ -41,10 +42,10 @@ export default function RelancesPendingCard({ rows }: Props) {
           {rows.slice(0, 10).map((row) => {
             const isOverdue = row.urgency === 'overdue'
             return (
-              <li key={row.prospectId}>
+              <li key={row.prospectId} className="relative">
                 <Link
                   href={`/admin/crm/${row.prospectId}`}
-                  className={`block rounded-sm border px-3 py-2 transition hover:bg-surface-soft ${
+                  className={`block rounded-sm border py-2 pl-3 pr-12 transition hover:bg-surface-soft ${
                     isOverdue
                       ? 'border-red-200 bg-red-50/60 hover:border-red-300'
                       : 'border-orange-200 bg-orange-50/40 hover:border-orange-300'
@@ -86,6 +87,14 @@ export default function RelancesPendingCard({ rows }: Props) {
                     </div>
                   </div>
                 </Link>
+                {/* Bouton 'ignorer' en absolu hors du <Link> (sinon le clic
+                    sur le bouton declencherait aussi la navigation). pr-12
+                    sur le Link reserve la place pour ne pas que le bouton
+                    chevauche le contenu. */}
+                <IgnoreRelanceButton
+                  prospectId={row.prospectId}
+                  prospectName={row.prospectName}
+                />
               </li>
             )
           })}
