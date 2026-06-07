@@ -310,7 +310,12 @@ export async function sendProspectEmail(
       preview_image_url: rendered.previewImageUrl,
       maquette_url: rendered.maquetteUrl,
       status: 'pending',
-      is_test: isTestEmailRecipient(finalTo),
+      // « Test » = bouton « Envoyer un test » (toOverride passé). On NE se
+      // base PAS sur le domaine du destinataire (isTestEmailRecipient) car
+      // l'adresse de test peut très bien être un Gmail perso et pas
+      // forcément @sigweb.fr — la seule signature fiable d'un envoi test,
+      // c'est qu'un toOverride a été fourni.
+      is_test: params.isTest === true,
     })
     .select('*')
     .single<EmailSend>()
