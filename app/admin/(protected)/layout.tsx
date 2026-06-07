@@ -40,10 +40,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const unread = unreadCount ?? 0
 
   return (
-    // overflow-x-hidden = filet de securite global : si un descendant
-    // depasse en largeur sur mobile, on coupe net plutot que de laisser
-    // apparaitre un scroll horizontal qui decale aussi la BottomNav fixed.
-    <div className="min-h-screen overflow-x-hidden bg-surface-soft">
+    <div className="min-h-screen bg-surface-soft">
       {/* Barre admin */}
       <header className="sticky top-0 z-40 border-b border-border bg-surface shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">

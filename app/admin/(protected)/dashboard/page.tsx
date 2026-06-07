@@ -41,7 +41,14 @@ export default async function AdminDashboardPage() {
         </p>
       </header>
 
-      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2">
+      {/* min-w-0 sur les grid items : CSS Grid impose min-width=auto par
+          defaut, ce qui empeche les items de shrink en dessous de leur
+          min-content. Si une carte contient un texte ou flex enfant
+          indivisible plus large que la colonne, l'item ET la carte
+          debordent visuellement. min-w-0 autorise le shrink jusqu'a 0
+          et delegue la responsabilite du wrap aux contenus internes
+          (truncate, break-words, min-w-0 sur les flex enfants). */}
+      <div className="grid gap-4 sm:gap-6 lg:grid-cols-2 [&>*]:min-w-0">
         {/* Mobile : priorité d'action en haut */}
         <div className="order-1 lg:order-1">
           <RelancesPendingCard rows={data.relancesPending} />
