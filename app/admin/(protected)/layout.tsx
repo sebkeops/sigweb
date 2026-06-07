@@ -7,6 +7,7 @@ import InactivityLogout from './InactivityLogout'
 import MobileNavDrawer from '@/components/admin/MobileNavDrawer'
 import AdminBottomNav from '@/components/admin/AdminBottomNav'
 import Logo from '@/components/ui/Logo'
+import { buildDailyRecap } from '@/lib/admin/daily-recap'
 
 /** Liens de navigation admin — partagés par la nav desktop et le drawer mobile. */
 const ADMIN_NAV_LINKS = [
@@ -33,11 +34,23 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect('/admin/login')
   }
 
+  // Compteur des messages non-lus pour le badge Messages dans la nav.
   const { count: unreadCount } = await supabase
     .from('contacts')
     .select('*', { count: 'exact', head: true })
     .eq('is_read', false)
   const unread = unreadCount ?? 0
+
+  // CRM v3 Phase 7 — compteur d'actions du jour (relances overdue/today + RDV
+  // du jour) pour le badge Dashboard de la BottomNav. Best-effort : si la
+  // requete plante, on retombe sur 0 plutot que de casser tout le layout admin.
+  let actionCount = 0
+  try {
+    const recap = await buildDailyRecap()
+    actionCount = recap.actionCount
+  } catch (err) {
+    console.error('[admin layout] buildDailyRecap KO', err)
+  }
 
   return (
     <div className="min-h-screen bg-surface-soft">
@@ -95,7 +108,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           de sm. py reduit aussi sur mobile. pb-24 reserve la place de la
           BottomNav (cachee lg+). */}
       <main className="mx-auto max-w-7xl px-4 py-6 pb-24 sm:px-6 sm:py-10 lg:pb-10">{children}</main>
-      <AdminBottomNav unread={unread} />
+      <AdminBottomNav unread={unread} actionCount={actionCount} />
       <InactivityLogout />
     </div>
   )
