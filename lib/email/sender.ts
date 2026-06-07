@@ -279,9 +279,22 @@ export async function sendProspectEmail(
   const rendered = await renderEmailContent(params, supabase)
 
   const finalSubject = options.customSubject ?? rendered.subject
-  const finalHtml = options.customBodyHtml ?? rendered.bodyHtml
-  const finalText = options.customBodyText ?? rendered.bodyText
+  let finalHtml = options.customBodyHtml ?? rendered.bodyHtml
+  let finalText = options.customBodyText ?? rendered.bodyText
   const finalTo = options.toOverride ?? rendered.toEmail
+
+  // CRM v3 Phase 3 — Si on est en mode TEST mais que le HTML/text vient
+  // de `customBodyHtml/Text` (preview pre-generee dans la modale AVANT
+  // que l'utilisateur ait cliqué sur "Envoyer un test"), `?src=email`
+  // est déjà figé dans le contenu. On le remplace par `?src=email-test`
+  // a la volée pour que le tracker distingue correctement la source.
+  // Idempotent : la regex `(?![-])` ignore `?src=email-test` déjà present.
+  if (params.isTest) {
+    const replaceSrcEmail = (s: string): string =>
+      s.replace(/([?&])src=email(?![-])/g, '$1src=email-test')
+    finalHtml = replaceSrcEmail(finalHtml)
+    finalText = replaceSrcEmail(finalText)
+  }
 
   // 1. Insert email_sends en pending — trace même si Resend foire ensuite.
   const { data: insertedRow, error: insertErr } = await supabase
