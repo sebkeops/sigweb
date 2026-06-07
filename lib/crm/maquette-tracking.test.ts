@@ -169,3 +169,46 @@ describe('VISIT_UPSERT_WINDOW_MS', () => {
     expect(VISIT_UPSERT_WINDOW_MS).toBe(30 * 60 * 1000)
   })
 })
+
+describe('regex find/replace src=email → src=email-test (sender.ts)', () => {
+  // Reproduit la regex utilisee dans sender.ts pour transformer
+  // les URLs maquette pre-generees dans la modale au moment de l'envoi
+  // TEST. Garde sa stabilite via tests dedies.
+  function replaceSrcEmail(s: string): string {
+    return s.replace(/([?&])src=email(?![-])/g, '$1src=email-test')
+  }
+
+  it('?src=email seul → ?src=email-test', () => {
+    expect(replaceSrcEmail('https://sigweb.fr/demos/x?src=email')).toBe(
+      'https://sigweb.fr/demos/x?src=email-test'
+    )
+  })
+
+  it('&src=email en milieu d\'URL → &src=email-test', () => {
+    expect(replaceSrcEmail('https://sigweb.fr/demos/x?a=1&src=email&b=2')).toBe(
+      'https://sigweb.fr/demos/x?a=1&src=email-test&b=2'
+    )
+  })
+
+  it('idempotent : ?src=email-test reste inchange (regex negative lookahead)', () => {
+    expect(replaceSrcEmail('https://sigweb.fr/demos/x?src=email-test')).toBe(
+      'https://sigweb.fr/demos/x?src=email-test'
+    )
+  })
+
+  it('multiples occurrences remplacees', () => {
+    const html = '<a href="https://sigweb.fr/x?src=email">link1</a> <a href="https://sigweb.fr/y?src=email">link2</a>'
+    const expected = '<a href="https://sigweb.fr/x?src=email-test">link1</a> <a href="https://sigweb.fr/y?src=email-test">link2</a>'
+    expect(replaceSrcEmail(html)).toBe(expected)
+  })
+
+  it('?src=affiche / ?src=carte / ?src=direct → inchanges', () => {
+    expect(replaceSrcEmail('?src=affiche')).toBe('?src=affiche')
+    expect(replaceSrcEmail('?src=carte')).toBe('?src=carte')
+    expect(replaceSrcEmail('?src=direct')).toBe('?src=direct')
+  })
+
+  it('texte sans ?src= → inchange', () => {
+    expect(replaceSrcEmail('Hello, sigweb.fr/demos/x')).toBe('Hello, sigweb.fr/demos/x')
+  })
+})
