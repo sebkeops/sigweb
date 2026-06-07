@@ -8,6 +8,7 @@ import {
   isTestEmailRecipient,
   nextStatutAfterEmailSent,
 } from '@/lib/crm/statut-progression'
+
 import {
   generateMaquettePreview,
   ScreenshotProviderError,
@@ -370,9 +371,7 @@ export async function sendProspectEmail(
   if (!isTestEmailRecipient(finalTo)) {
     const { data: prospectRow } = await supabase
       .from('prospects')
-      .select('statut')
-      .eq('id', params.prospectId)
-      .maybeSingle<{ statut: ProspectStatut }>()
+
 
     if (prospectRow) {
       const next = nextStatutAfterEmailSent(prospectRow.statut)
@@ -389,6 +388,7 @@ export async function sendProspectEmail(
             '[sendProspectEmail] progression statut échec (best-effort, email parti) :',
             progressionErr.message
           )
+
         }
       }
     }
