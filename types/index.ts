@@ -525,11 +525,15 @@ export interface StatusChangedMetadata {
  * `?src=...` dans l'URL. Whitelist stricte cote BDD (CHECK constraint).
  */
 export type MaquetteVisitSource =
-  | 'affiche'  // QR code de l'affiche A4 deposee en physique
-  | 'email'    // Lien dans l'email Resend envoye au prospect
-  | 'carte'    // QR de la carte de visite (capture preventive)
-  | 'direct'   // Aucun `?src` ou trafic direct (defaut)
-  | 'other'    // `?src` present avec valeur non whitelistee → normalise
+  | 'affiche'      // QR code de l'affiche A4 deposee en physique
+  | 'email'        // Lien dans l'email Resend envoye au VRAI prospect
+  | 'email-test'   // Lien dans l'email Resend envoye en MODE TEST a l'admin
+                   // (bouton 'Envoyer un test' avec toOverride). Force
+                   // is_test=true cote route handler → ces visites ne
+                   // polluent ni l'encadre stats ni la timeline.
+  | 'carte'        // QR de la carte de visite (capture preventive)
+  | 'direct'       // Aucun `?src` ou trafic direct (defaut)
+  | 'other'        // `?src` present avec valeur non whitelistee → normalise
 
 /**
  * Resume du user agent — on NE conserve PAS le UA brut (quasi-identifiant).

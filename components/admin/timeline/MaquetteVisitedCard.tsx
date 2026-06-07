@@ -105,11 +105,12 @@ export default function MaquetteVisitedCard({ item }: Props) {
 
 function labelForSource(src: MaquetteVisitSource): string {
   switch (src) {
-    case 'affiche': return 'via affiche'
-    case 'email':   return 'via email'
-    case 'carte':   return 'via carte'
-    case 'direct':  return 'direct'
-    case 'other':   return 'autre'
+    case 'affiche':     return 'via affiche'
+    case 'email':       return 'via email'
+    case 'email-test':  return 'via email (test)'
+    case 'carte':       return 'via carte'
+    case 'direct':      return 'direct'
+    case 'other':       return 'autre'
   }
 }
 

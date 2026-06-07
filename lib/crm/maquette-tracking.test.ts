@@ -79,8 +79,15 @@ describe('parseSource — whitelist stricte', () => {
   it('valeurs whitelistees passent telles quelles', () => {
     expect(parseSource('affiche')).toBe('affiche')
     expect(parseSource('email')).toBe('email')
+    expect(parseSource('email-test')).toBe('email-test')
     expect(parseSource('carte')).toBe('carte')
     expect(parseSource('direct')).toBe('direct')
+  })
+
+  it('email-test (envoi test) distingue de email (envoi reel)', () => {
+    expect(parseSource('email-test')).toBe('email-test')
+    expect(parseSource('email')).toBe('email')
+    expect(parseSource('email-test')).not.toBe(parseSource('email'))
   })
 
   it('casse mixte normalisee', () => {

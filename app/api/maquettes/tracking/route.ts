@@ -67,16 +67,23 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const source = parseSource(rawSource)
   const referrer = normalizeReferrer(bodyReferrer ?? request.headers.get('referer'))
 
-  // 3. Detection admin connecte → is_test (cookie Supabase Auth)
-  let is_test = false
-  try {
-    const ssr = await createSsrClient()
-    const {
-      data: { user },
-    } = await ssr.auth.getUser()
-    if (user) is_test = true
-  } catch {
-    // best-effort — si le cookie n'est pas la, pas grave
+  // 3. Detection is_test selon 2 signaux cumulatifs (OR logique) :
+  //    a. Cookie Supabase Auth present → admin connecte qui consulte
+  //    b. Source = 'email-test' → URL provient d'un envoi test (bouton
+  //       'Envoyer un test' avec toOverride → sender genere `?src=email-test`)
+  //    Dans les 2 cas, la visite est exclue des stats agregees + de la
+  //    timeline cote admin (filtrage WHERE is_test = false partout).
+  let is_test = source === 'email-test'
+  if (!is_test) {
+    try {
+      const ssr = await createSsrClient()
+      const {
+        data: { user },
+      } = await ssr.auth.getUser()
+      if (user) is_test = true
+    } catch {
+      // best-effort — si le cookie n'est pas la, pas grave
+    }
   }
 
   // 4. Lookup prospect_id via le slug de la maquette

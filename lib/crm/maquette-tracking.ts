@@ -67,6 +67,7 @@ export function parseUserAgent(userAgent: string | null | undefined): MaquetteVi
 const VALID_SOURCES: ReadonlySet<MaquetteVisitSource> = new Set([
   'affiche',
   'email',
+  'email-test',
   'carte',
   'direct',
   'other',
