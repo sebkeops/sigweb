@@ -14,6 +14,7 @@ import CtaBanner from './components/CtaBanner'
 import Avis from './components/Avis'
 import Infos from './components/Infos'
 import Footer from './components/Footer'
+import MaquetteTracker from './MaquetteTracker'
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -127,6 +128,9 @@ export default async function MaquettePage({ params }: Props) {
         defaultFooterColonneLabel={template.defaults.footerColonneLabel}
         overrides={maquette.infos_overrides}
       />
+      {/* CRM v3 Phase 3 — tracking RGPD-friendly (cf. MaquetteTracker.tsx)
+          Invisible : ne rend rien, juste un useEffect qui POST/PATCH le tracking. */}
+      <MaquetteTracker slug={maquette.slug} />
     </div>
   )
 }

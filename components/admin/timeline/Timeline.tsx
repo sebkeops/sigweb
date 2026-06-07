@@ -8,6 +8,7 @@ import {
 } from '@/lib/crm/timeline-aggregator'
 import StatusChangedCard from './StatusChangedCard'
 import EmailCardGrouped from './EmailCardGrouped'
+import MaquetteVisitedCard from './MaquetteVisitedCard'
 import TimelineFilter from './TimelineFilter'
 
 interface Props {
@@ -92,9 +93,11 @@ export default async function Timeline({ prospectId, activeChannel }: Props) {
             <li key={item.id}>
               {isEmailGroup(item) ? (
                 <EmailCardGrouped item={item} />
-              ) : (
+              ) : item.event.event_type === 'maquette_visited' ? (
+                <MaquetteVisitedCard item={item} />
+              ) : item.event.event_type === 'status_changed' ? (
                 <StatusChangedCard item={item} />
-              )}
+              ) : null /* types Phase 4 (phone_call, etc.) — cartes a venir */}
             </li>
           ))}
         </ol>

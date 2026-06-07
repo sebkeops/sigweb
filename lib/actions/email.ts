@@ -191,10 +191,19 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
   }
 
   try {
+    // CRM v3 Phase 3 — `toOverride` ⇒ envoi TEST (le bouton "Envoyer
+    // un test" force l'adresse de destination vers admin@sigweb.fr).
+    // On propage ce flag à `sendProspectEmail` pour que l'URL de la
+    // maquette dans le body utilise `?src=email-test` (au lieu de
+    // `?src=email`), permettant au tracker de distinguer les visites
+    // issues des tests de celles issues des vrais envois.
+    const isTest = Boolean(input.toOverride)
+
     const sendRow = await sendProspectEmail(
       {
         prospectId: input.prospectId,
         variantOverride: input.variantOverride,
+        isTest,
       },
       supabase,
       {

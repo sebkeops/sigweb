@@ -41,6 +41,19 @@ export interface RenderEmailParams {
   prospectId: string
   /** Force la variante (override scoring auto). */
   variantOverride?: WebVariant
+  /**
+   * CRM v3 Phase 3 — flag de TEST. Quand true, l'URL de la maquette
+   * dans le body utilise `?src=email-test` (au lieu de `?src=email`)
+   * pour que le tracker distingue les visites issues des envois TEST
+   * (bouton 'Envoyer un test' de l'admin) des envois REELS au prospect.
+   *
+   * Les visites avec source 'email-test' sont marquees is_test=true
+   * cote route handler → exclues de l'encadre stats et de la timeline.
+   *
+   * Le caller (`lib/actions/email.ts`) calcule ce flag depuis la
+   * presence de `options.toOverride`.
+   */
+  isTest?: boolean
 }
 
 export interface RenderedEmail {
@@ -144,7 +157,13 @@ export async function renderEmailContent(
   // 6. Construit le set de variables de substitution
   const siteUrl = process.env.SIGWEB_SITE_URL ?? 'https://www.sigweb.fr'
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? siteUrl
-  const maquetteUrl = `${baseUrl}/demos/${maquette.slug}?source=email`
+  // CRM v3 Phase 3 — `?src=email` (envoi réel) ou `?src=email-test`
+  // (envoi test via bouton "Envoyer un test"). Le tracker distingue les
+  // 2 sources et force is_test=true sur les visites 'email-test'.
+  // Le tracker accepte aussi `?source=email` en rétrocompat pour les
+  // emails Resend déjà partis avec l'ancien nom.
+  const trackingSource = params.isTest ? 'email-test' : 'email'
+  const maquetteUrl = `${baseUrl}/demos/${maquette.slug}?src=${trackingSource}`
   const unsubscribeUrl = `${baseUrl}/unsubscribe?token=${encodeURIComponent(
     generateUnsubscribeToken(params.prospectId)
   )}`

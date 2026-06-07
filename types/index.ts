@@ -517,3 +517,62 @@ export interface StatusChangedMetadata {
   from: ProspectStatut | null  // null = initialisation / pas d'ancien connu
   to: ProspectStatut
 }
+
+// ─── Tracking visites maquette (CRM v3 Phase 3) ──────────────────────────────
+
+/**
+ * Source du trafic vers une page `/demos/{slug}`, derivee du parametre
+ * `?src=...` dans l'URL. Whitelist stricte cote BDD (CHECK constraint).
+ */
+export type MaquetteVisitSource =
+  | 'affiche'      // QR code de l'affiche A4 deposee en physique
+  | 'email'        // Lien dans l'email Resend envoye au VRAI prospect
+  | 'email-test'   // Lien dans l'email Resend envoye en MODE TEST a l'admin
+                   // (bouton 'Envoyer un test' avec toOverride). Force
+                   // is_test=true cote route handler → ces visites ne
+                   // polluent ni l'encadre stats ni la timeline.
+  | 'carte'        // QR de la carte de visite (capture preventive)
+  | 'direct'       // Aucun `?src` ou trafic direct (defaut)
+  | 'other'        // `?src` present avec valeur non whitelistee → normalise
+
+/**
+ * Resume du user agent — on NE conserve PAS le UA brut (quasi-identifiant).
+ * `null` si non detectable (UA absent ou trop bizarre).
+ */
+export type MaquetteVisitUserAgent = 'mobile' | 'desktop' | 'tablet'
+
+/**
+ * Ligne brute de `maquette_visits`. Une ligne = une visite (page load
+ * unique). La deduplication court terme (rafraichissements) se fait
+ * cote event timeline via une fenetre de 30 min.
+ */
+export interface MaquetteVisit {
+  id: string
+  created_at: string
+  slug: string
+  prospect_id: string | null
+  source: MaquetteVisitSource
+  ip_hash: string
+  user_agent_summary: MaquetteVisitUserAgent | null
+  duration_seconds: number | null
+  referrer: string | null
+  is_test: boolean
+}
+
+/**
+ * Metadata d'un event timeline `maquette_visited`. L'event est cree au
+ * 1er passage puis mis a jour (UPSERT) a chaque nouvelle visite dans
+ * une fenetre de 30 min (3 refresh ≠ 3 events).
+ *
+ * Si la 4eme visite arrive plus de 30 min apres la 3eme, un NOUVEL
+ * event est cree au lieu de mettre a jour l'ancien.
+ */
+export interface MaquetteVisitedMetadata {
+  visit_count: number
+  first_visit_at: string  // ISO — premiere visite de ce groupe
+  last_visit_at: string   // ISO — derniere visite de ce groupe (= occurred_at)
+  /** Decompte des visites par source dans ce groupe. */
+  sources: Partial<Record<MaquetteVisitSource, number>>
+  /** Slug de la maquette concernee (utile cote rendu UI). */
+  slug: string
+}
