@@ -465,6 +465,14 @@ export interface EmailSend {
   bounced_at: string | null
   bounce_reason: string | null
   unsubscribed_at: string | null
+
+  /**
+   * `true` quand l'envoi a été déclenché via le bouton « Envoyer un test »
+   * (destinataire @sigweb.fr forcé par `toOverride`). Permet d'afficher
+   * un badge TEST sur la carte timeline et de filtrer ces envois côté
+   * dashboard pour ne pas polluer les métriques d'envois réels.
+   */
+  is_test: boolean
 }
 
 // ─── Pilotage commercial CRM v3 — Timeline (Phase 2) ─────────────────────────

@@ -75,6 +75,12 @@ export interface EmailSendGroup {
   failed: boolean
   /** `true` si le destinataire s'est désinscrit après cet email. */
   unsubscribed: boolean
+  /**
+   * `true` si l'envoi vient du bouton « Envoyer un test » (destinataire
+   * @sigweb.fr forcé par `toOverride`). Sert à afficher un badge TEST
+   * sur la carte timeline pour distinguer visuellement des envois réels.
+   */
+  isTest: boolean
 }
 
 export type TimelineItem = PlainTimelineItem | EmailSendGroup
@@ -180,6 +186,7 @@ function emailToGroup(email: EmailSend): EmailSendGroup {
     milestones,
     failed: email.status === 'bounced' || email.status === 'complained',
     unsubscribed: email.unsubscribed_at !== null,
+    isTest: email.is_test,
   }
 }
 

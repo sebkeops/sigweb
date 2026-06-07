@@ -53,12 +53,17 @@ export default function EmailCardGrouped({ item }: Props) {
             </time>
           </div>
 
-          <div className="mt-1.5">
+          <div className="mt-1.5 flex flex-wrap items-center gap-2">
             <Badge variant={item.variant === 'avec-site' ? 'gray' : 'purple'}>
               {item.variant === 'avec-site'
                 ? 'Variante : avec site'
                 : 'Variante : sans site'}
             </Badge>
+            {item.isTest && (
+              <span title="Envoi test (destinataire @sigweb.fr)">
+                <Badge variant="orange">TEST</Badge>
+              </span>
+            )}
           </div>
         </div>
       </div>
