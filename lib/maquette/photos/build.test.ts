@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildInitialPhotoData, migrateLegacyPhotos } from './build'
+import { buildInitialPhotoData, migrateLegacyPhotos, type PhotoData } from './build'
 
 // IDs déterministes pour les snapshots de test
 function makeIdGen() {
@@ -49,6 +49,56 @@ describe('buildInitialPhotoData', () => {
   it('marque toutes les photos avec source = google', () => {
     const r = buildInitialPhotoData(['places/A/photos/1'], makeIdGen())
     expect(r.available_photos[0].source).toBe('google')
+  })
+})
+
+describe('buildInitialPhotoData — fallback simulation (prospects Sirene)', () => {
+  const fallback: PhotoData = {
+    available_photos: [
+      { id: 'sim-1', source: 'upload', reference: 'https://sigweb.fr/sim/hero.jpg' },
+      { id: 'sim-2', source: 'upload', reference: 'https://sigweb.fr/sim/hist.jpg' },
+      { id: 'sim-3', source: 'upload', reference: 'https://sigweb.fr/sim/u1.jpg' },
+    ],
+    photo_assignments: [
+      { slot: 'hero', photo_id: 'sim-1' },
+      { slot: 'histoire', photo_id: 'sim-2' },
+      { slot: 'univers_1', photo_id: 'sim-3' },
+      { slot: 'univers_2', photo_id: null },
+      { slot: 'univers_3', photo_id: null },
+      { slot: 'univers_4', photo_id: null },
+      { slot: 'univers_5', photo_id: null },
+    ],
+  }
+
+  it('utilise le fallback simulation si pas de photos Google', () => {
+    const r = buildInitialPhotoData([], makeIdGen(), fallback)
+    // Mêmes photos aux mêmes emplacements
+    expect(r.available_photos).toEqual(fallback.available_photos)
+    expect(r.photo_assignments).toEqual(fallback.photo_assignments)
+  })
+
+  it('ignore le fallback si photos Google présentes (priorité Google)', () => {
+    const r = buildInitialPhotoData(['places/A/1'], makeIdGen(), fallback)
+    expect(r.available_photos).toHaveLength(1)
+    expect(r.available_photos[0].source).toBe('google')
+    expect(r.available_photos[0].reference).toBe('places/A/1')
+  })
+
+  it('fallback null + pas de Google → pool vide + tous les slots null', () => {
+    const r = buildInitialPhotoData([], makeIdGen(), null)
+    expect(r.available_photos).toHaveLength(0)
+    expect(r.photo_assignments.every((a) => a.photo_id === null)).toBe(true)
+  })
+
+  it('fallback fourni mais sans photos → pool vide + slots null', () => {
+    const emptyFallback: PhotoData = {
+      available_photos: [],
+      photo_assignments: [],
+    }
+    const r = buildInitialPhotoData([], makeIdGen(), emptyFallback)
+    expect(r.available_photos).toHaveLength(0)
+    expect(r.photo_assignments).toHaveLength(7)
+    expect(r.photo_assignments.every((a) => a.photo_id === null)).toBe(true)
   })
 })
 

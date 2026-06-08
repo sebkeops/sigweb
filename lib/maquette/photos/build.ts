@@ -27,25 +27,36 @@ export interface PhotoData {
  * Construit le pool initial de photos + l'assignation par défaut au moment
  * où une nouvelle maquette est générée à partir d'un prospect.
  *
- * Mapping initial (arbitraire, l'admin réajustera dans l'éditeur) :
+ * Logique en cascade :
+ *   1. Si `googlePhotoRefs` non vide → pool Google (comportement historique)
+ *   2. Sinon, si `simulationFallback` fourni (cas prospect Sirene typiquement) →
+ *      copie tel quel les photos de la simulation publique correspondant à
+ *      la catégorie. Mêmes images aux mêmes emplacements. URLs Supabase
+ *      Storage partagées, pas de recopie de fichier.
+ *   3. Sinon → pool vide + tous les slots à `photo_id: null` (la page
+ *      publique affiche des placeholders neutres).
+ *
+ * Mapping initial Google (arbitraire, l'admin réajustera dans l'éditeur) :
  *   hero       ← photo[0]
  *   histoire   ← photo[1]
  *   univers_1  ← photo[2]
- *   univers_2  ← photo[3]
  *   …
  *   univers_5  ← photo[6]
  *
- * Si moins de 7 photos disponibles, les slots restants reçoivent `photo_id: null`
- * (la page publique affichera un placeholder neutre, cf. composants).
+ * Déduplication : si la même `reference` Google apparaît plusieurs fois
+ * dans `googlePhotoRefs`, on ne la stocke qu'une seule fois. Les slots
+ * qui auraient pointé vers le doublon reçoivent null.
  *
- * Déduplication : si la même `reference` Google apparaît plusieurs fois dans
- * `googlePhotoRefs` (rare, mais possible), on ne la stocke qu'une seule fois
- * dans le pool. Les slots qui auraient pointé vers le doublon reçoivent null.
+ * Fallback simulation : aucune dédup nécessaire — les photos de la
+ * simulation source sont déjà déduplexées et leurs `photo_id` (UUIDs)
+ * sont uniques.
  */
 export function buildInitialPhotoData(
   googlePhotoRefs: readonly string[],
-  idGen: IdGen = defaultIdGen
+  idGen: IdGen = defaultIdGen,
+  simulationFallback?: PhotoData | null
 ): PhotoData {
+  // Cas 1 : photos Google → comportement historique
   const seenRefs = new Set<string>()
   const available_photos: MaquettePhotoEntry[] = []
 
@@ -59,14 +70,29 @@ export function buildInitialPhotoData(
     })
   }
 
-  const photo_assignments: MaquettePhotoAssignment[] = MAQUETTE_PHOTO_SLOTS.map(
-    (slot, i) => ({
-      slot,
-      photo_id: available_photos[i]?.id ?? null,
-    })
-  )
+  if (available_photos.length > 0) {
+    const photo_assignments: MaquettePhotoAssignment[] = MAQUETTE_PHOTO_SLOTS.map(
+      (slot, i) => ({
+        slot,
+        photo_id: available_photos[i]?.id ?? null,
+      })
+    )
+    return { available_photos, photo_assignments }
+  }
 
-  return { available_photos, photo_assignments }
+  // Cas 2 : fallback simulation (Sirene typiquement)
+  if (simulationFallback && simulationFallback.available_photos.length > 0) {
+    return {
+      available_photos: simulationFallback.available_photos,
+      photo_assignments: simulationFallback.photo_assignments,
+    }
+  }
+
+  // Cas 3 : aucune photo disponible
+  const photo_assignments: MaquettePhotoAssignment[] = MAQUETTE_PHOTO_SLOTS.map(
+    (slot) => ({ slot, photo_id: null })
+  )
+  return { available_photos: [], photo_assignments }
 }
 
 /**

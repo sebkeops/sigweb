@@ -1,6 +1,6 @@
 import type { Prospect, ProspectCategorie } from '@/types'
 import { getLogoInitial } from './initials'
-import { buildInitialPhotoData } from './photos'
+import { buildInitialPhotoData, type PhotoData } from './photos'
 import { categorieToVariant, getTemplate } from './templates'
 import type { MaquetteInitialData } from './types'
 
@@ -40,6 +40,17 @@ export interface GenerateMaquetteInput {
   ville: string | null
   /** Refs photos Google ou URLs absolues. Null/vide → pool vide. */
   google_photo_refs: string[] | null
+  /**
+   * Fallback photos : utilisé quand `google_photo_refs` est null/vide
+   * (cas typique d'un prospect sourcé via Sirene). Si fourni, on copie
+   * tel quel les photos de la simulation publique correspondant à la
+   * catégorie (mêmes images aux mêmes emplacements).
+   *
+   * Optionnel : le caller (server action `createMaquetteFromProspect`)
+   * fait le lookup BDD via `getSimulationPhotoFallback` AVANT d'appeler
+   * cette fonction pure.
+   */
+  simulationFallbackPhotos?: PhotoData | null
 }
 
 /**
@@ -82,8 +93,13 @@ export function generateInitialMaquette(
 
   const photoRefs = input.google_photo_refs ?? []
 
-  // Nouveau modèle : pool + assignations
-  const photoData = buildInitialPhotoData(photoRefs, idGen)
+  // Nouveau modèle : pool + assignations. Le fallback simulation est
+  // utilisé uniquement si `google_photo_refs` est vide (cas Sirene).
+  const photoData = buildInitialPhotoData(
+    photoRefs,
+    idGen,
+    input.simulationFallbackPhotos ?? null
+  )
 
   // Anciens champs (transition) : on dérive du pool fraîchement construit
   // pour rester cohérent en cas de dédup. NE PAS lire `photoRefs` directement
@@ -157,7 +173,8 @@ export function generateInitialMaquette(
  */
 export function generateInitialMaquetteFromProspect(
   prospect: Prospect,
-  idGen?: () => string
+  idGen?: () => string,
+  simulationFallbackPhotos?: PhotoData | null
 ): MaquetteInitialData {
   return generateInitialMaquette(
     {
@@ -166,6 +183,7 @@ export function generateInitialMaquetteFromProspect(
       nom_commerce: prospect.nom_commerce,
       ville: prospect.ville,
       google_photo_refs: prospect.google_photo_refs,
+      simulationFallbackPhotos,
     },
     idGen
   )
