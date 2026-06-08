@@ -1,5 +1,4 @@
-import { StyleSheet, View } from '@react-pdf/renderer'
-import BenefitIcon from './BenefitIcon'
+import { StyleSheet, Text, View } from '@react-pdf/renderer'
 import MarkupText from './MarkupText'
 import { AFFICHE_COLORS } from './tokens'
 import type { AfficheData } from '@/lib/affiche'
@@ -31,11 +30,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
-  iconWrapper: {
+  check: {
+    fontFamily: 'Nunito',
+    color: AFFICHE_COLORS.primary,
+    fontWeight: 800,
+    fontSize: 14,
+    lineHeight: 1,
     marginRight: 8,
-    marginTop: 1,
-    width: 14,
-    flexShrink: 0,
+    marginTop: 2,
   },
   text: {
     flex: 1,
@@ -61,9 +63,7 @@ export default function BenefitsGrid({ data }: Props) {
       <View style={styles.box}>
         {data.benefits.slice(0, 4).map((benefit, i) => (
           <View key={i} style={styles.itemCol}>
-            <View style={styles.iconWrapper}>
-              <BenefitIcon index={i} color={AFFICHE_COLORS.primary} />
-            </View>
+            <Text style={styles.check}>✓</Text>
             <MarkupText
               content={benefit}
               style={styles.text}

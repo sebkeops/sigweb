@@ -155,11 +155,24 @@ async function findMaquetteHeroEntry(
 async function fetchEntryBuffer(
   entry: MaquettePhotoEntry
 ): Promise<Buffer | null> {
-  if (entry.source === 'google') {
-    return fetchGooglePhotoBuffer(entry.reference, { maxHeightPx: 800 })
+  // On ne fait PAS confiance au champ `source` : cas observé en prod sur
+  // DETAIL VIANDES (PR #37) — une photo Supabase Storage (ref URL absolue)
+  // était marquée `source: 'google'` dans la maquette, héritée d'une
+  // simulation. fetchGooglePhotoBuffer rejetait la ref via son regex
+  // `places/X/photos/Y` → buffer null → pas d'image.
+  //
+  // Solution : détecte le bon fetcher à partir du FORMAT de la ref,
+  // pas du label source. Marche dans les 2 sens (URL absolue, ref Google).
+  const ref = entry.reference
+  if (/^https?:\/\//i.test(ref)) {
+    return fetchUploadPhotoBuffer(ref)
   }
-  if (entry.source === 'upload') {
-    return fetchUploadPhotoBuffer(entry.reference)
+  if (/^places\/[A-Za-z0-9_-]+\/photos\/[A-Za-z0-9_-]+$/.test(ref)) {
+    return fetchGooglePhotoBuffer(ref, { maxHeightPx: 800 })
   }
+  console.warn('[affiche/photo-resolver] format de ref inconnu', {
+    source: entry.source,
+    ref: ref.slice(0, 120),
+  })
   return null
 }
