@@ -391,19 +391,47 @@ function normalizeUniteLegale(
   const etat: 'A' | 'F' | 'C' | null =
     etatRaw === 'A' || etatRaw === 'F' || etatRaw === 'C' ? etatRaw : null
 
-  const numero =
-    typeof etab.numero_voie === 'string' ? etab.numero_voie : ''
-  const typeVoie =
-    typeof etab.type_voie === 'string' ? etab.type_voie : ''
-  const libelleVoie =
-    typeof etab.libelle_voie === 'string' ? etab.libelle_voie : ''
-  const adresse =
-    [numero, typeVoie, libelleVoie].filter(Boolean).join(' ').trim() || null
-
   const codePostal =
     typeof etab.code_postal === 'string' ? etab.code_postal : null
   const ville =
     typeof etab.libelle_commune === 'string' ? etab.libelle_commune : null
+
+  // Adresse : data.gouv.fr expose des champs différents selon la source :
+  //   - matching_etablissements : champ `adresse` formaté complet
+  //     ("12 RUE DE LA REPUBLIQUE 32600 L'ISLE-JOURDAIN"), pas de
+  //     numero_voie / type_voie / libelle_voie séparés
+  //   - siege : les 3 champs séparés (numero_voie, type_voie, libelle_voie)
+  //     ET un champ `adresse` formaté
+  // On préfère `etab.adresse` complet (présent dans les 2 cas) puis on
+  // strip le suffixe " CP COMMUNE" pour ne garder que la partie rue.
+  // Fallback : reconstruction depuis les champs séparés si l'API n'a
+  // pas renvoyé d'adresse formatée.
+  let adresse: string | null = null
+  if (typeof etab.adresse === 'string' && etab.adresse) {
+    let formatted = etab.adresse.trim()
+    if (codePostal && ville) {
+      const suffix = ` ${codePostal} ${ville}`
+      if (formatted.endsWith(suffix)) {
+        formatted = formatted.slice(0, -suffix.length).trim()
+      } else if (formatted.endsWith(` ${codePostal}`)) {
+        formatted = formatted.slice(0, -(codePostal.length + 1)).trim()
+      }
+    }
+    adresse = formatted || null
+  }
+  if (!adresse) {
+    const numero =
+      typeof etab.numero_voie === 'string' ? etab.numero_voie : ''
+    const typeVoie =
+      typeof etab.type_voie === 'string' ? etab.type_voie : ''
+    const libelleVoie =
+      typeof etab.libelle_voie === 'string' ? etab.libelle_voie : ''
+    const complement =
+      typeof etab.complement_adresse === 'string' ? etab.complement_adresse : ''
+    adresse =
+      [complement, numero, typeVoie, libelleVoie].filter(Boolean).join(' ').trim() ||
+      null
+  }
 
   return {
     siret,

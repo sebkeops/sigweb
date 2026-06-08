@@ -496,6 +496,105 @@ describe('searchSireneSourcing', () => {
     expect(result.data).toHaveLength(0)
   })
 
+  it('extrait l\'adresse depuis le champ adresse formaté (cas matching_etablissement sans numero_voie/type_voie séparés)', async () => {
+    // Cas observé en prod : pour GRATIBUS (SIRET 10279707300016), le
+    // matching_etablissement renvoyé par l'API ne contient PAS
+    // numero_voie/type_voie/libelle_voie séparés, uniquement le champ
+    // `adresse` formaté complet. La reconstruction depuis les 3 champs
+    // donnait une chaîne vide. On doit utiliser `etab.adresse` en
+    // priorité et stripper le suffixe " CP COMMUNE".
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'BEROMAF (GRATIBUS)',
+              siege: { siret: '10279707300016' },
+              matching_etablissements: [
+                {
+                  siret: '10279707300016',
+                  etat_administratif: 'A',
+                  code_postal: '32600',
+                  libelle_commune: "L'ISLE-JOURDAIN",
+                  adresse: "12 RUE DE LA REPUBLIQUE 32600 L'ISLE-JOURDAIN",
+                  date_creation: '2026-03-23',
+                  // PAS de numero_voie / type_voie / libelle_voie
+                },
+              ],
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(1)
+    expect(result.data[0].adresse).toBe('12 RUE DE LA REPUBLIQUE')
+    expect(result.data[0].code_postal).toBe('32600')
+    expect(result.data[0].ville).toBe("L'ISLE-JOURDAIN")
+  })
+
+  it('fallback : reconstruction depuis numero_voie/type_voie/libelle_voie si pas de champ adresse formaté', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'AVEC CHAMPS SEPARES',
+              siege: {
+                siret: '99999999900099',
+                etat_administratif: 'A',
+                code_postal: '32600',
+                libelle_commune: 'X',
+                numero_voie: '5',
+                type_voie: 'PLACE',
+                libelle_voie: 'DU MARCHE',
+                // pas de champ adresse formaté
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data[0].adresse).toBe('5 PLACE DU MARCHE')
+  })
+
+  it('inclut complement_adresse si disponible', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'AVEC COMPLEMENT',
+              siege: {
+                siret: '88888888800088',
+                etat_administratif: 'A',
+                code_postal: '32600',
+                libelle_commune: 'X',
+                numero_voie: '10',
+                type_voie: 'RUE',
+                libelle_voie: 'DE LA POSTE',
+                complement_adresse: 'BATIMENT B',
+                // pas de champ adresse formaté
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data[0].adresse).toBe('BATIMENT B 10 RUE DE LA POSTE')
+  })
+
   it('exclut les établissements fermés (etat_administratif != "A")', async () => {
     fetchMock.mockResolvedValueOnce(
       new Response(
