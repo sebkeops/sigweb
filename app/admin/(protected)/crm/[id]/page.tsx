@@ -12,6 +12,7 @@ import {
   displayCategorie,
 } from '@/lib/crm/constants'
 import StatusDropdown from '@/components/admin/StatusDropdown'
+import { deriveCanalRecommande } from '@/lib/crm/canal-badge'
 import Timeline from '@/components/admin/timeline/Timeline'
 import MaquetteVisitsStats from '@/components/admin/MaquetteVisitsStats'
 import type { TimelineItem } from '@/lib/crm/timeline-aggregator'
@@ -216,6 +217,28 @@ export default async function ProspectDetailPage({ params, searchParams }: Props
           </div>
         </div>
       </div>
+
+      {/* Canal recommandé dérivé — n'apparaît que si terrain (chantier
+          Sirene/PageSpeed étape 6). Signal d'alerte clair pour les
+          commerces neufs Sirene sans canal distance.
+          IMPORTANT : c'est de la JOIGNABILITÉ (comment l'aborder), pas
+          le BESOIN (score_besoin_web). Les deux notions restent séparées. */}
+      {(() => {
+        const reco = deriveCanalRecommande(p)
+        if (reco.canal !== 'terrain') return null
+        return (
+          <div className="rounded-md border border-orange-200 bg-orange-50 p-4 sm:p-6">
+            <p className="font-heading text-sm font-bold text-orange-900">
+              📍 {reco.label}
+            </p>
+            <p className="mt-1 font-body text-sm text-orange-800">{reco.description}</p>
+            <p className="mt-2 font-body text-xs text-orange-700/80">
+              Action suggérée : préparer une affiche A4 + visite physique, ou
+              passer par un contact réseau si tu en as un.
+            </p>
+          </div>
+        )
+      })()}
 
       {/* Détail du score */}
       <ScoreBreakdown prospect={p} />

@@ -7,6 +7,7 @@ import {
   CANAL_LABELS,
   displayCategorie,
 } from '@/lib/crm/constants'
+import { deriveCanalRecommande } from '@/lib/crm/canal-badge'
 
 interface ProspectCardProps {
   prospect: Prospect
@@ -44,6 +45,18 @@ export default function ProspectCard({ prospect: p }: ProspectCardProps) {
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <Badge variant={CANAL_BADGE[p.canal]}>{CANAL_LABELS[p.canal]}</Badge>
         <StatusBadge statut={p.statut} />
+        {/* Badge canal recommandé DÉRIVÉ (chantier Sirene/PageSpeed étape 6) :
+            n'apparaît que si terrain — signal d'alerte « pas de canal distance »
+            pour les commerces neufs Sirene sans email/téléphone. */}
+        {(() => {
+          const reco = deriveCanalRecommande(p)
+          if (reco.canal !== 'terrain') return null
+          return (
+            <span title={reco.description}>
+              <Badge variant="orange">📍 {reco.label}</Badge>
+            </span>
+          )
+        })()}
       </div>
 
       <div className="mt-4 flex items-center gap-2 border-t border-border pt-3">

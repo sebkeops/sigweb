@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/daily-recap",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/pagespeed-batch",
+      "schedule": "0 3 * * *"
     }
   ]
 }

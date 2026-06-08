@@ -53,6 +53,21 @@ function makeProspect(overrides: Partial<Prospect> = {}): Prospect {
     email_unsubscribed_at: null,
     statut_updated_at: '2026-01-01T00:00:00Z',
     is_test: false,
+    // Sirene + PageSpeed (intégration Lot 1 — neutres dans les tests maquette)
+    siret: null,
+    code_naf: null,
+    libelle_naf: null,
+    date_creation: null,
+    tranche_effectif: null,
+    etat_administratif: null,
+    sirene_raw: null,
+    sirene_enriched_at: null,
+    pagespeed_score_perf: null,
+    pagespeed_score_mobile: null,
+    pagespeed_analyzed_at: null,
+    pagespeed_status: null,
+    pagespeed_raw: null,
+    dedup_warning: null,
     ...overrides,
   }
 }
