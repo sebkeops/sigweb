@@ -95,7 +95,10 @@ describe('searchSireneSourcing', () => {
     // côté JS plus précis sur l'établissement choisi).
     expect(url).not.toContain('etat_administratif')
     expect(url).toContain('per_page=10')
-    expect(url).toMatch(/date_creation_min=\d{4}-\d{2}-\d{2}/)
+    // date_creation_min n'est PLUS passé en query car ce param filtre
+    // sur l'unité légale, alors qu'on veut filtrer sur l'établissement
+    // (cf. cas Chausson Matériaux : SA née en 2010, magasin de 2025).
+    expect(url).not.toContain('date_creation_min')
   })
 
   it('plafonne perPage à 25 (limite API)', async () => {
@@ -280,6 +283,105 @@ describe('searchSireneSourcing', () => {
     if (!result.ok) return
     expect(result.data).toHaveLength(1)
     expect(result.data[0].nom_commerce).toBe('PETIT COMMERCE')
+  })
+
+  it('priorise la date_creation de l\'établissement (point de vente) sur celle de l\'unité légale', async () => {
+    // Cas Chausson Matériaux : entreprise née en 2010, magasin récent 2025
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'CHAUSSON MATERIAUX',
+              date_creation: '2010-01-01',  // unité légale
+              siege: {
+                siret: '12345678900012',
+                etat_administratif: 'A',
+                code_postal: '32600',
+                libelle_commune: 'L\'ISLE-JOURDAIN',
+                date_creation: '2025-04-01',  // établissement (le magasin)
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(1)
+    expect(result.data[0].date_creation).toBe('2025-04-01')
+  })
+
+  it('filtre recentMonths sur la date de l\'établissement (pas de l\'unité légale)', async () => {
+    // Magasin créé il y a longtemps, même si entreprise mère récente → exclu
+    // Et inversement, magasin récent d'une vieille entreprise → inclus
+    const longAgo = '1990-01-01'
+    const recent = new Date()
+    recent.setMonth(recent.getMonth() - 1)
+    const recentIso = recent.toISOString().slice(0, 10)
+
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'VIEUX MAGASIN',
+              date_creation: '2025-01-01',
+              siege: {
+                siret: '11111111111111',
+                etat_administratif: 'A',
+                code_postal: '32600',
+                date_creation: longAgo,  // 1990 — devrait être exclu
+              },
+            },
+            {
+              nom_complet: 'NOUVEAU MAGASIN VIEILLE ENTREPRISE',
+              date_creation: '1990-01-01',
+              siege: {
+                siret: '22222222222222',
+                etat_administratif: 'A',
+                code_postal: '32600',
+                date_creation: recentIso,  // récent — devrait être inclus
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600', recentMonths: 3 })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(1)
+    expect(result.data[0].siret).toBe('22222222222222')
+  })
+
+  it('drop les résultats sans date_creation d\'établissement quand recentMonths est demandé', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'SANS DATE',
+              siege: {
+                siret: '33333333333333',
+                etat_administratif: 'A',
+                code_postal: '32600',
+                // pas de date_creation
+              },
+              // pas non plus au niveau unité légale
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600', recentMonths: 3 })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(0)
   })
 
   it('exclut les établissements fermés (etat_administratif != "A")', async () => {

@@ -114,13 +114,12 @@ export async function searchSireneSourcing(
     url.searchParams.set('activite_principale', nafToApiFormat(params.codeNaf))
   }
 
-  // Filtre « créés récemment » : data.gouv.fr expose `date_creation_min`
-  // (date minimale de création) au format YYYY-MM-DD.
-  if (params.recentMonths && params.recentMonths > 0) {
-    const minDate = new Date()
-    minDate.setMonth(minDate.getMonth() - params.recentMonths)
-    url.searchParams.set('date_creation_min', minDate.toISOString().slice(0, 10))
-  }
+  // Filtre « créés récemment » : on N'utilise PAS `date_creation_min`
+  // côté API car il filtre sur la date de création de l'UNITE LEGALE
+  // (l'entreprise), pas de l'ETABLISSEMENT. Cas observé : Chausson
+  // Matériaux SA créée en 2010, mais son magasin dans le 32600 est de
+  // 2025 — on veut le magasin, pas l'entreprise mère.
+  // → on filtre côté JS sur `etab.date_creation` du matching choisi.
 
   // etat_administratif='A' n'est plus passé en query : c'est déjà le défaut
   // serveur ET on filtre en plus côté JS sur l'établissement choisi (le
@@ -134,6 +133,16 @@ export async function searchSireneSourcing(
   const data = response.data as { results?: unknown[] } | undefined
   if (!data || !Array.isArray(data.results)) {
     return { ok: false, reason: 'parse' }
+  }
+
+  // Calcule la borne basse de date_creation côté JS (si recentMonths
+  // passé). On préfère cette approche au filtre serveur date_creation_min
+  // qui s'applique à l'unité légale et non à l'établissement.
+  let dateCreationMin: string | null = null
+  if (params.recentMonths && params.recentMonths > 0) {
+    const minDate = new Date()
+    minDate.setMonth(minDate.getMonth() - params.recentMonths)
+    dateCreationMin = minDate.toISOString().slice(0, 10)
   }
 
   const establishments: SireneEstablishment[] = []
@@ -160,6 +169,22 @@ export async function searchSireneSourcing(
     // cible commerces de proximité.
     const cat = (result as { categorie_entreprise?: unknown }).categorie_entreprise
     if (cat === 'GE') continue
+    // Filtre « créés récemment » côté JS — sur la date de création de
+    // l'établissement (Chausson Matériaux SA née en 2010 mais son
+    // magasin du 32600 est un SIRET de 2025).
+    if (
+      dateCreationMin &&
+      normalized.date_creation &&
+      normalized.date_creation < dateCreationMin
+    ) {
+      continue
+    }
+    // Garde-fou : si on a un filtre date mais qu'on n'a PAS la
+    // date_creation de l'établissement (champ absent), on rejette par
+    // précaution — éviter d'afficher des résultats potentiellement vieux.
+    if (dateCreationMin && !normalized.date_creation) {
+      continue
+    }
     establishments.push(normalized)
   }
 
@@ -309,19 +334,27 @@ function normalizeUniteLegale(
     (typeof obj.nom_raison_sociale === 'string' && obj.nom_raison_sociale) ||
     'Établissement sans nom'
 
+  // NAF + date + effectif : on préfère les valeurs au niveau ÉTABLISSEMENT
+  // (point de vente réel) plutôt que celles de l'unité légale (entreprise
+  // mère). Fallback sur l'unité légale si l'établissement ne porte pas
+  // l'info — peut arriver pour des fiches anciennes.
   const codeNaf =
-    typeof obj.activite_principale === 'string' ? obj.activite_principale : null
+    (typeof etab.activite_principale === 'string' ? etab.activite_principale : null) ??
+    (typeof obj.activite_principale === 'string' ? obj.activite_principale : null)
   const libelleNaf =
     typeof obj.libelle_activite_principale === 'string'
       ? obj.libelle_activite_principale
       : null
-
   const dateCreation =
-    typeof obj.date_creation === 'string' ? obj.date_creation : null
+    (typeof etab.date_creation === 'string' ? etab.date_creation : null) ??
+    (typeof obj.date_creation === 'string' ? obj.date_creation : null)
   const trancheEffectif =
-    typeof obj.tranche_effectif_salarie === 'string'
+    (typeof etab.tranche_effectif_salarie === 'string' && etab.tranche_effectif_salarie !== 'NN'
+      ? etab.tranche_effectif_salarie
+      : null) ??
+    (typeof obj.tranche_effectif_salarie === 'string' && obj.tranche_effectif_salarie !== 'NN'
       ? obj.tranche_effectif_salarie
-      : null
+      : null)
 
   const etatRaw =
     typeof etab.etat_administratif === 'string' ? etab.etat_administratif : null
