@@ -30,13 +30,6 @@ export interface AfficheData {
     eyebrow: string       // "Nom commerce · Ville"
     title: string         // peut contenir *italique*
     photoUrl: string | null   // null = placeholder dégradé
-    /**
-     * Raison d'échec à afficher dans le PDF en cas d'absence d'image
-     * (debug Lot 2 — à retirer une fois le bug DETAIL VIANDES résolu).
-     * Affiché en petit rouge en bas du placeholder pour comprendre où
-     * le pipeline coupe sans devoir lire les logs Vercel.
-     */
-    photoDebugReason?: string
   }
 
   /** Pitch (zone 3). */

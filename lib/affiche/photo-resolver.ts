@@ -31,50 +31,31 @@ import { fetchGooglePhotoBuffer, fetchUploadPhotoBuffer } from './photo-fetcher'
  *   - `source = 'google'`  → ref Places, fetch via Google Places API
  *   - `source = 'upload'`  → URL absolue Supabase Storage, fetch HTTP direct
  */
-export interface AfficheImageResult {
-  buffer: Buffer | null
-  /** Raison d'échec à afficher dans le PDF (debug Lot 2 — à retirer plus tard). */
-  reason?: string
-}
-
 export async function resolveAffichePhotoBuffer(
   prospect: Prospect,
   supabase: SupabaseClient
-): Promise<AfficheImageResult> {
+): Promise<Buffer | null> {
   const heroEntry = await findMaquetteHeroEntry(prospect, supabase)
   if (heroEntry) {
     const buffer = await fetchEntryBuffer(heroEntry)
-    if (buffer) return { buffer }
-    const refExtract = heroEntry.reference.slice(-80)
+    if (buffer) return buffer
     console.warn(
       '[affiche/photo-resolver] maquette hero entry trouvée mais fetch buffer KO',
       { prospectId: prospect.id, source: heroEntry.source, ref: heroEntry.reference }
     )
-    return {
-      buffer: null,
-      reason: `Photo maquette trouvée (${heroEntry.source}) mais fetch KO. Ref: …${refExtract}`,
-    }
+    // Si fetch échoue, fallback Google plutôt que placeholder direct.
   }
 
   const ref = prospect.google_photo_refs?.[0]
   if (ref) {
-    const buffer = await fetchGooglePhotoBuffer(ref, { maxHeightPx: 800 })
-    if (buffer) return { buffer }
-    return {
-      buffer: null,
-      reason: `Fallback Google : fetch KO sur ref ${ref.slice(-40)}`,
-    }
+    return fetchGooglePhotoBuffer(ref, { maxHeightPx: 800 })
   }
 
   console.warn(
     '[affiche/photo-resolver] aucune image trouvée pour le prospect',
     { prospectId: prospect.id, maquette_id: prospect.maquette_id, nom: prospect.nom_commerce }
   )
-  const maquetteHint = prospect.maquette_id ? 'mais ID rempli' : 'et pas de maquette_id'
-  return {
-    buffer: null,
-    reason: `Aucune maquette ni photo Google. Maquette ${maquetteHint}.`,
-  }
+  return null
 }
 
 async function findMaquetteHeroEntry(
