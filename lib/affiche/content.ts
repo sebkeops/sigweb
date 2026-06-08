@@ -1,4 +1,5 @@
 import type { Prospect, WebVariant } from '@/types'
+import { hasGoogleReputation } from '@/lib/prospect/has-google-data'
 import { getCategorieLabel } from './categories'
 import { shortDisplayUrl } from './url-resolver'
 import type { AfficheData } from './types'
@@ -21,7 +22,15 @@ import type { AfficheData } from './types'
 
 export interface ContentInput {
   variant: WebVariant
-  prospect: Pick<Prospect, 'nom_commerce' | 'categorie' | 'ville' | 'google_rating' | 'google_reviews_count'>
+  prospect: Pick<
+    Prospect,
+    | 'nom_commerce'
+    | 'categorie'
+    | 'ville'
+    | 'google_rating'
+    | 'google_reviews_count'
+    | 'google_photo_refs'
+  >
   qrTargetUrl: string
 }
 
@@ -46,6 +55,15 @@ export function buildContent(input: ContentInput): ContentResult {
   const categorie = getCategorieLabel(prospect.categorie)
   const nom = prospect.nom_commerce
   const villeSuffix = prospect.ville ? ` · ${prospect.ville}` : ''
+
+  // Branchement Lot 2 — wording « nouveau commerce » pour les prospects
+  // sans données Google (typiquement sourcés via Sirene). Note : on
+  // détecte sur la DONNÉE Google (note OU avis OU photos), pas sur le
+  // champ `source` qui peut être `'sirene'` mais devenir `'both'` après
+  // enrichissement.
+  if (!hasGoogleReputation(prospect)) {
+    return buildContentNouveauCommerce({ nom, categorie, villeSuffix, qrTargetUrl })
+  }
 
   // Stats Google : on les garde uniquement si les 2 sont présentes
   // (note isolée sans nb d'avis n'a pas de sens dans nos phrases).
@@ -126,6 +144,56 @@ export function buildContent(input: ContentInput): ContentResult {
     benefits,
     ctaTitle,
     ctaDescription,
+    ctaUrlDisplay: shortDisplayUrl(qrTargetUrl),
+  }
+}
+
+/**
+ * Wording « nouveau commerce » (Lot 2 — complément Sirene).
+ *
+ * Déclenché quand le prospect n'a aucune donnée Google (note, avis ni
+ * photo). Cas typique : commerce neuf sourcé via Sirene.
+ *
+ * Ton :
+ *   - Reconnaît le lancement, valorise « se rendre visible dès le départ »
+ *   - Ne mentionne ni avis ni note (il n'y en a pas)
+ *   - N'attaque pas un « site actuel pas à la hauteur » (il n'y en a pas)
+ *   - L'image utilisée par le rendu est illustrative (univers métier),
+ *     pas la boutique réelle — le wording doit rester cohérent (jamais
+ *     « voici votre commerce »).
+ *
+ * Le wording est volontairement orthogonal à `WebVariant` : un nouveau
+ * commerce avec un site existant est rare en pratique (cas Sirene = pas
+ * de site dans 99 % des cas). On unifie pour simplifier.
+ */
+function buildContentNouveauCommerce(opts: {
+  nom: string
+  categorie: string
+  villeSuffix: string
+  qrTargetUrl: string
+}): ContentResult {
+  const { nom, categorie, villeSuffix, qrTargetUrl } = opts
+  return {
+    headerEyebrow: {
+      line1: 'Une idée de site',
+      line2: `pour votre ${categorie}`,
+    },
+    heroEyebrow: `${nom}${villeSuffix}`,
+    heroTitle: `Votre ${categorie}\nmérite d'être *visible*\ndès le départ.`,
+    pitchEyebrow: 'Une présence en ligne pour bien démarrer',
+    pitchTitle: 'Vous venez de\n*vous lancer*.',
+    pitchText:
+      `Offrez à votre ${categorie} une **vraie présence en ligne**, ` +
+      `et donnez envie dès les premiers clics. Pas de fiche perdue, ` +
+      `pas de bouche-à-oreille seul : une **vraie vitrine, dès le départ**.`,
+    benefits: [
+      '**Un site clair et pro**, prêt rapidement',
+      COMMON_BENEFIT_TIME,
+      '**Optimisé téléphone** et facile à gérer vous-même',
+      COMMON_BENEFIT_FREE,
+    ],
+    ctaTitle: 'Scannez pour découvrir *une idée de site* pour votre commerce',
+    ctaDescription: `J'ai préparé une projection de site pour ${nom}. Visible immédiatement depuis votre téléphone.`,
     ctaUrlDisplay: shortDisplayUrl(qrTargetUrl),
   }
 }

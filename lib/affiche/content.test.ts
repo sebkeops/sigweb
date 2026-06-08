@@ -7,6 +7,7 @@ const baseProspect = {
   ville: 'L\'Isle Jourdain',
   google_rating: 4.8,
   google_reviews_count: 156,
+  google_photo_refs: ['places/X/photos/1'] as string[] | null,
 }
 
 describe('buildContent — variante sans-site', () => {
@@ -91,13 +92,67 @@ describe('buildContent — variante avec-site', () => {
     expect(r.ctaDescription).toContain('refonte spécifique')
   })
 
-  it('fallback si données manquantes', () => {
+  it('fallback si données manquantes (note + nb avis null) — photos Google présentes', () => {
     const r = buildContent({
       variant: 'avec-site',
-      prospect: { ...baseProspect, google_rating: null, google_reviews_count: null },
+      prospect: {
+        ...baseProspect,
+        google_rating: null,
+        google_reviews_count: null,
+        // ← photos toujours présentes : on garde le wording « réputation établie »
+      },
       qrTargetUrl: 'https://www.sigweb.fr/demos/x',
     })
     expect(r.pitchTitle).toBe('Un site qui ne\n*vous rend pas justice*.')
+  })
+})
+
+describe('buildContent — wording « nouveau commerce » (aucune donnée Google)', () => {
+  it('sans note, sans avis, sans photo → wording adapté lancement', () => {
+    const r = buildContent({
+      variant: 'sans-site',
+      prospect: {
+        ...baseProspect,
+        google_rating: null,
+        google_reviews_count: null,
+        google_photo_refs: null,
+      },
+      qrTargetUrl: 'https://www.sigweb.fr/demos/x',
+    })
+    // Pas de mention « avis » / « note » / « votre site actuel »
+    expect(r.pitchText).not.toMatch(/avis|note|site actuel/i)
+    expect(r.heroTitle).toContain('visible')
+    expect(r.headerEyebrow.line1).toBe('Une idée de site')
+    expect(r.ctaTitle).toContain('idée de site')
+  })
+
+  it('photos vides + pas de note/avis → wording « nouveau commerce »', () => {
+    const r = buildContent({
+      variant: 'avec-site',
+      prospect: {
+        ...baseProspect,
+        google_rating: null,
+        google_reviews_count: null,
+        google_photo_refs: [],
+      },
+      qrTargetUrl: 'x',
+    })
+    expect(r.pitchTitle).toContain('vous lancer')
+  })
+
+  it('photo Google présente → reste sur wording « réputation établie » (pas de bascule)', () => {
+    const r = buildContent({
+      variant: 'sans-site',
+      prospect: {
+        ...baseProspect,
+        google_rating: null,
+        google_reviews_count: null,
+        google_photo_refs: ['places/X/photos/1'],
+      },
+      qrTargetUrl: 'x',
+    })
+    // Reste sur le wording existant (fallback variant), pas « nouveau commerce »
+    expect(r.headerEyebrow.line1).toBe('Une simulation gratuite')
   })
 })
 

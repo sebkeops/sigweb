@@ -36,28 +36,56 @@ const HIGHLIGHT_FALLBACK_TEXT: Record<WebVariant, string> = {
     `J'ai jeté un œil à votre site actuel — il a le mérite d'exister, mais je crois honnêtement qu'il ne rend pas justice à la qualité de votre {{categorie}} aujourd'hui.`,
 }
 
+// ─── Fallback "nouveau commerce" (Lot 2 — complément Sirene) ──────────────
+//
+// Déclenché quand le prospect n'a AUCUNE donnée Google (note, avis ni photo).
+// Cas typique : commerce neuf sourcé via Sirene.
+//
+// Ton :
+//   - reconnaît le lancement
+//   - valorise « être trouvable dès le départ »
+//   - n'attaque PAS un « site actuel pas à la hauteur » (il n'y en a pas)
+//   - ne mentionne PAS d'avis ni de note (il n'y en a pas)
+
+const HIGHLIGHT_NOUVEAU_COMMERCE_HTML =
+  `Vous venez de lancer votre {{categorie}}. Quand de nouveaux clients vous cherchent sur leur téléphone, ils ne trouvent <em>rien</em> — pas encore. C'est <em>exactement le moment</em> où une vraie présence en ligne fait toute la différence : être visible, paraître établi, donner envie dès les premiers clics.`
+
+const HIGHLIGHT_NOUVEAU_COMMERCE_TEXT =
+  `Vous venez de lancer votre {{categorie}}. Quand de nouveaux clients vous cherchent sur leur téléphone, ils ne trouvent rien — pas encore. C'est exactement le moment où une vraie présence en ligne fait toute la différence : être visible, paraître établi, donner envie dès les premiers clics.`
+
 /**
  * Si rating ou nb_avis manquant, swap le contenu du highlight par le fallback
  * générique. À appliquer AVANT `interpolate`.
+ *
+ * Paramètre `isNouveauCommerce` (Lot 2) : si `true`, utilise le wording
+ * « nouveau commerce » au lieu du fallback variant-aware. Déclenché par
+ * `!hasGoogleReputation(prospect)` côté caller.
  */
 export function applyHighlightFallback(
   template: string,
   variant: WebVariant,
-  format: 'html' | 'text'
+  format: 'html' | 'text',
+  isNouveauCommerce: boolean = false
 ): string {
   if (format === 'html') {
+    const fallback = isNouveauCommerce
+      ? HIGHLIGHT_NOUVEAU_COMMERCE_HTML
+      : HIGHLIGHT_FALLBACK_HTML[variant]
     // Match le bloc <div class="highlight-fact">…</div> non-greedy.
     return template.replace(
       /<div class="highlight-fact">[\s\S]*?<\/div>/,
-      `<div class="highlight-fact">${HIGHLIGHT_FALLBACK_HTML[variant]}</div>`
+      `<div class="highlight-fact">${fallback}</div>`
     )
   }
   // Texte : la phrase highlight commence par "Avec {{nb_avis}} avis Google"
   // et se termine à la double newline (paragraphe suivant). Cible précise
   // qui survit aux variations mineures du seed.
+  const fallback = isNouveauCommerce
+    ? HIGHLIGHT_NOUVEAU_COMMERCE_TEXT
+    : HIGHLIGHT_FALLBACK_TEXT[variant]
   return template.replace(
     /Avec \{\{nb_avis\}\}[\s\S]*?(\r?\n\r?\n)/,
-    `${HIGHLIGHT_FALLBACK_TEXT[variant]}\n\n`
+    `${fallback}\n\n`
   )
 }
 
