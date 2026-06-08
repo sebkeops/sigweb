@@ -384,6 +384,118 @@ describe('searchSireneSourcing', () => {
     expect(result.data).toHaveLength(0)
   })
 
+  it('recherche par département : choisit le matching dont le CP commence par le département', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'CHAINE NATIONALE',
+              siege: {
+                siret: '11111111111111',
+                etat_administratif: 'A',
+                code_postal: '75015',
+                libelle_commune: 'PARIS',
+              },
+              matching_etablissements: [
+                {
+                  siret: '11111111122222',
+                  etat_administratif: 'A',
+                  code_postal: '31000',
+                  libelle_commune: 'TOULOUSE',
+                  date_creation: '2025-03-15',
+                },
+              ],
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ departement: '31' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(1)
+    expect(result.data[0].code_postal).toBe('31000')
+    expect(result.data[0].siret).toBe('11111111122222')
+  })
+
+  it('recherche par département + recentMonths : prend le matching le plus récent', async () => {
+    // Date dynamique pour rester dans la fenêtre recentMonths (sinon le
+    // test casse au fil des mois). « Récent » = 1 mois en arrière.
+    const recent = new Date()
+    recent.setMonth(recent.getMonth() - 1)
+    const recentIso = recent.toISOString().slice(0, 10)
+
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'ENTREPRISE AVEC PLUSIEURS MAGASINS',
+              siege: {
+                siret: '99999999900099',
+                etat_administratif: 'A',
+                code_postal: '75015',
+              },
+              matching_etablissements: [
+                {
+                  siret: '99999999900111',
+                  etat_administratif: 'A',
+                  code_postal: '31000',
+                  date_creation: '2010-01-01',
+                },
+                {
+                  siret: '99999999900222',
+                  etat_administratif: 'A',
+                  code_postal: '31300',
+                  date_creation: recentIso,  // plus récent ET dans la fenêtre
+                },
+              ],
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ departement: '31', recentMonths: 12 })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(1)
+    expect(result.data[0].siret).toBe('99999999900222')
+  })
+
+  it('rejette si aucun matching dans le département recherché', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'AILLEURS',
+              siege: {
+                siret: '12345678900012',
+                etat_administratif: 'A',
+                code_postal: '75015',
+              },
+              matching_etablissements: [
+                {
+                  siret: '12345678900013',
+                  etat_administratif: 'A',
+                  code_postal: '69000',  // Rhône, pas Haute-Garonne
+                },
+              ],
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ departement: '31' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(0)
+  })
+
   it('exclut les établissements fermés (etat_administratif != "A")', async () => {
     fetchMock.mockResolvedValueOnce(
       new Response(
