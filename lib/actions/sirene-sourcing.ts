@@ -5,6 +5,10 @@ import { createClient } from '@/lib/supabase/server'
 import { searchSireneSourcing, type SireneEstablishment } from '@/lib/sirene/sirene'
 import { NAF_BY_CATEGORIE } from '@/lib/sirene/naf-mapping'
 import { normalizeNomCommerce } from '@/lib/sirene/normalize-name'
+import {
+  extractCodesPostaux,
+  resolveCommunesInRadius,
+} from '@/lib/sirene/geo-communes'
 import type { ProspectCategorie } from '@/types'
 
 /**
@@ -31,17 +35,31 @@ export interface SireneSourcingRow extends SireneEstablishment {
   alreadyInCrm: boolean
 }
 
+/**
+ * Paramètres de la recherche Sirene en mode « centre + rayon + multi-catégories ».
+ * Aligné sur le UX du sourcing Google pour offrir la même expérience à l'admin.
+ */
 export interface SireneSourcingParams {
-  categorie: ProspectCategorie | 'tous'
-  codePostal?: string
-  departement?: string
+  /** Latitude du centre de la zone de recherche (typiquement le domicile). */
+  centerLat: number
+  /** Longitude du centre. */
+  centerLng: number
+  /** Rayon de recherche en km autour du centre (1-50). */
+  radiusKm: number
+  /** Catégories Sigweb sélectionnées (≥ 1). Mapping interne vers les NAF. */
+  categories: ProspectCategorie[]
   recentMonths?: number  // 0 = pas de filtre
   excludeAlreadyInCrm: boolean
-  perPage?: number
 }
 
 export type RunSireneSourcingResult =
-  | { success: true; data: SireneSourcingRow[]; warning?: string }
+  | {
+      success: true
+      data: SireneSourcingRow[]
+      /** Métadonnées de la recherche pour affichage UI (zone résolue, appels effectués). */
+      meta?: { communesCount: number; codesPostauxCount: number }
+      warning?: string
+    }
   | { success: false; error: string }
 
 const FRIENDLY_REASONS: Record<string, string> = {
@@ -53,6 +71,34 @@ const FRIENDLY_REASONS: Record<string, string> = {
   not_found: 'Aucun résultat.',
 }
 
+/** Plafond CPs traités par recherche pour borner le nombre d'appels Sirene. */
+const MAX_CODES_POSTAUX = 30
+
+/** Concurrence des appels Sirene parallèles (rate limit data.gouv.fr ~7 req/s). */
+const SIRENE_CONCURRENCY = 5
+
+/**
+ * Helper simple de concurrence bornée — équivalent local de p-map (5 lignes
+ * suffisent, pas besoin d'ajouter une dépendance).
+ */
+async function pMap<T, R>(
+  items: T[],
+  fn: (item: T) => Promise<R>,
+  concurrency: number
+): Promise<R[]> {
+  const results: R[] = new Array(items.length)
+  let cursor = 0
+  async function worker() {
+    while (true) {
+      const i = cursor++
+      if (i >= items.length) return
+      results[i] = await fn(items[i])
+    }
+  }
+  await Promise.all(Array.from({ length: concurrency }, worker))
+  return results
+}
+
 export async function runSireneSourcingAction(
   params: SireneSourcingParams
 ): Promise<RunSireneSourcingResult> {
@@ -62,80 +108,108 @@ export async function runSireneSourcingAction(
   } = await supabase.auth.getUser()
   if (!user) return { success: false, error: 'Non autorisé.' }
 
-  if (!params.codePostal && !params.departement) {
+  if (!params.categories || params.categories.length === 0) {
+    return { success: false, error: 'Sélectionne au moins une catégorie.' }
+  }
+  if (!Number.isFinite(params.centerLat) || !Number.isFinite(params.centerLng)) {
     return {
       success: false,
-      error: 'Code postal ou département obligatoire.',
+      error: 'Coordonnées du centre manquantes (SIGWEB_BASE_LATITUDE / LONGITUDE).',
+    }
+  }
+  if (params.radiusKm < 1 || params.radiusKm > 50) {
+    return { success: false, error: 'Rayon : entre 1 et 50 km.' }
+  }
+
+  // 1. Résolution de la zone : centre + rayon → liste de CPs via geo.api.gouv.fr
+  const geo = await resolveCommunesInRadius(
+    params.centerLat,
+    params.centerLng,
+    params.radiusKm
+  )
+  if (!geo.ok) {
+    return {
+      success: false,
+      error: 'Impossible de résoudre la zone géographique. Réessaye.',
+    }
+  }
+  const communes = geo.data
+  if (communes.length === 0) {
+    return { success: true, data: [], meta: { communesCount: 0, codesPostauxCount: 0 } }
+  }
+  const codesPostaux = extractCodesPostaux(communes).slice(0, MAX_CODES_POSTAUX)
+
+  // 2. Mapping catégories → NAF distincts. Une recherche par paire (CP × NAF).
+  //    On dédup les NAFs car plusieurs catégories peuvent partager un code
+  //    (ex: traiteur et chocolatier touchent tous les deux 4724Z).
+  const nafSet = new Set<string>()
+  for (const cat of params.categories) {
+    for (const naf of NAF_BY_CATEGORIE[cat] ?? []) {
+      nafSet.add(naf)
+    }
+  }
+  const nafCodes = Array.from(nafSet)
+  if (nafCodes.length === 0) {
+    return {
+      success: false,
+      error: 'Aucun code NAF associé aux catégories sélectionnées.',
     }
   }
 
-  // Mapping catégorie → codes NAF. Une catégorie a 1-3 codes ; on lance
-  // une recherche par code et on agrège (data.gouv.fr ne fait pas le OR
-  // multi-NAF côté serveur, mais 1-3 appels reste largement sous quota).
-  const nafCodes =
-    params.categorie === 'tous'
-      ? [undefined]
-      : NAF_BY_CATEGORIE[params.categorie].length > 0
-        ? NAF_BY_CATEGORIE[params.categorie]
-        : [undefined]
+  // 3. Produit cartésien CP × NAF
+  const tasks: Array<{ codePostal: string; codeNaf: string }> = []
+  for (const cp of codesPostaux) {
+    for (const naf of nafCodes) {
+      tasks.push({ codePostal: cp, codeNaf: naf })
+    }
+  }
 
-  // Stratégie de pagination : l'API renvoie les résultats triés par
-  // « score » (taille d'entreprise décroissante) sans possibilité d'inverser.
-  // Pour le cas dégradé « toutes activités + département » qui ne contient
-  // que des grandes entreprises en page 1 (toutes filtrées par GE), on
-  // tire plusieurs pages pour atteindre les PME/TPE.
-  //   - activité ciblée : 1 page (le NAF restreint déjà fortement)
-  //   - 'tous' + departement (zone large) : 5 pages (125 résultats bruts)
-  //   - 'tous' + code postal (zone restreinte) : 2 pages
-  const maxPages =
-    params.categorie === 'tous'
-      ? params.departement
-        ? 5
-        : 2
-      : 1
-
+  // 4. Exécution avec concurrence bornée (rate limit data.gouv.fr)
   const allResults: SireneEstablishment[] = []
   const seenSiret = new Set<string>()
+  let hasError: string | null = null
 
-  for (const naf of nafCodes) {
-    let lastError: string | null = null
-    for (let page = 1; page <= maxPages; page++) {
+  await pMap(
+    tasks,
+    async (task) => {
       const result = await searchSireneSourcing({
-        codePostal: params.codePostal,
-        departement: params.departement,
-        codeNaf: naf,
-        recentMonths: params.recentMonths && params.recentMonths > 0 ? params.recentMonths : undefined,
-        perPage: params.perPage ?? 25,
-        page,
+        codePostal: task.codePostal,
+        codeNaf: task.codeNaf,
+        recentMonths:
+          params.recentMonths && params.recentMonths > 0
+            ? params.recentMonths
+            : undefined,
+        perPage: 25,
+        page: 1,
       })
-
       if (!result.ok) {
-        lastError = FRIENDLY_REASONS[result.reason] ?? 'Erreur inconnue.'
-        break  // page suivante inutile si l'API tombe
+        if (!hasError) hasError = FRIENDLY_REASONS[result.reason] ?? 'Erreur inconnue.'
+        return
       }
-
-      // IMPORTANT : on NE break PAS si result.data est vide après filtrage.
-      // L'API renvoie 25 résultats bruts par page, et il est fréquent qu'une
-      // page entière soit composée de grandes entreprises (rejetées par
-      // notre filtre 'GE') sans qu'on soit arrivé à la fin des résultats
-      // disponibles. Ce serait un break précoce qui condamne la pagination.
-      // On boucle systématiquement jusqu'à `maxPages`.
       for (const e of result.data) {
         if (seenSiret.has(e.siret)) continue
         seenSiret.add(e.siret)
         allResults.push(e)
       }
-    }
+    },
+    SIRENE_CONCURRENCY
+  )
 
-    // Si on a 0 résultat sur ce NAF et qu'on n'a rien accumulé jusque-là,
-    // remonter l'erreur. Sinon on continue silencieusement avec ce qu'on a.
-    if (lastError && allResults.length === 0) {
-      return { success: false, error: lastError }
-    }
+  // Si tous les appels ont échoué et aucun résultat → on remonte l'erreur.
+  // Sinon on garde ce qu'on a (mode best-effort).
+  if (hasError && allResults.length === 0) {
+    return { success: false, error: hasError }
   }
 
   if (allResults.length === 0) {
-    return { success: true, data: [] }
+    return {
+      success: true,
+      data: [],
+      meta: {
+        communesCount: communes.length,
+        codesPostauxCount: codesPostaux.length,
+      },
+    }
   }
 
   // Dédup : check des SIRETs déjà en BDD
@@ -155,7 +229,14 @@ export async function runSireneSourcingAction(
     rows = rows.filter((r) => !r.alreadyInCrm)
   }
 
-  return { success: true, data: rows }
+  return {
+    success: true,
+    data: rows,
+    meta: {
+      communesCount: communes.length,
+      codesPostauxCount: codesPostaux.length,
+    },
+  }
 }
 
 // ─── Import batch Sirene ──────────────────────────────────────────────

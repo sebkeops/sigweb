@@ -68,7 +68,7 @@ export default function SourcingPage({ baseCoords }: Props) {
       {activeSource === 'google' ? (
         <GoogleSourcingForm baseCoords={baseCoords} />
       ) : (
-        <SireneSourcingForm />
+        <SireneSourcingForm baseCoords={baseCoords} />
       )}
     </div>
   )

@@ -17,32 +17,35 @@ import {
   type SireneSourcingRow,
 } from '@/lib/actions/sirene-sourcing'
 
+interface Props {
+  baseCoords: { lat: number; lng: number } | null
+}
+
 /**
- * Formulaire de sourcing Sirene (chantier Sirene/PageSpeed Lot 1, étape 4).
+ * Formulaire de sourcing Sirene v2 — UX alignée sur GoogleSourcingForm :
+ *   - Zone : centre (domicile, lecture seule) + slider de rayon en km
+ *   - Catégories : grille de checkboxes multi-sélection (≥ 1 obligatoire)
  *
- * Différences vs sourcing Google :
- *   - Pas de centre/rayon (Sirene cherche par CP ou département)
- *   - Filtre 'créés < N mois' = la valeur ajoutée du canal Sirene
- *     (capter les commerces neufs invisibles sur Google)
- *   - Pas de score à l'étape de recherche (Sirene = données légales sèches)
- *   - Pas de filtre 'exclure chaînes/fermés' : etat_administratif='A' est
- *     déjà posé d'office côté adaptateur (filtre Sirene natif)
- *
- * UI alignée sur GoogleSourcingForm pour cohérence visuelle (mêmes
- * sections, mêmes Tailwind classes, mêmes patterns mobile-first).
+ * Côté serveur, la zone (lat/lng + rayon) est résolue en liste de codes
+ * postaux via geo.api.gouv.fr, puis on interroge Sirene CP par CP × NAF.
+ * Concurrence bornée pour respecter le rate limit data.gouv.fr.
  */
 
+// Sourceable Sirene : on autorise toutes les catégories exposées dans
+// l'admin (y compris 'autre' ? non — 'autre' n'a pas de NAF côté Sigweb,
+// donc une recherche serait vide. On exclut.).
 const SOURCEABLE = CATEGORIE_OPTIONS.filter(
-  (o) => CATEGORIES_EXPOSED_IN_ADMIN.has(o.value)
+  (o) => o.value !== 'autre' && CATEGORIES_EXPOSED_IN_ADMIN.has(o.value)
 )
 
 const fieldClass =
   'rounded-sm border border-border bg-white px-4 py-2.5 font-body text-sm text-ink focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary'
 
 interface ResultsMeta {
-  categorie: ProspectCategorie | 'tous'
   zone: string
   count: number
+  communesCount: number
+  codesPostauxCount: number
 }
 
 type ViewState =
@@ -52,7 +55,7 @@ type ViewState =
       phase: 'results'
       data: SireneSourcingRow[]
       meta: ResultsMeta
-      selected: Set<string>  // SIRETs sélectionnés pour import
+      selected: Set<string>
       importPending: boolean
       importError: string | null
     }
@@ -66,29 +69,46 @@ type ViewState =
     }
   | { phase: 'error'; message: string }
 
-export default function SireneSourcingForm() {
+export default function SireneSourcingForm({ baseCoords }: Props) {
   const [state, setState] = useState<ViewState>({ phase: 'form' })
 
-  // Form state
-  const [zoneType, setZoneType] = useState<'codePostal' | 'departement'>('codePostal')
-  const [zone, setZone] = useState('')
-  const [categorie, setCategorie] = useState<ProspectCategorie | 'tous'>('tous')
-  const [recentMonths, setRecentMonths] = useState(0)  // 0 = pas de filtre
+  const [radiusKm, setRadiusKm] = useState(15)
+  const [recentMonths, setRecentMonths] = useState(0)
   const [excludeAlreadyInCrm, setExcludeAlreadyInCrm] = useState(true)
+  const [selectedCats, setSelectedCats] = useState<Set<ProspectCategorie>>(new Set())
+
+  function toggleCategory(c: ProspectCategorie) {
+    setSelectedCats((prev) => {
+      const next = new Set(prev)
+      if (next.has(c)) next.delete(c)
+      else next.add(c)
+      return next
+    })
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!zone.trim()) {
-      setState({ phase: 'error', message: 'Indique un code postal ou un département.' })
+    if (selectedCats.size === 0) {
+      setState({ phase: 'error', message: 'Sélectionne au moins une catégorie.' })
+      return
+    }
+    if (!baseCoords) {
+      setState({
+        phase: 'error',
+        message:
+          'Coordonnées du centre manquantes (SIGWEB_BASE_LATITUDE / LONGITUDE).',
+      })
       return
     }
 
+    const cats = [...selectedCats]
     setState({ phase: 'loading' })
 
     const result = await runSireneSourcingAction({
-      categorie,
-      codePostal: zoneType === 'codePostal' ? zone.trim() : undefined,
-      departement: zoneType === 'departement' ? zone.trim() : undefined,
+      centerLat: baseCoords.lat,
+      centerLng: baseCoords.lng,
+      radiusKm,
+      categories: cats,
       recentMonths,
       excludeAlreadyInCrm,
     })
@@ -98,12 +118,11 @@ export default function SireneSourcingForm() {
         phase: 'results',
         data: result.data,
         meta: {
-          categorie,
-          zone: `${zoneType === 'codePostal' ? 'CP' : 'Dépt'} ${zone}`,
+          zone: `${radiusKm} km autour du domicile`,
           count: result.data.length,
+          communesCount: result.meta?.communesCount ?? 0,
+          codesPostauxCount: result.meta?.codesPostauxCount ?? 0,
         },
-        // Toutes décochées par défaut — l'admin coche explicitement
-        // les fiches qu'il veut importer (évite les ajouts massifs accidentels).
         selected: new Set<string>(),
         importPending: false,
         importError: null,
@@ -124,6 +143,9 @@ export default function SireneSourcingForm() {
 
     setState({ ...state, importPending: true, importError: null })
 
+    const fallbackCat: ProspectCategorie | null =
+      selectedCats.size === 1 ? [...selectedCats][0] : null
+
     const items = selected.map((r) => ({
       siret: r.siret,
       nom_commerce: r.nom_commerce,
@@ -137,11 +159,9 @@ export default function SireneSourcingForm() {
       ville: r.ville,
       raw: r.raw,
       // Catégorie dérivée du NAF de l'établissement = plus précise que
-      // celle de la recherche (qui peut être 'tous' ou ne pas matcher
-      // exactement le NAF réel du SIRET). Fallback sur la catégorie de
-      // recherche si le NAF est hors périmètre Sigweb.
-      suggestedCategorie:
-        categorieFromNaf(r.code_naf) ?? (categorie === 'tous' ? null : categorie),
+      // les catégories de recherche (multi-sélection). Fallback : si une
+      // seule catégorie était cochée, on la propose ; sinon null.
+      suggestedCategorie: categorieFromNaf(r.code_naf) ?? fallbackCat,
     }))
 
     const result = await importSireneBatchAction(items)
@@ -171,9 +191,14 @@ export default function SireneSourcingForm() {
     return (
       <div className="rounded-md border border-border bg-surface p-12 text-center shadow-sm">
         <div className="mx-auto mb-6 h-12 w-12 animate-spin rounded-full border-4 border-primary/20 border-t-primary" />
-        <p className="font-heading text-lg font-bold text-ink">Recherche Sirene en cours…</p>
+        <p className="font-heading text-lg font-bold text-ink">
+          Recherche Sirene en cours…
+        </p>
         <p className="mt-2 font-body text-sm text-muted">
-          Interrogation des registres légaux.
+          Résolution des codes postaux puis interrogation des registres.
+        </p>
+        <p className="mt-3 font-body text-xs text-accent">
+          ⏱️ Plusieurs catégories ou rayon large : peut prendre 10-20 s.
         </p>
       </div>
     )
@@ -187,6 +212,7 @@ export default function SireneSourcingForm() {
         selected={state.selected}
         importPending={state.importPending}
         importError={state.importError}
+        searchCats={[...selectedCats]}
         onToggle={toggleSelection}
         onImport={handleImport}
         onReset={backToForm}
@@ -206,70 +232,84 @@ export default function SireneSourcingForm() {
         </div>
       )}
 
-      {/* Section 1 — Zone */}
+      {/* Section 1 — Zone géographique (identique à GoogleSourcingForm) */}
       <section className="rounded-md border border-border bg-surface-soft p-6">
-        <h2 className="mb-4 font-heading text-base font-bold text-ink">Zone à cibler</h2>
+        <h2 className="mb-4 font-heading text-base font-bold text-ink">
+          Zone géographique
+        </h2>
 
-        <div className="mb-4 flex flex-wrap gap-2">
-          <button
-            type="button"
-            onClick={() => setZoneType('codePostal')}
-            className={`rounded-sm border px-4 py-2 font-body text-sm font-medium transition ${
-              zoneType === 'codePostal'
-                ? 'border-primary bg-primary-soft text-primary-dark'
-                : 'border-border bg-surface text-muted hover:text-ink'
-            }`}
-          >
-            Code postal
-          </button>
-          <button
-            type="button"
-            onClick={() => setZoneType('departement')}
-            className={`rounded-sm border px-4 py-2 font-body text-sm font-medium transition ${
-              zoneType === 'departement'
-                ? 'border-primary bg-primary-soft text-primary-dark'
-                : 'border-border bg-surface text-muted hover:text-ink'
-            }`}
-          >
-            Département
-          </button>
+        <div className="mb-6">
+          <p className="font-body text-xs font-semibold uppercase tracking-wider text-muted">
+            Centre de recherche
+          </p>
+          <p className="mt-1 font-body text-sm text-ink">
+            {baseCoords
+              ? `Domicile (${baseCoords.lat.toFixed(4)}, ${baseCoords.lng.toFixed(4)})`
+              : '⚠️ Coordonnées manquantes'}
+          </p>
         </div>
 
-        <input
-          type="text"
-          value={zone}
-          onChange={(e) => setZone(e.target.value)}
-          placeholder={zoneType === 'codePostal' ? 'Ex : 31000' : 'Ex : 31 ou 32'}
-          inputMode="numeric"
-          className={`${fieldClass} w-full sm:max-w-xs`}
-        />
-        <p className="mt-2 font-body text-xs text-muted">
-          {zoneType === 'codePostal'
-            ? 'Recherche restreinte aux établissements de ce code postal.'
-            : 'Recherche sur tout le département (peut renvoyer beaucoup de résultats).'}
-        </p>
+        <div>
+          <div className="mb-2 flex items-baseline justify-between">
+            <label htmlFor="sirene-radius" className="font-body text-sm font-semibold text-ink">
+              Rayon de recherche
+            </label>
+            <span className="font-heading text-lg font-bold text-primary">
+              {radiusKm} km
+            </span>
+          </div>
+          <input
+            id="sirene-radius"
+            type="range"
+            min={1}
+            max={50}
+            step={1}
+            value={radiusKm}
+            onChange={(e) => setRadiusKm(parseInt(e.target.value, 10))}
+            className="w-full accent-primary"
+          />
+          <div className="mt-1 flex justify-between font-body text-xs text-muted">
+            <span>1 km — quartier</span>
+            <span className="hidden sm:inline">15 km — agglo proche</span>
+            <span>50 km — département</span>
+          </div>
+        </div>
       </section>
 
-      {/* Section 2 — Catégorie */}
+      {/* Section 2 — Catégories (grille checkbox multi-sélection) */}
       <section className="rounded-md border border-border bg-surface-soft p-6">
-        <h2 className="mb-4 font-heading text-base font-bold text-ink">Type d&apos;activité</h2>
-        <select
-          value={categorie}
-          onChange={(e) => setCategorie(e.target.value as ProspectCategorie | 'tous')}
-          className={`${fieldClass} w-full sm:max-w-md`}
-        >
-          <option value="tous">Toutes activités</option>
-          {SOURCEABLE.map((opt) => (
-            <option key={opt.value} value={opt.value}>
-              {opt.label}
-            </option>
-          ))}
-        </select>
-        <p className="mt-2 font-body text-xs text-muted">
-          Les libellés correspondent à des codes NAF Sigweb (boulangerie =
-          1071C, 1071D, 4724Z, etc.). « Toutes activités » ne filtre pas par
-          NAF (utile pour explorer un quartier ou un département).
-        </p>
+        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+          <h2 className="font-heading text-base font-bold text-ink">
+            Catégories à cibler
+          </h2>
+          <span className="font-body text-xs text-muted">
+            {selectedCats.size} sélectionnée{selectedCats.size > 1 ? 's' : ''}
+            {selectedCats.size === 0 && ' — au moins une obligatoire'}
+          </span>
+        </div>
+        <div className="grid gap-2 sm:grid-cols-2 md:grid-cols-3">
+          {SOURCEABLE.map((opt) => {
+            const checked = selectedCats.has(opt.value)
+            return (
+              <label
+                key={opt.value}
+                className={`flex cursor-pointer items-center gap-2 rounded-sm border px-3 py-2 font-body text-sm transition-colors max-lg:min-h-[44px] ${
+                  checked
+                    ? 'border-primary bg-primary-soft text-primary-dark'
+                    : 'border-border bg-surface text-ink hover:border-primary/40'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggleCategory(opt.value)}
+                  className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
+                />
+                {opt.label}
+              </label>
+            )
+          })}
+        </div>
       </section>
 
       {/* Section 3 — Filtres */}
@@ -320,10 +360,10 @@ export default function SireneSourcingForm() {
           type="submit"
           variant="primary"
           size="md"
-          disabled={!zone.trim()}
+          disabled={selectedCats.size === 0 || !baseCoords}
           className="max-lg:min-h-[44px] max-lg:w-full"
         >
-          Rechercher
+          Lancer le sourcing
         </Button>
       </div>
     </form>
@@ -338,6 +378,7 @@ interface ResultsTableProps {
   selected: Set<string>
   importPending: boolean
   importError: string | null
+  searchCats: ProspectCategorie[]
   onToggle: (siret: string) => void
   onImport: () => void
   onReset: () => void
@@ -349,6 +390,7 @@ function SireneResultsTable({
   selected,
   importPending,
   importError,
+  searchCats,
   onToggle,
   onImport,
   onReset,
@@ -361,7 +403,13 @@ function SireneResultsTable({
             {meta.count} résultat{meta.count > 1 ? 's' : ''}
           </h2>
           <p className="font-body text-sm text-muted">
-            {meta.zone} · {meta.categorie === 'tous' ? 'toutes activités' : meta.categorie}
+            {meta.zone} ·{' '}
+            {searchCats.length > 0
+              ? `${searchCats.length} catégorie${searchCats.length > 1 ? 's' : ''}`
+              : 'toutes catégories'}{' '}
+            · {meta.codesPostauxCount} code{meta.codesPostauxCount > 1 ? 's' : ''} postal
+            {meta.codesPostauxCount > 1 ? 'aux' : ''} couvert
+            {meta.codesPostauxCount > 1 ? 's' : ''}
           </p>
         </div>
         <Button type="button" variant="ghost" size="sm" onClick={onReset}>
@@ -372,22 +420,10 @@ function SireneResultsTable({
       {data.length === 0 ? (
         <div className="rounded-md border border-border bg-surface-soft px-4 py-8 text-center font-body text-sm text-muted">
           <p>Aucun établissement trouvé pour ces critères.</p>
-          {meta.categorie === 'tous' && (
-            <p className="mt-3 text-xs">
-              💡 Avec <strong>« Toutes activités »</strong>, l&apos;API Sirene
-              renvoie en priorité les grandes entreprises (Carrefour, La Poste,
-              EDF…) qui sont automatiquement exclues. Pour trouver des
-              <em> commerces de proximité neufs</em>, <strong>cibles une activité
-              précise</strong> (boulangerie, coiffeur, plomberie…) et lance la
-              recherche par code postal plutôt que département.
-            </p>
-          )}
-          {meta.categorie !== 'tous' && (
-            <p className="mt-3 text-xs">
-              Élargis la zone (passer en département) ou retire le filtre de
-              date.
-            </p>
-          )}
+          <p className="mt-3 text-xs">
+            Élargis le rayon, sélectionne plus de catégories ou retire le filtre
+            de date.
+          </p>
         </div>
       ) : (
         <>
@@ -418,9 +454,6 @@ function SireneResultsTable({
                       <p className="mt-1 font-body text-xs text-muted">
                         {row.adresse} · {row.code_postal} {row.ville}
                       </p>
-                      {/* Catégorie Sigweb dérivée du NAF — utile pour distinguer
-                          rapidement un commerce-cible (boulangerie, coiffeur)
-                          d'un NAF hors périmètre (ex: production électrique). */}
                       <p className="mt-1 flex flex-wrap items-baseline gap-1.5 font-body text-xs text-muted">
                         {(() => {
                           const cat = categorieFromNaf(row.code_naf)
@@ -446,9 +479,13 @@ function SireneResultsTable({
                         </span>
                       </p>
                       <p className="mt-1 font-body text-xs text-muted">
-                        {row.date_creation ? `Créé le ${row.date_creation}` : 'Date inconnue'}
+                        {row.date_creation
+                          ? `Créé le ${row.date_creation}`
+                          : 'Date inconnue'}
                       </p>
-                      <p className="mt-1 font-body text-[11px] text-muted">SIRET : {row.siret}</p>
+                      <p className="mt-1 font-body text-[11px] text-muted">
+                        SIRET : {row.siret}
+                      </p>
                     </div>
                   </label>
                 </li>
