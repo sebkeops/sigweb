@@ -363,10 +363,25 @@ function SireneResultsTable({
       </div>
 
       {data.length === 0 ? (
-        <p className="rounded-md border border-border bg-surface-soft px-4 py-8 text-center font-body text-sm text-muted">
-          Aucun établissement trouvé pour ces critères. Élargis la zone, change
-          d&apos;activité ou retire le filtre de date.
-        </p>
+        <div className="rounded-md border border-border bg-surface-soft px-4 py-8 text-center font-body text-sm text-muted">
+          <p>Aucun établissement trouvé pour ces critères.</p>
+          {meta.categorie === 'tous' && (
+            <p className="mt-3 text-xs">
+              💡 Avec <strong>« Toutes activités »</strong>, l&apos;API Sirene
+              renvoie en priorité les grandes entreprises (Carrefour, La Poste,
+              EDF…) qui sont automatiquement exclues. Pour trouver des
+              <em> commerces de proximité neufs</em>, <strong>cibles une activité
+              précise</strong> (boulangerie, coiffeur, plomberie…) et lance la
+              recherche par code postal plutôt que département.
+            </p>
+          )}
+          {meta.categorie !== 'tous' && (
+            <p className="mt-3 text-xs">
+              Élargis la zone (passer en département) ou retire le filtre de
+              date.
+            </p>
+          )}
+        </div>
       ) : (
         <>
           <ul className="space-y-2">

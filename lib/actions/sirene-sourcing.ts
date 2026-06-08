@@ -79,34 +79,53 @@ export async function runSireneSourcingAction(
         ? NAF_BY_CATEGORIE[params.categorie]
         : [undefined]
 
+  // Stratégie de pagination : l'API renvoie les résultats triés par
+  // « score » (taille d'entreprise décroissante) sans possibilité d'inverser.
+  // Pour le cas dégradé « toutes activités + département » qui ne contient
+  // que des grandes entreprises en page 1 (toutes filtrées par GE), on
+  // tire plusieurs pages pour atteindre les PME/TPE.
+  //   - activité ciblée : 1 page (le NAF restreint déjà fortement)
+  //   - 'tous' + departement (zone large) : 5 pages (125 résultats bruts)
+  //   - 'tous' + code postal (zone restreinte) : 2 pages
+  const maxPages =
+    params.categorie === 'tous'
+      ? params.departement
+        ? 5
+        : 2
+      : 1
+
   const allResults: SireneEstablishment[] = []
   const seenSiret = new Set<string>()
 
   for (const naf of nafCodes) {
-    const result = await searchSireneSourcing({
-      codePostal: params.codePostal,
-      departement: params.departement,
-      codeNaf: naf,
-      recentMonths: params.recentMonths && params.recentMonths > 0 ? params.recentMonths : undefined,
-      perPage: params.perPage ?? 25,
-    })
+    let lastError: string | null = null
+    for (let page = 1; page <= maxPages; page++) {
+      const result = await searchSireneSourcing({
+        codePostal: params.codePostal,
+        departement: params.departement,
+        codeNaf: naf,
+        recentMonths: params.recentMonths && params.recentMonths > 0 ? params.recentMonths : undefined,
+        perPage: params.perPage ?? 25,
+        page,
+      })
 
-    if (!result.ok) {
-      // Une erreur sur un NAF ne doit pas tout casser. Si on a déjà eu
-      // des résultats sur les NAFs précédents, on continue et on signale.
-      if (allResults.length === 0) {
-        return {
-          success: false,
-          error: FRIENDLY_REASONS[result.reason] ?? 'Erreur inconnue.',
-        }
+      if (!result.ok) {
+        lastError = FRIENDLY_REASONS[result.reason] ?? 'Erreur inconnue.'
+        break  // page suivante inutile si l'API tombe
       }
-      continue
+      if (result.data.length === 0) break  // plus de résultats à paginer
+
+      for (const e of result.data) {
+        if (seenSiret.has(e.siret)) continue
+        seenSiret.add(e.siret)
+        allResults.push(e)
+      }
     }
 
-    for (const e of result.data) {
-      if (seenSiret.has(e.siret)) continue
-      seenSiret.add(e.siret)
-      allResults.push(e)
+    // Si on a 0 résultat sur ce NAF et qu'on n'a rien accumulé jusque-là,
+    // remonter l'erreur. Sinon on continue silencieusement avec ce qu'on a.
+    if (lastError && allResults.length === 0) {
+      return { success: false, error: lastError }
     }
   }
 
