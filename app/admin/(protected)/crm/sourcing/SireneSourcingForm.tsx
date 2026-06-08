@@ -4,9 +4,11 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import {
+  CATEGORIE_LABELS,
   CATEGORIE_OPTIONS,
   CATEGORIES_EXPOSED_IN_ADMIN,
 } from '@/lib/crm/constants'
+import { categorieFromNaf } from '@/lib/sirene/naf-mapping'
 import type { ProspectCategorie } from '@/types'
 import {
   importSireneBatchAction,
@@ -134,7 +136,12 @@ export default function SireneSourcingForm() {
       code_postal: r.code_postal,
       ville: r.ville,
       raw: r.raw,
-      suggestedCategorie: categorie === 'tous' ? null : categorie,
+      // Catégorie dérivée du NAF de l'établissement = plus précise que
+      // celle de la recherche (qui peut être 'tous' ou ne pas matcher
+      // exactement le NAF réel du SIRET). Fallback sur la catégorie de
+      // recherche si le NAF est hors périmètre Sigweb.
+      suggestedCategorie:
+        categorieFromNaf(r.code_naf) ?? (categorie === 'tous' ? null : categorie),
     }))
 
     const result = await importSireneBatchAction(items)
@@ -411,10 +418,35 @@ function SireneResultsTable({
                       <p className="mt-1 font-body text-xs text-muted">
                         {row.adresse} · {row.code_postal} {row.ville}
                       </p>
+                      {/* Catégorie Sigweb dérivée du NAF — utile pour distinguer
+                          rapidement un commerce-cible (boulangerie, coiffeur)
+                          d'un NAF hors périmètre (ex: production électrique). */}
+                      <p className="mt-1 flex flex-wrap items-baseline gap-1.5 font-body text-xs text-muted">
+                        {(() => {
+                          const cat = categorieFromNaf(row.code_naf)
+                          if (cat) {
+                            return (
+                              <span className="rounded-full bg-primary-soft px-2 py-0.5 font-body text-[10px] font-semibold text-primary-dark">
+                                {CATEGORIE_LABELS[cat]}
+                              </span>
+                            )
+                          }
+                          return (
+                            <span
+                              className="rounded-full bg-gray-100 px-2 py-0.5 font-body text-[10px] font-semibold text-gray-700"
+                              title="NAF hors périmètre Sigweb — sera importé comme « Autre »"
+                            >
+                              Hors périmètre
+                            </span>
+                          )
+                        })()}
+                        <span>
+                          NAF {row.code_naf}
+                          {row.libelle_naf ? ` · ${row.libelle_naf}` : ''}
+                        </span>
+                      </p>
                       <p className="mt-1 font-body text-xs text-muted">
-                        NAF {row.code_naf}
-                        {row.libelle_naf ? ` · ${row.libelle_naf}` : ''}
-                        {row.date_creation ? ` · créé le ${row.date_creation}` : ''}
+                        {row.date_creation ? `Créé le ${row.date_creation}` : 'Date inconnue'}
                       </p>
                       <p className="mt-1 font-body text-[11px] text-muted">SIRET : {row.siret}</p>
                     </div>
