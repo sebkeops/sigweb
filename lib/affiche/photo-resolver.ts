@@ -35,10 +35,14 @@ export async function resolveAffichePhotoBuffer(
   prospect: Prospect,
   supabase: SupabaseClient
 ): Promise<Buffer | null> {
-  const heroEntry = await findMaquetteHeroEntry(prospect.id, supabase)
+  const heroEntry = await findMaquetteHeroEntry(prospect, supabase)
   if (heroEntry) {
     const buffer = await fetchEntryBuffer(heroEntry)
     if (buffer) return buffer
+    console.warn(
+      '[affiche/photo-resolver] maquette hero entry trouvée mais fetch buffer KO',
+      { prospectId: prospect.id, source: heroEntry.source, ref: heroEntry.reference }
+    )
     // Si fetch échoue (ref invalide, upload supprimé, etc.), on retombe
     // sur le fallback Google plutôt que d'afficher le placeholder direct.
   }
@@ -48,24 +52,65 @@ export async function resolveAffichePhotoBuffer(
     return fetchGooglePhotoBuffer(ref, { maxHeightPx: 800 })
   }
 
+  console.warn(
+    '[affiche/photo-resolver] aucune image trouvée pour le prospect',
+    { prospectId: prospect.id, maquette_id: prospect.maquette_id, nom: prospect.nom_commerce }
+  )
   return null
 }
 
 async function findMaquetteHeroEntry(
-  prospectId: string,
+  prospect: Pick<Prospect, 'id' | 'maquette_id'>,
   supabase: SupabaseClient
 ): Promise<MaquettePhotoEntry | null> {
-  const { data, error } = await supabase
-    .from('maquettes')
-    .select('available_photos, photo_assignments')
-    .eq('prospect_id', prospectId)
-    .maybeSingle()
+  // Stratégie de lookup en 2 passes :
+  //   1. Si `prospect.maquette_id` est rempli (cas usuel après création
+  //      via createMaquetteFromProspect), on query par PRIMARY KEY direct.
+  //   2. Sinon (cas rare : maquette créée hors flow standard, ou
+  //      désynchronisation), fallback sur `prospect_id` (clé étrangère).
+  // La passe par PK est plus robuste car elle marche même si la maquette
+  // a un `prospect_id` NULL ou pointant ailleurs.
+  let data: { available_photos: unknown; photo_assignments: unknown } | null = null
 
-  if (error) {
-    console.error('[affiche/photo-resolver] fetch maquette failed:', error)
+  if (prospect.maquette_id) {
+    const r = await supabase
+      .from('maquettes')
+      .select('available_photos, photo_assignments')
+      .eq('id', prospect.maquette_id)
+      .maybeSingle()
+    if (r.error) {
+      console.error(
+        '[affiche/photo-resolver] fetch maquette by id failed:',
+        r.error
+      )
+    } else {
+      data = r.data as typeof data
+    }
+  }
+
+  if (!data) {
+    const r = await supabase
+      .from('maquettes')
+      .select('available_photos, photo_assignments')
+      .eq('prospect_id', prospect.id)
+      .maybeSingle()
+    if (r.error) {
+      console.error(
+        '[affiche/photo-resolver] fetch maquette by prospect_id failed:',
+        r.error
+      )
+      return null
+    }
+    data = r.data as typeof data
+  }
+
+  if (!data) {
+    console.warn('[affiche/photo-resolver] aucune maquette en BDD', {
+      prospectId: prospect.id,
+      maquette_id: prospect.maquette_id,
+    })
     return null
   }
-  if (!data) return null
 
   const stub = data as Pick<Maquette, 'available_photos' | 'photo_assignments'>
 
@@ -83,6 +128,9 @@ async function findMaquetteHeroEntry(
   const pool = stub.available_photos
   if (pool && pool.length > 0) return pool[0]
 
+  console.warn('[affiche/photo-resolver] maquette sans photo (pool vide)', {
+    prospectId: prospect.id,
+  })
   return null
 }
 

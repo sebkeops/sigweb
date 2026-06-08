@@ -138,6 +138,8 @@ describe('buildContent — wording « nouveau commerce » (aucune donnée Google
       qrTargetUrl: 'x',
     })
     expect(r.pitchTitle).toContain('vous lancer')
+    // Lot 2 — pas de saut de ligne forcé dans le titre (1 seule ligne)
+    expect(r.pitchTitle).not.toContain('\n')
   })
 
   it('photo Google présente → reste sur wording « réputation établie » (pas de bascule)', () => {

@@ -181,7 +181,12 @@ function buildContentNouveauCommerce(opts: {
     heroEyebrow: `${nom}${villeSuffix}`,
     heroTitle: `Votre ${categorie}\nmérite d'être *visible*\ndès le départ.`,
     pitchEyebrow: 'Une présence en ligne pour bien démarrer',
-    pitchTitle: 'Vous venez de\n*vous lancer*.',
+    // Une seule ligne (cf. brief Lot 2 — Robert Imbert) : on retire le
+    // saut explicite. Si la zone est trop étroite pour la phrase, le
+    // composant PDF gère le wrap automatiquement, mais le saut forcé
+    // au milieu (« Vous venez de » / « vous lancer ») n'est jamais
+    // souhaité.
+    pitchTitle: 'Vous venez de *vous lancer*.',
     pitchText:
       `Offrez à votre ${categorie} une **vraie présence en ligne**, ` +
       `et donnez envie dès les premiers clics. Pas de fiche perdue, ` +

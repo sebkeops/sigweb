@@ -22,6 +22,10 @@ export const AFFICHE_COLORS = {
   inkSoft:       '#3F3D33',   // texte secondaire (pitch text, benefits)
   inkMuted:      '#6E6B5E',   // texte tertiaire
   white:         '#FFFFFF',
+
+  // Bloc bénéfices (Lot 2 design — distinct visuellement de la zone pitch)
+  benefitsBg:    '#EFF4F0',   // vert sapin très pâle (dérivé du primary)
+  benefitsBorder:'#D7E0D9',   // bordure vert pâle moyen
 } as const
 
 /**
