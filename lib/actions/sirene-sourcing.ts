@@ -113,8 +113,13 @@ export async function runSireneSourcingAction(
         lastError = FRIENDLY_REASONS[result.reason] ?? 'Erreur inconnue.'
         break  // page suivante inutile si l'API tombe
       }
-      if (result.data.length === 0) break  // plus de résultats à paginer
 
+      // IMPORTANT : on NE break PAS si result.data est vide après filtrage.
+      // L'API renvoie 25 résultats bruts par page, et il est fréquent qu'une
+      // page entière soit composée de grandes entreprises (rejetées par
+      // notre filtre 'GE') sans qu'on soit arrivé à la fin des résultats
+      // disponibles. Ce serait un break précoce qui condamne la pagination.
+      // On boucle systématiquement jusqu'à `maxPages`.
       for (const e of result.data) {
         if (seenSiret.has(e.siret)) continue
         seenSiret.add(e.siret)
