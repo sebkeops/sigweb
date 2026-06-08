@@ -10,13 +10,18 @@ import type { PhotoData } from './build'
  * Sirene, qui n'a pas de `google_photo_refs`).
  *
  * Logique :
- *   1. Lookup `projects` où `slug = categorie` ET `project_kind='simulation'`
- *      ET `published=true`. Le mapping catégorie → slug de simulation est
- *      direct (1:1) : la simulation publique pour la catégorie « boulangerie »
- *      a le slug « boulangerie ».
- *   2. Si trouvé, parse `simulation_data` et extrait `available_photos` +
+ *   1. Lookup `projects` où `simulation_data->maquette->>template_variant
+ *      = categorie` ET `project_kind='simulation'` ET `published=true`.
+ *      On filtre sur le `template_variant` car les `slug` des simulations
+ *      sont des noms commerciaux fictifs (« la-table-artisan », « pizz-gabriel »),
+ *      pas des noms de catégories. Le `template_variant` est aligné 1:1
+ *      sur `ProspectCategorie` (cf. `categorieToVariant`).
+ *   2. Si plusieurs simulations matchent (plusieurs simulations par
+ *      catégorie sont fréquentes), on prend la première — leurs photos
+ *      sont toutes générées sur les mêmes pools Unsplash, donc équivalentes.
+ *   3. Parse `simulation_data` et extrait `available_photos` +
  *      `photo_assignments` de la maquette stockée.
- *   3. Si aucun match (catégorie sans simulation publique), retourne null.
+ *   4. Si aucun match (catégorie sans simulation publique), retourne null.
  *      Le caller fait alors un fallback « aucune photo » (placeholders).
  *
  * Pourquoi pas de re-mapping de slot ? Les 7 slots de maquette (hero,
@@ -36,11 +41,11 @@ export async function getSimulationPhotoFallback(
   const { data, error } = await supabase
     .from('projects')
     .select('simulation_data')
-    .eq('slug', categorie)
     .eq('project_kind', 'simulation')
     .eq('published', true)
+    .eq('simulation_data->maquette->>template_variant', categorie)
     .returns<{ simulation_data: unknown }[]>()
-    .maybeSingle()
+    .limit(1)
 
   if (error) {
     console.warn(
@@ -50,9 +55,9 @@ export async function getSimulationPhotoFallback(
     )
     return null
   }
-  if (!data?.simulation_data) return null
+  if (!data || data.length === 0 || !data[0]?.simulation_data) return null
 
-  const parsed = SimulationPayloadSchema.safeParse(data.simulation_data)
+  const parsed = SimulationPayloadSchema.safeParse(data[0].simulation_data)
   if (!parsed.success) {
     console.warn(
       '[simulation-fallback] simulation_data invalide pour',
