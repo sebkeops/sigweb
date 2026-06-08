@@ -15,6 +15,7 @@ import {
 } from './preview-generator'
 import {
   applyHighlightFallback,
+  applyNouveauCommerceIntroSwap,
   applyPreviewBlock,
   interpolate,
 } from './templating'
@@ -241,6 +242,14 @@ export async function renderEmailContent(
     // aux commerces neufs sans aucune donnée Google (cas Sirene).
     bodyHtmlTpl = applyHighlightFallback(bodyHtmlTpl, variant, 'html', isNouveauCommerce)
     bodyTextTpl = applyHighlightFallback(bodyTextTpl, variant, 'text', isNouveauCommerce)
+  }
+  // Swap d'intro maquette spécifique « nouveau commerce » (Lot 2 fix) :
+  // retire les mentions « vos vraies photos » / « vos vrais avis Google »
+  // qui n'ont aucun sens pour un prospect sans réputation Google et dont
+  // la maquette utilise une image illustrative (pas la vraie boutique).
+  if (isNouveauCommerce) {
+    bodyHtmlTpl = applyNouveauCommerceIntroSwap(bodyHtmlTpl)
+    bodyTextTpl = applyNouveauCommerceIntroSwap(bodyTextTpl)
   }
   if (previewImageUrl) {
     bodyHtmlTpl = applyPreviewBlock(

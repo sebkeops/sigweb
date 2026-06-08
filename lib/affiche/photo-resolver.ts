@@ -67,10 +67,23 @@ async function findMaquetteHeroEntry(
   }
   if (!data) return null
 
-  // On reconstruit un objet partial Maquette avec uniquement les champs lus —
-  // c'est tout ce dont `getMaquettePhoto` a besoin.
   const stub = data as Pick<Maquette, 'available_photos' | 'photo_assignments'>
-  return getMaquettePhoto(stub as Maquette, 'hero')
+
+  // 1. Slot 'hero' explicitement assigné en priorité (cas usuel — admin
+  //    a choisi la photo Hero dans le PhotoManager).
+  const heroPhoto = getMaquettePhoto(stub as Maquette, 'hero')
+  if (heroPhoto) return heroPhoto
+
+  // 2. Fallback : première photo du pool. Cas typique pour les prospects
+  //    Sirene dont la maquette hérite des photos d'une simulation (PR #29
+  //    → #32) : si l'assignation 'hero' héritée pointe sur null ou un
+  //    photo_id absent, on prend quand même la 1ère photo disponible
+  //    pour ne pas générer une affiche sans image (brief Lot 2 : « la
+  //    première image de la maquette »).
+  const pool = stub.available_photos
+  if (pool && pool.length > 0) return pool[0]
+
+  return null
 }
 
 async function fetchEntryBuffer(
