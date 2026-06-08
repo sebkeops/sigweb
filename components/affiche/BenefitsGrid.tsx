@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from '@react-pdf/renderer'
+import { StyleSheet, View } from '@react-pdf/renderer'
+import BenefitIcon from './BenefitIcon'
 import MarkupText from './MarkupText'
 import { AFFICHE_COLORS } from './tokens'
 import type { AfficheData } from '@/lib/affiche'
@@ -30,14 +31,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
-  check: {
-    fontFamily: 'Nunito',
-    color: AFFICHE_COLORS.primary,
-    fontWeight: 800,
-    fontSize: 14,
-    lineHeight: 1,
+  iconWrapper: {
     marginRight: 8,
-    marginTop: 2,
+    marginTop: 1,
+    width: 14,
+    flexShrink: 0,
   },
   text: {
     flex: 1,
@@ -60,24 +58,12 @@ interface Props {
 export default function BenefitsGrid({ data }: Props) {
   return (
     <View style={styles.wrapper}>
-      {/* DEBUG-LOT2-V36 — temporaire, à retirer une fois confirmé que le
-          déploiement Vercel sert bien la nouvelle version du composant.
-          Si tu vois cette ligne rouge sur l'affiche, le redeploy a marché.
-          Si tu ne la vois pas, le déploiement Vercel n'a pas pris. */}
-      <Text
-        style={{
-          color: 'red',
-          fontSize: 9,
-          fontFamily: 'Nunito',
-          paddingBottom: 4,
-        }}
-      >
-        DEBUG-LOT2-V36
-      </Text>
       <View style={styles.box}>
         {data.benefits.slice(0, 4).map((benefit, i) => (
           <View key={i} style={styles.itemCol}>
-            <Text style={styles.check}>✓</Text>
+            <View style={styles.iconWrapper}>
+              <BenefitIcon index={i} color={AFFICHE_COLORS.primary} />
+            </View>
             <MarkupText
               content={benefit}
               style={styles.text}

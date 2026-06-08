@@ -51,7 +51,7 @@ export async function buildAfficheData(
   const qrTargetUrl = resolveQRCodeUrl(prospect, availableSimulationSlugs)
 
   // En parallèle : photo + QR (les 2 opérations async indépendantes)
-  const [photoBuffer, qrDataUrl] = await Promise.all([
+  const [photoResult, qrDataUrl] = await Promise.all([
     resolveAffichePhotoBuffer(prospect, supabase),
     generateQRCodeDataUrl(qrTargetUrl),
   ])
@@ -61,10 +61,19 @@ export async function buildAfficheData(
   // Normalisation format → @react-pdf ne gère que JPEG/PNG. Les uploads
   // admin sont stockés en WebP, donc on doit reconvertir le buffer (sinon
   // <Image> échoue silencieusement et le hero rend vide).
-  const normalizedPhoto = photoBuffer ? await normalizeImageBuffer(photoBuffer) : null
+  const normalizedPhoto = photoResult.buffer
+    ? await normalizeImageBuffer(photoResult.buffer)
+    : null
   const photoUrl = normalizedPhoto
     ? `data:${normalizedPhoto.mime};base64,${normalizedPhoto.data.toString('base64')}`
     : null
+  // Si on a un buffer mais que la normalisation foire (cas typique : sharp
+  // refuse de décoder), on remonte la cause distinct du fallback initial.
+  const photoDebugReason = photoUrl
+    ? undefined
+    : photoResult.buffer && !normalizedPhoto
+      ? 'Buffer fetché mais normalisation/sharp KO (format invalide ou page HTML).'
+      : photoResult.reason
 
   return {
     variant,
@@ -78,6 +87,7 @@ export async function buildAfficheData(
       eyebrow: content.heroEyebrow,
       title: content.heroTitle,
       photoUrl,
+      photoDebugReason,
     },
     pitch: {
       eyebrow: content.pitchEyebrow,

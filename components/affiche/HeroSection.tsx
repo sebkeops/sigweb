@@ -104,6 +104,19 @@ export default function HeroSection({ data }: Props) {
       ) : (
         <View style={styles.placeholder}>
           <Text style={styles.placeholderText}>{data.prospect.nomCommerce}</Text>
+          {data.hero.photoDebugReason && (
+            <Text
+              style={{
+                marginTop: 14,
+                fontFamily: 'Nunito',
+                fontSize: 8,
+                color: '#FFB088',
+                textAlign: 'center',
+              }}
+            >
+              {data.hero.photoDebugReason}
+            </Text>
+          )}
         </View>
       )}
 
