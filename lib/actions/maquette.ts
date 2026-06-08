@@ -17,6 +17,7 @@ import {
   availablePhotosSchema,
   photoAssignmentsSchema,
 } from '@/lib/maquette/photos'
+import { getSimulationPhotoFallback } from '@/lib/maquette/photos/simulation-fallback'
 import { processPhotoBuffer } from '@/lib/maquette/photos/process'
 import {
   extractDominantColors,
@@ -107,10 +108,20 @@ export async function createMaquetteFromProspect(
     }
   }
 
-  // 3) Générer le contenu initial (peut throw UnsupportedCategoryError)
+  // 3a) Fallback photos : si le prospect n'a pas de photos Google
+  //     (typiquement source Sirene), on essaie de récupérer celles de la
+  //     simulation publique correspondant à sa catégorie. Aucune photo
+  //     trouvée → maquette générée sans photo (placeholders, cf. les
+  //     composants de rendu).
+  const hasGooglePhotos = (p.google_photo_refs ?? []).length > 0
+  const simulationFallbackPhotos = hasGooglePhotos
+    ? null
+    : await getSimulationPhotoFallback(p.categorie, supabase)
+
+  // 3b) Générer le contenu initial (peut throw UnsupportedCategoryError)
   let initial
   try {
-    initial = generateInitialMaquetteFromProspect(p)
+    initial = generateInitialMaquetteFromProspect(p, undefined, simulationFallbackPhotos)
   } catch (e) {
     if (e instanceof UnsupportedCategoryError) {
       return {
