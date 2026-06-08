@@ -25,6 +25,7 @@ import {
   SOURCE_ICONS,
   SOURCE_LABELS,
 } from '@/lib/crm/constants'
+import { deriveCanalRecommande } from '@/lib/crm/canal-badge'
 
 export const metadata: Metadata = { title: 'CRM | Admin Sigweb' }
 
@@ -257,6 +258,22 @@ export default async function AdminCrmPage({ searchParams }: Props) {
                     >
                       {p.nom_commerce}
                     </Link>
+                    {/* Picto orange si aucun canal distance (chantier
+                        Sirene/PageSpeed étape 6) — signal d'alerte discret
+                        pour les commerces neufs Sirene à démarcher terrain. */}
+                    {(() => {
+                      const reco = deriveCanalRecommande(p)
+                      if (reco.canal !== 'terrain') return null
+                      return (
+                        <span
+                          className="ml-2 inline-block text-sm"
+                          title={reco.description}
+                          aria-label="À démarcher en terrain/réseau"
+                        >
+                          📍
+                        </span>
+                      )
+                    })()}
                   </td>
                   <td className="hidden px-5 py-4 sm:table-cell">
                     <Badge variant={CATEGORIE_BADGE}>{displayCategorie(p)}</Badge>
