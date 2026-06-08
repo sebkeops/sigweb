@@ -147,16 +147,24 @@ export async function searchSireneSourcing(
 
   const establishments: SireneEstablishment[] = []
   for (const result of data.results) {
-    // On passe le CP recherché : si l'unité légale a un établissement
-    // dans ce CP (matching_etablissements), on prend celui-là plutôt
-    // que le siège. Évite « LA POSTE retourne son siège Paris » alors
-    // qu'on cherche dans le 32600.
-    const normalized = normalizeUniteLegale(result, params.codePostal)
+    // On passe la zone recherchée pour que normalizeUniteLegale choisisse
+    // intelligemment le matching_etablissement (CP exact ou département)
+    // plutôt que le siège qui peut être Paris/Bordeaux.
+    const normalized = normalizeUniteLegale(
+      result,
+      params.codePostal,
+      params.departement
+    )
     if (!normalized) continue
-    // Filtre côté JS : si CP recherché, on rejette les normalizes qui
-    // n'ont PAS d'établissement dans ce CP (le siège a été pris en
-    // fallback mais ce n'est pas notre cible).
+    // Filtre côté JS : on rejette les résultats hors zone (le fallback
+    // siège a été pris alors que la zone recherchée n'est pas là).
     if (params.codePostal && normalized.code_postal !== params.codePostal) {
+      continue
+    }
+    if (
+      params.departement &&
+      (!normalized.code_postal || !normalized.code_postal.startsWith(params.departement))
+    ) {
       continue
     }
     // etat_administratif='A' uniquement (filtre côté JS sur l'établissement
@@ -305,7 +313,8 @@ export function nafToApiFormat(code: string): string {
  */
 function normalizeUniteLegale(
   raw: unknown,
-  codePostalFilter?: string
+  codePostalFilter?: string,
+  departementFilter?: string
 ): SireneEstablishment | null {
   if (!raw || typeof raw !== 'object') return null
   const obj = raw as Record<string, unknown>
@@ -315,13 +324,34 @@ function normalizeUniteLegale(
     ? (obj.matching_etablissements as Record<string, unknown>[])
     : []
 
-  // Priorité : matching_etablissement qui est dans le CP recherché.
-  // Si pas de CP filtre, ou pas de matching dans ce CP, fallback siège.
+  // Choix de l'établissement à retourner :
+  //   1. Si codePostalFilter : matching avec ce CP exact
+  //   2. Si departementFilter : matching dont code_postal commence par
+  //      le département (ex: '31' matche '31000', '31300', ...)
+  //   3. Sinon : siège
+  // Quand plusieurs matchings sont éligibles (ex: une entreprise a 3
+  // magasins dans le département), on préfère le plus récent en termes
+  // de date_creation — utile pour le filtre `recentMonths` qui cherche
+  // les commerces neufs.
   let etab: Record<string, unknown> | undefined
+  let candidats: Record<string, unknown>[] = []
   if (codePostalFilter) {
-    etab = matchings.find(
+    candidats = matchings.filter(
       (m) => typeof m.code_postal === 'string' && m.code_postal === codePostalFilter
     )
+  } else if (departementFilter) {
+    candidats = matchings.filter(
+      (m) => typeof m.code_postal === 'string' && m.code_postal.startsWith(departementFilter)
+    )
+  }
+  if (candidats.length > 0) {
+    // Tri par date_creation DESC (le plus récent en premier)
+    candidats.sort((a, b) => {
+      const da = typeof a.date_creation === 'string' ? a.date_creation : ''
+      const db = typeof b.date_creation === 'string' ? b.date_creation : ''
+      return db.localeCompare(da)
+    })
+    etab = candidats[0]
   }
   if (!etab) etab = siege ?? matchings[0]
   if (!etab) return null
