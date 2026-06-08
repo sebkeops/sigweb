@@ -19,6 +19,7 @@ import {
   interpolate,
 } from './templating'
 import { generateUnsubscribeToken } from './unsubscribe-token'
+import { hasGoogleReputation } from '@/lib/prospect/has-google-data'
 
 /**
  * Service d'envoi d'emails de prospection via Resend.
@@ -180,8 +181,14 @@ export async function renderEmailContent(
   // Si non défini, fallback sur fromEmail (Resend gère naturellement).
   const replyToEmail = process.env.RESEND_REPLY_TO_EMAIL ?? fromEmail
 
+  // Distinction (Lot 2) :
+  //   - hasGoogleData : note ET avis présents → on peut afficher « 42 avis 4,8/5 »
+  //   - hasGoogleReputation : note OU avis OU photos → réputation établie
+  // Pour les prospects sans aucune des 3 (typiquement source Sirene), on
+  // bascule sur le wording « nouveau commerce ».
   const hasGoogleData =
     prospect.google_rating != null && prospect.google_reviews_count != null
+  const isNouveauCommerce = !hasGoogleReputation(prospect)
   const ratingFr = hasGoogleData
     ? prospect.google_rating!.toFixed(1).replace('.', ',')
     : ''
@@ -230,8 +237,10 @@ export async function renderEmailContent(
 
   // 8. Transformations structurelles AVANT interpolation
   if (!hasGoogleData) {
-    bodyHtmlTpl = applyHighlightFallback(bodyHtmlTpl, variant, 'html')
-    bodyTextTpl = applyHighlightFallback(bodyTextTpl, variant, 'text')
+    // 2e param `isNouveauCommerce` (Lot 2) bascule sur le wording adapté
+    // aux commerces neufs sans aucune donnée Google (cas Sirene).
+    bodyHtmlTpl = applyHighlightFallback(bodyHtmlTpl, variant, 'html', isNouveauCommerce)
+    bodyTextTpl = applyHighlightFallback(bodyTextTpl, variant, 'text', isNouveauCommerce)
   }
   if (previewImageUrl) {
     bodyHtmlTpl = applyPreviewBlock(
