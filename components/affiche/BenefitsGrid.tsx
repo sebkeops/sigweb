@@ -60,6 +60,20 @@ interface Props {
 export default function BenefitsGrid({ data }: Props) {
   return (
     <View style={styles.wrapper}>
+      {/* DEBUG-LOT2-V36 — temporaire, à retirer une fois confirmé que le
+          déploiement Vercel sert bien la nouvelle version du composant.
+          Si tu vois cette ligne rouge sur l'affiche, le redeploy a marché.
+          Si tu ne la vois pas, le déploiement Vercel n'a pas pris. */}
+      <Text
+        style={{
+          color: 'red',
+          fontSize: 9,
+          fontFamily: 'Nunito',
+          paddingBottom: 4,
+        }}
+      >
+        DEBUG-LOT2-V36
+      </Text>
       <View style={styles.box}>
         {data.benefits.slice(0, 4).map((benefit, i) => (
           <View key={i} style={styles.itemCol}>
