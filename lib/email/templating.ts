@@ -89,6 +89,46 @@ export function applyHighlightFallback(
   )
 }
 
+// ─── Swap d'intro maquette pour « nouveau commerce » (Lot 2 corrigé) ──────
+//
+// Le bloc « highlight-fact » n'est pas la SEULE référence Google dans les
+// templates email. La phrase d'intro du bloc maquette mentionne aussi
+// « vos vraies photos » et « vos vrais avis Google » :
+//
+//   sans-site : « …spécialement pour {{nom_commerce}}, avec vos vraies
+//                photos et vos vrais avis Google : »
+//   avec-site : « …spécialement pour {{nom_commerce}}, avec vos photos
+//                et vos vrais avis Google : »
+//
+// Pour un prospect sans aucune donnée Google (cas Sirene), ces phrases
+// sont incorrectes : l'image utilisée est ILLUSTRATIVE (univers métier
+// hérité de la simulation), pas la vraie boutique. Et il n'y a pas d'avis.
+//
+// On swap pour une formulation neutre et honnête, à appliquer AVANT
+// interpolation des {{var}}.
+
+const INTRO_NOUVEAU_COMMERCE_REPLACEMENT =
+  ', pour vous montrer concrètement ce que ça pourrait donner dès vos débuts'
+
+/**
+ * Swap les fragments d'intro de maquette qui mentionnent les vraies
+ * photos / avis Google. Sans effet si les fragments ne sont pas présents
+ * (templates futurs sans ces mentions).
+ *
+ * À appliquer AVANT `interpolate`, après `applyHighlightFallback`.
+ */
+export function applyNouveauCommerceIntroSwap(template: string): string {
+  return template
+    .replace(
+      /, avec vos vraies photos et vos vrais avis Google/g,
+      INTRO_NOUVEAU_COMMERCE_REPLACEMENT
+    )
+    .replace(
+      /, avec vos photos et vos vrais avis Google/g,
+      INTRO_NOUVEAU_COMMERCE_REPLACEMENT
+    )
+}
+
 /**
  * Remplace le placeholder `<div class="preview-box">…</div>` par un bloc
  * équivalent contenant un `<img>` cliquable. On reconstruit tout le bloc
