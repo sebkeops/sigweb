@@ -73,3 +73,41 @@ export const NAF_BY_CATEGORIE: Record<ProspectCategorie, string[]> = {
   // Fallback
   autre: [],
 }
+
+/**
+ * Mapping inverse : code NAF → ProspectCategorie.
+ *
+ * Construit à partir de `NAF_BY_CATEGORIE` (source de vérité unique).
+ * Format compact des codes ('1071C', pas '10.71C') pour matcher le
+ * stockage DB de `prospects.code_naf`.
+ *
+ * Si un NAF est listé sous plusieurs catégories (ex: '8690E' sous `kine`
+ * ET `osteopathe`), la PREMIÈRE catégorie déclarée gagne — l'ordre des
+ * clés dans `NAF_BY_CATEGORIE` détermine la priorité.
+ */
+const NAF_TO_CATEGORIE: Map<string, ProspectCategorie> = (() => {
+  const map = new Map<string, ProspectCategorie>()
+  for (const [categorie, codes] of Object.entries(NAF_BY_CATEGORIE) as Array<
+    [ProspectCategorie, string[]]
+  >) {
+    for (const code of codes) {
+      if (!map.has(code)) map.set(code, categorie)
+    }
+  }
+  return map
+})()
+
+/**
+ * Devine la ProspectCategorie depuis le code NAF d'un établissement.
+ *
+ * Accepte les 2 formats (compact `1071C` ou avec point `10.71C`) — on
+ * normalise en compact avant lookup.
+ *
+ * Retourne `null` si le NAF n'est pas dans `NAF_BY_CATEGORIE` (ex: NAF
+ * `35.11Z` = production d'électricité, hors périmètre Sigweb).
+ */
+export function categorieFromNaf(naf: string | null): ProspectCategorie | null {
+  if (!naf) return null
+  const compact = naf.trim().toUpperCase().replace(/\./g, '')
+  return NAF_TO_CATEGORIE.get(compact) ?? null
+}
