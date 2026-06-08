@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   enrichBySiret,
+  nafToApiFormat,
   normalizeNaf,
   searchSireneSourcing,
 } from './sirene'
@@ -33,6 +34,22 @@ describe('normalizeNaf', () => {
 
   it('trim les espaces', () => {
     expect(normalizeNaf('  1071C  ')).toBe('1071C')
+  })
+})
+
+describe('nafToApiFormat', () => {
+  it('ajoute le point après les 2 premiers chiffres ("1071C" → "10.71C")', () => {
+    expect(nafToApiFormat('1071C')).toBe('10.71C')
+    expect(nafToApiFormat('1013B')).toBe('10.13B')
+    expect(nafToApiFormat('4724Z')).toBe('47.24Z')
+  })
+
+  it('idempotent sur un code déjà au format API', () => {
+    expect(nafToApiFormat('10.71C')).toBe('10.71C')
+  })
+
+  it('accepte le format compact en minuscules', () => {
+    expect(nafToApiFormat('1071c')).toBe('10.71C')
   })
 })
 
@@ -71,8 +88,12 @@ describe('searchSireneSourcing', () => {
     expect(fetchMock).toHaveBeenCalledTimes(1)
     const url = fetchMock.mock.calls[0][0] as string
     expect(url).toContain('code_postal=31000')
-    expect(url).toContain('activite_principale=1071C')
-    expect(url).toContain('etat_administratif=A')
+    // Important : l'API exige le format AVEC point. La normalisation
+    // côté DB reste compacte mais l'appel API utilise nafToApiFormat.
+    expect(url).toContain('activite_principale=10.71C')
+    // etat_administratif n'est plus passé en query (déjà default + filtre
+    // côté JS plus précis sur l'établissement choisi).
+    expect(url).not.toContain('etat_administratif')
     expect(url).toContain('per_page=10')
     expect(url).toMatch(/date_creation_min=\d{4}-\d{2}-\d{2}/)
   })
@@ -158,6 +179,134 @@ describe('searchSireneSourcing', () => {
     if (!result.ok) expect(result.reason).toBe('parse')
   })
 
+  it('rejette les résultats hors zone (siège ailleurs, pas de matching dans le CP)', async () => {
+    // Simule LA POSTE : siège à Paris (75015), pas de matching dans le 32600
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'LA POSTE',
+              siege: {
+                siret: '35600000000048',
+                etat_administratif: 'A',
+                code_postal: '75015',
+                libelle_commune: 'PARIS',
+              },
+              // matching_etablissements absent ou hors zone
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(0)
+  })
+
+  it('prend le matching_etablissement du bon CP plutôt que le siège', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'BUREAU DE POSTE LOCAL',
+              siege: {
+                siret: '35600000000048',
+                etat_administratif: 'A',
+                code_postal: '75015',
+                libelle_commune: 'PARIS',
+              },
+              matching_etablissements: [
+                {
+                  siret: '35600000099999',
+                  etat_administratif: 'A',
+                  code_postal: '32600',
+                  libelle_commune: 'LISLE JOURDAIN',
+                  numero_voie: '5',
+                  type_voie: 'RUE',
+                  libelle_voie: 'DE LA POSTE',
+                },
+              ],
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(1)
+    expect(result.data[0].siret).toBe('35600000099999')
+    expect(result.data[0].code_postal).toBe('32600')
+    expect(result.data[0].ville).toBe('LISLE JOURDAIN')
+  })
+
+  it('exclut les grandes entreprises (categorie_entreprise === "GE")', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'MULTINATIONALE',
+              categorie_entreprise: 'GE',
+              siege: {
+                siret: '12345678900012',
+                etat_administratif: 'A',
+                code_postal: '32600',
+                libelle_commune: 'X',
+              },
+            },
+            {
+              nom_complet: 'PETIT COMMERCE',
+              categorie_entreprise: 'PME',
+              siege: {
+                siret: '99999999900099',
+                etat_administratif: 'A',
+                code_postal: '32600',
+                libelle_commune: 'X',
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(1)
+    expect(result.data[0].nom_commerce).toBe('PETIT COMMERCE')
+  })
+
+  it('exclut les établissements fermés (etat_administratif != "A")', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'FERME',
+              siege: {
+                siret: '12345678900012',
+                etat_administratif: 'F',
+                code_postal: '32600',
+                libelle_commune: 'X',
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(0)
+  })
+
   it('drop les résultats sans SIRET (raw mal formé) plutôt que de throw', async () => {
     fetchMock.mockResolvedValueOnce(
       new Response(
@@ -166,7 +315,11 @@ describe('searchSireneSourcing', () => {
             { siege: { /* pas de siret */ } },
             {
               nom_complet: 'OK',
-              siege: { siret: '12345678900013', etat_administratif: 'A' },
+              siege: {
+                siret: '12345678900013',
+                etat_administratif: 'A',
+                code_postal: '31000',
+              },
             },
           ],
         }),

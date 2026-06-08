@@ -100,7 +100,9 @@ export default function SireneSourcingForm() {
           zone: `${zoneType === 'codePostal' ? 'CP' : 'Dépt'} ${zone}`,
           count: result.data.length,
         },
-        selected: new Set(result.data.map((r) => r.siret)),  // tous coches par défaut
+        // Toutes décochées par défaut — l'admin coche explicitement
+        // les fiches qu'il veut importer (évite les ajouts massifs accidentels).
+        selected: new Set<string>(),
         importPending: false,
         importError: null,
       })

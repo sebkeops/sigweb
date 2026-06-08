@@ -106,10 +106,12 @@ export async function searchSireneSourcing(
     return { ok: false, reason: 'parse' }  // aucune zone fournie
   }
 
-  // Activité : on normalise le code NAF en virant les éventuels points
-  // (data.gouv.fr accepte '1071C' et '10.71C', on s'aligne sur '1071C').
+  // Activité : data.gouv.fr exige le format AVEC point ('10.13B', pas
+  // '1013B'). Notre DB stocke compact ; on convertit au format API ici.
+  // Vérifié 2026-06-08 : sans le point, l'API renvoie une 400 avec
+  // « Au moins un paramètre activite_principale est non valide ».
   if (params.codeNaf) {
-    url.searchParams.set('activite_principale', normalizeNaf(params.codeNaf))
+    url.searchParams.set('activite_principale', nafToApiFormat(params.codeNaf))
   }
 
   // Filtre « créés récemment » : data.gouv.fr expose `date_creation_min`
@@ -120,7 +122,9 @@ export async function searchSireneSourcing(
     url.searchParams.set('date_creation_min', minDate.toISOString().slice(0, 10))
   }
 
-  url.searchParams.set('etat_administratif', 'A')
+  // etat_administratif='A' n'est plus passé en query : c'est déjà le défaut
+  // serveur ET on filtre en plus côté JS sur l'établissement choisi (le
+  // siège peut être Actif alors qu'un établissement secondaire est Fermé).
   url.searchParams.set('per_page', String(Math.min(params.perPage ?? 25, 25)))
   url.searchParams.set('page', String(params.page ?? 1))
 
@@ -134,8 +138,29 @@ export async function searchSireneSourcing(
 
   const establishments: SireneEstablishment[] = []
   for (const result of data.results) {
-    const normalized = normalizeUniteLegale(result)
-    if (normalized) establishments.push(normalized)
+    // On passe le CP recherché : si l'unité légale a un établissement
+    // dans ce CP (matching_etablissements), on prend celui-là plutôt
+    // que le siège. Évite « LA POSTE retourne son siège Paris » alors
+    // qu'on cherche dans le 32600.
+    const normalized = normalizeUniteLegale(result, params.codePostal)
+    if (!normalized) continue
+    // Filtre côté JS : si CP recherché, on rejette les normalizes qui
+    // n'ont PAS d'établissement dans ce CP (le siège a été pris en
+    // fallback mais ce n'est pas notre cible).
+    if (params.codePostal && normalized.code_postal !== params.codePostal) {
+      continue
+    }
+    // etat_administratif='A' uniquement (filtre côté JS sur l'établissement
+    // choisi, plus précis que le filtre serveur sur l'unité légale).
+    if (normalized.etat_administratif && normalized.etat_administratif !== 'A') {
+      continue
+    }
+    // Exclusion des grandes entreprises (catégorie_entreprise = 'GE') :
+    // La Poste, SNCF Réseau, Société Générale, etc. ne sont pas notre
+    // cible commerces de proximité.
+    const cat = (result as { categorie_entreprise?: unknown }).categorie_entreprise
+    if (cat === 'GE') continue
+    establishments.push(normalized)
   }
 
   return { ok: true, data: establishments }
@@ -213,26 +238,50 @@ async function safeFetchJson(
 }
 
 /**
- * Normalise le code NAF en supprimant le point séparateur :
+ * Normalise le code NAF en supprimant le point séparateur, pour le
+ * stockage en DB et la sortie :
  *   '10.71C' → '1071C'
  *   '1071C'  → '1071C'  (idempotent)
  *
- * data.gouv.fr accepte les deux formats mais on s'aligne sur la forme
- * compacte pour le stockage en DB.
+ * Note : pour APPELER data.gouv.fr, utiliser `nafToApiFormat` (qui ré-injecte
+ * le point), car l'API exige strictement le format avec point séparateur.
  */
 export function normalizeNaf(code: string): string {
   return code.trim().toUpperCase().replace(/\./g, '')
 }
 
 /**
+ * Convertit un code NAF compact en format API data.gouv.fr (avec point) :
+ *   '1071C'  → '10.71C'
+ *   '10.71C' → '10.71C' (idempotent)
+ *
+ * Format INSEE NAF rev2 : 2 chiffres + point + 2 chiffres + 1 lettre.
+ * Vérifié 2026-06-08 : sans le point, l'API rejette le param avec 400.
+ */
+export function nafToApiFormat(code: string): string {
+  const compact = normalizeNaf(code)
+  // Si déjà au bon format compact, ré-injecte le point après les 2 1ers chiffres
+  if (/^\d{2}\d{2}[A-Z]?$/.test(compact)) {
+    return `${compact.slice(0, 2)}.${compact.slice(2)}`
+  }
+  return code  // format inconnu, on laisse — l'API rejettera proprement
+}
+
+/**
  * Convertit un résultat brut data.gouv.fr en `SireneEstablishment`.
  *
  * data.gouv.fr renvoie des UNITES LEGALES avec un tableau `matching_etablissements`.
- * Pour le sourcing, on prend le siège (`siege.siret`) ou le premier matching.
+ * Si un `codePostalFilter` est fourni (recherche par CP), on prend EN
+ * PRIORITÉ l'établissement matching qui est dans ce CP — évite le bug
+ * « LA POSTE → siège Paris alors qu'on cherchait dans 32600 ».
+ * Sinon, on prend le siège.
  *
  * Retourne null si l'objet est mal formé.
  */
-function normalizeUniteLegale(raw: unknown): SireneEstablishment | null {
+function normalizeUniteLegale(
+  raw: unknown,
+  codePostalFilter?: string
+): SireneEstablishment | null {
   if (!raw || typeof raw !== 'object') return null
   const obj = raw as Record<string, unknown>
 
@@ -240,7 +289,16 @@ function normalizeUniteLegale(raw: unknown): SireneEstablishment | null {
   const matchings = Array.isArray(obj.matching_etablissements)
     ? (obj.matching_etablissements as Record<string, unknown>[])
     : []
-  const etab = siege ?? matchings[0]
+
+  // Priorité : matching_etablissement qui est dans le CP recherché.
+  // Si pas de CP filtre, ou pas de matching dans ce CP, fallback siège.
+  let etab: Record<string, unknown> | undefined
+  if (codePostalFilter) {
+    etab = matchings.find(
+      (m) => typeof m.code_postal === 'string' && m.code_postal === codePostalFilter
+    )
+  }
+  if (!etab) etab = siege ?? matchings[0]
   if (!etab) return null
 
   const siret = typeof etab.siret === 'string' ? etab.siret : null
