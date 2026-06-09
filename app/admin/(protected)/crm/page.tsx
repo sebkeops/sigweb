@@ -16,7 +16,6 @@ import ProspectCard from '@/components/admin/ProspectCard'
 import BackfillGooglePhotosButton from './BackfillGooglePhotosButton'
 import BackfillGoogleReviewsButton from './BackfillGoogleReviewsButton'
 import MigrateMaquettesPhotosButton from './MigrateMaquettesPhotosButton'
-import PersistGooglePhotosButton from './PersistGooglePhotosButton'
 import RecomputeAllScoresButton from './RecomputeAllScoresButton'
 import {
   CANAL_BADGE,
@@ -100,34 +99,6 @@ async function countMaquettesToMigrate(): Promise<number> {
   return count ?? 0
 }
 
-/**
- * Compte les maquettes dont le pool contient encore au moins une entrée
- * `source: 'google'` (donc une ref Places API volatile à persister).
- *
- * Filtrage côté JS plutôt que via `.contains('available_photos', ...)` :
- * supabase-js sérialise les objets passés à `.contains()` avec
- * `Array.join(',')` ce qui produit `[object Object]` pour les JSONB
- * d'objets et casse silencieusement la requête. La table maquettes
- * reste petite (~dizaines de lignes), tirer `available_photos` ne pose
- * aucun problème de bande passante.
- */
-async function countMaquettesWithGooglePhotos(): Promise<number> {
-  const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('maquettes')
-    .select('available_photos')
-  if (error || !data) {
-    if (error) console.error('[crm/page] countMaquettesWithGooglePhotos', error)
-    return 0
-  }
-  let count = 0
-  for (const row of data) {
-    const pool = (row.available_photos ?? []) as { source?: string }[]
-    if (pool.some((p) => p?.source === 'google')) count += 1
-  }
-  return count
-}
-
 async function getProspects(filters: {
   canal?: ProspectCanal
   statut?: ProspectStatut
@@ -190,7 +161,6 @@ export default async function AdminCrmPage({ searchParams }: Props) {
   const hasFilters = !!(canal || statut || categorie || source || q || sort)
   const eligibleForBackfill = await countEligibleForBackfill()
   const maquettesToMigrate = await countMaquettesToMigrate()
-  const maquettesWithGooglePhotos = await countMaquettesWithGooglePhotos()
 
   return (
     <div>
@@ -229,7 +199,6 @@ export default async function AdminCrmPage({ searchParams }: Props) {
         <MigrateMaquettesPhotosButton pendingCount={maquettesToMigrate} />
         <BackfillGoogleReviewsButton eligibleCount={eligibleForBackfill} />
         <BackfillGooglePhotosButton eligibleCount={eligibleForBackfill} />
-        <PersistGooglePhotosButton eligibleCount={maquettesWithGooglePhotos} />
         <RecomputeAllScoresButton />
       </div>
 

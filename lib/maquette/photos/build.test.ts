@@ -46,9 +46,30 @@ describe('buildInitialPhotoData', () => {
     expect(r.available_photos[1].reference).toBe('places/B/photos/2')
   })
 
-  it('marque toutes les photos avec source = google', () => {
+  it('marque les refs Google (préfixe places/) avec source = google', () => {
     const r = buildInitialPhotoData(['places/A/photos/1'], makeIdGen())
     expect(r.available_photos[0].source).toBe('google')
+  })
+
+  it('marque les URLs https comme upload (cas seeding simulation)', () => {
+    // Cf. `buildFictiveSimulation` qui passe les URLs Supabase Storage des
+    // photos Unsplash via le paramètre `googlePhotoRefs`. Sans détection
+    // automatique, ces URLs étaient à tort taguées `google` et polluaient
+    // ensuite tous les fallbacks Sirene.
+    const r = buildInitialPhotoData(
+      ['https://abc.supabase.co/storage/v1/object/public/project-images/sim/hero.jpg'],
+      makeIdGen()
+    )
+    expect(r.available_photos[0].source).toBe('upload')
+  })
+
+  it('détection mixte si refs Google et URLs https sont mélangées', () => {
+    const r = buildInitialPhotoData(
+      ['places/A/photos/1', 'https://abc.supabase.co/storage/sim.jpg'],
+      makeIdGen()
+    )
+    expect(r.available_photos[0].source).toBe('google')
+    expect(r.available_photos[1].source).toBe('upload')
   })
 })
 
@@ -78,10 +99,10 @@ describe('buildInitialPhotoData — fallback simulation (prospects Sirene)', () 
   })
 
   it('ignore le fallback si photos Google présentes (priorité Google)', () => {
-    const r = buildInitialPhotoData(['places/A/1'], makeIdGen(), fallback)
+    const r = buildInitialPhotoData(['places/A/photos/1'], makeIdGen(), fallback)
     expect(r.available_photos).toHaveLength(1)
     expect(r.available_photos[0].source).toBe('google')
-    expect(r.available_photos[0].reference).toBe('places/A/1')
+    expect(r.available_photos[0].reference).toBe('places/A/photos/1')
   })
 
   it('fallback null + pas de Google → pool vide + tous les slots null', () => {

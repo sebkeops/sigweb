@@ -63,9 +63,16 @@ export function buildInitialPhotoData(
   for (const ref of googlePhotoRefs) {
     if (!ref || seenRefs.has(ref)) continue
     seenRefs.add(ref)
+    // `source` détecté par préfixe de la ref, pas codé en dur. Le paramètre
+    // s'appelle `googlePhotoRefs` pour des raisons historiques mais le
+    // seeding des simulations publiques (cf. `buildFictiveSimulation`) y
+    // passe des URLs Supabase Storage `https://...` qui ne sont PAS des
+    // refs Google. Hardcoder `source: 'google'` créait un bug silencieux :
+    // URLs Supabase taguées `google`, propagation au fallback Sirene, et
+    // pollution du compteur du défunt bouton "Persister photos Google".
     available_photos.push({
       id: idGen(),
-      source: 'google',
+      source: detectSourceFromRef(ref),
       reference: ref,
     })
   }
