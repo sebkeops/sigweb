@@ -1,4 +1,5 @@
 import 'server-only'
+import { mapNatureJuridique } from './nature-juridique'
 
 /**
  * Adaptateur Sirene — accès aux données légales d'entreprise via l'API
@@ -48,7 +49,7 @@ export interface SireneEstablishment {
   nom_commerce: string  // 'denomination' de l'unité légale, ou nom commercial
   code_naf: string | null
   libelle_naf: string | null
-  date_creation: string | null  // YYYY-MM-DD
+  date_creation: string | null  // YYYY-MM-DD (établissement)
   tranche_effectif: string | null
   etat_administratif: 'A' | 'F' | 'C' | null
   adresse: string | null
@@ -56,6 +57,23 @@ export interface SireneEstablishment {
   ville: string | null
   /** Payload brut data.gouv.fr — à stocker tel quel dans sirene_raw. */
   raw: unknown
+
+  // ── Lot 2 : champs additionnels (extraits du même payload) ──
+  /** Nom du dirigeant principal (personne physique). Null sinon. */
+  dirigeant_nom: string | null
+  /** Prénom(s) du dirigeant. Null sinon. */
+  dirigeant_prenom: string | null
+  /**
+   * `true` UNIQUEMENT si statut_diffusion === 'O' ET dirigeant personne
+   * physique présent. Cf. règle de diffusion INSEE depuis 2023.
+   */
+  dirigeant_nom_diffusible: boolean
+  /** Date de création de l'unité légale (entreprise). */
+  date_creation_entreprise: string | null
+  /** Code INSEE brut de nature juridique. */
+  forme_juridique_code: string | null
+  /** Libellé humanisé via `mapNatureJuridique` (null si code non mappé). */
+  forme_juridique_label: string | null
 }
 
 export type SireneResult<T> =
@@ -433,6 +451,36 @@ function normalizeUniteLegale(
       null
   }
 
+  // ── Lot 2 : extraction dirigeant + ancienneté + forme juridique ──
+  const dirigeants = Array.isArray(obj.dirigeants)
+    ? (obj.dirigeants as Record<string, unknown>[])
+    : []
+  const firstPP = dirigeants.find(
+    (d) => typeof d?.type_dirigeant === 'string' && d.type_dirigeant === 'personne physique'
+  )
+  const dirigeantNom =
+    firstPP && typeof firstPP.nom === 'string'
+      ? cleanDirigeantNom(firstPP.nom)
+      : null
+  const dirigeantPrenom =
+    firstPP && typeof firstPP.prenoms === 'string'
+      ? cleanDirigeantPrenom(firstPP.prenoms)
+      : null
+  // Diffusibilité : on N'autorise le nom qu'avec `statut_diffusion = 'O'`.
+  // Pour 'P' (Partielle) ou 'N' (Non), l'INSEE protège la donnée et le
+  // freelance ne doit pas l'utiliser pour personnaliser un email.
+  const statutDiffusion =
+    typeof obj.statut_diffusion === 'string' ? obj.statut_diffusion : null
+  const dirigeantNomDiffusible =
+    statutDiffusion === 'O' && dirigeantNom !== null
+
+  const dateCreationEntreprise =
+    typeof obj.date_creation === 'string' ? obj.date_creation : null
+
+  const formeJuridiqueCode =
+    typeof obj.nature_juridique === 'string' ? obj.nature_juridique : null
+  const formeJuridiqueLabel = mapNatureJuridique(formeJuridiqueCode)
+
   return {
     siret,
     nom_commerce: nom,
@@ -445,5 +493,37 @@ function normalizeUniteLegale(
     code_postal: codePostal,
     ville,
     raw,
+    dirigeant_nom: dirigeantNom,
+    dirigeant_prenom: dirigeantPrenom,
+    dirigeant_nom_diffusible: dirigeantNomDiffusible,
+    date_creation_entreprise: dateCreationEntreprise,
+    forme_juridique_code: formeJuridiqueCode,
+    forme_juridique_label: formeJuridiqueLabel,
   }
+}
+
+/**
+ * Nettoie un nom de famille brut data.gouv.fr.
+ * Cas observé : « TESTARD (TESTARD) » (forme nom légal/nom d'usage).
+ * On ne garde que le 1er token avant la parenthèse.
+ * Renvoie null sur chaîne vide.
+ */
+function cleanDirigeantNom(raw: string): string | null {
+  const trimmed = raw.trim()
+  if (!trimmed) return null
+  // Strip parenthèse type "TESTARD (TESTARD)"
+  const beforeParen = trimmed.split('(')[0].trim()
+  return beforeParen || null
+}
+
+/**
+ * Nettoie les prénoms : data.gouv.fr renvoie souvent plusieurs prénoms
+ * séparés par espace (« HENRY HENRI » = 1er + 2e prénom). On garde
+ * uniquement le 1er pour personnaliser l'email (« Bonjour Henry, »).
+ */
+function cleanDirigeantPrenom(raw: string): string | null {
+  const trimmed = raw.trim()
+  if (!trimmed) return null
+  const first = trimmed.split(/\s+/)[0]
+  return first || null
 }

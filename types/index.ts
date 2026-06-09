@@ -204,6 +204,33 @@ export interface Prospect {
   sirene_raw: unknown
   sirene_enriched_at: string | null  // ISO
 
+  // ── Lot 2 : champs Sirene additionnels persistés ──
+  /**
+   * Nom de famille du dirigeant principal (personne physique).
+   * Null si dirigeant personne morale (SAS/SARL gérée par une holding) ou
+   * si l'unité légale n'a pas de dirigeants exposés par l'API.
+   */
+  dirigeant_nom: string | null
+  /** Prénom(s) du dirigeant principal. Cf. `dirigeant_nom` pour le contexte. */
+  dirigeant_prenom: string | null
+  /**
+   * `true` UNIQUEMENT si `statut_diffusion === 'O'` ET un dirigeant personne
+   * physique est exposé. Permet d'utiliser le nom pour personnaliser un
+   * email sans risquer de violer la diffusion partielle/protégée INSEE
+   * (règle depuis 2023). Si `false`, ne JAMAIS afficher le nom au client.
+   */
+  dirigeant_nom_diffusible: boolean
+  /**
+   * Date de création de l'unité légale (entreprise), distincte de
+   * `date_creation` (établissement). Utile pour le pitch d'ancienneté
+   * « depuis AAAA » sur les commerces établis.
+   */
+  date_creation_entreprise: string | null
+  /** Code INSEE brut de nature juridique (1000, 5410, 5710…). */
+  forme_juridique_code: string | null
+  /** Libellé humanisé pour l'admin (« SAS », « SARL », « Entrepreneur Individuel »…). */
+  forme_juridique_label: string | null
+
   // ── Performance site existant (PageSpeed Insights v5) ──
 
   /** Score de performance (0..100), null si non analysé ou prospect sans site. */
