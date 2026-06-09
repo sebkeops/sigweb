@@ -20,6 +20,10 @@ import {
 import { getSimulationPhotoFallback } from '@/lib/maquette/photos/simulation-fallback'
 import { processPhotoBuffer } from '@/lib/maquette/photos/process'
 import {
+  applyPersistedPhotos,
+  persistGooglePhotoRefs,
+} from '@/lib/maquette/photos/persist-google-refs'
+import {
   extractDominantColors,
   LogoValidationError,
   processLogoBuffer,
@@ -147,6 +151,63 @@ export async function createMaquetteFromProspect(
   if (insertErr || !inserted) {
     console.error('[createMaquetteFromProspect] insert', insertErr)
     return { success: false, error: 'Erreur lors de la création de la maquette.' }
+  }
+
+  // 5b) Persister immédiatement les photos Google dans Supabase Storage.
+  //
+  //     Les refs Places API (`places/X/photos/Y`) ne sont PAS permanentes,
+  //     elles expirent après quelques semaines/mois. Sans cette étape, le
+  //     hero et la galerie d'une maquette envoyée au prospect finiront par
+  //     casser (proxy live `/api/demos/photo` renverra 502). Cf. CONTEXT.md
+  //     "Photos maquettes / refs Google expirent".
+  //
+  //     Best-effort : si certaines photos échouent (ref déjà invalide,
+  //     timeout, etc.), on garde l'entrée Google d'origine dans le pool et
+  //     on log. La maquette reste utilisable — le rendu repassera par le
+  //     proxy live tant que la ref tient. C'est le comportement legacy,
+  //     juste pas régressé.
+  if (initial.available_photos && initial.available_photos.length > 0) {
+    const { persisted, failures } = await persistGooglePhotoRefs(
+      supabase,
+      inserted.id,
+      initial.available_photos
+    )
+
+    if (failures.length > 0) {
+      console.warn(
+        `[createMaquetteFromProspect] persist google photos: ${failures.length} échec(s)`,
+        failures
+      )
+    }
+
+    if (persisted.size > 0) {
+      const newPool = applyPersistedPhotos(initial.available_photos, persisted)
+      // Aligner aussi les champs legacy (hero/histoire/univers_photos_urls)
+      // sur les nouvelles URLs Supabase — bien que le rendu ne les lise plus
+      // (cf. CLEANUP-TODO.md), ils restent en base et pourraient être lus
+      // par un import legacy. Mieux vaut tout aligner.
+      const newHero = newPool[0]?.reference ?? null
+      const newHistoire = newPool[1]?.reference ?? null
+      const newUnivers = newPool.slice(2, 7).map((p) => p.reference)
+
+      const { error: updErr } = await supabase
+        .from('maquettes')
+        .update({
+          available_photos: newPool,
+          hero_photo_url: newHero,
+          histoire_photo_url: newHistoire,
+          univers_photos_urls: newUnivers,
+        })
+        .eq('id', inserted.id)
+
+      if (updErr) {
+        console.error(
+          '[createMaquetteFromProspect] update pool after persist',
+          updErr
+        )
+        // Pas bloquant — la maquette existe avec les refs Google originales.
+      }
+    }
   }
 
   // 6) Lier côté prospect (le maquette_url reste null jusqu'à la publication)
