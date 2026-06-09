@@ -188,3 +188,64 @@ Garantie sur tous les chemins externes :
 545 tests verts (76 nouveaux : 18 Sirene + 17 PageSpeed + 8 normalize-name + 8 canal-badge + autres).
 
 Stub `server-only` pour vitest : `tests/stubs/server-only.ts`, mappé via `vitest.config.ts`. Le vrai paquet throw dès qu'il est importé en CSR ; le stub est un module vide pour le runner uniquement. **La garde production reste assurée par Next.js à la build**.
+
+---
+
+## Photos maquettes — refs Google qui expirent (PR #43 + PR de reprise)
+
+### Symptôme
+
+Certaines maquettes envoyées au prospect (ex. `/demos/le-joug`) finissent par afficher des trous ou des placeholders à la place du hero et des photos d'univers, alors qu'elles étaient parfaites à la génération.
+
+Le proxy live `/api/demos/photo?ref=places/X/photos/Y` renvoie **502 "Photo unavailable"** quand on le sollicite plusieurs semaines après la création.
+
+### Root cause
+
+Les refs Google Places (`places/X/photos/Y`) renvoyées par `getPlaceDetails(placeId)` au moment du sourcing **ne sont pas permanentes**. Elles expirent au bout de quelques semaines/mois. Google n'offre aucune garantie de durée.
+
+Jusqu'à PR #43, `buildInitialPhotoData` stockait ces refs **telles quelles** dans `available_photos[].reference` avec `source: 'google'`. Le rendu (`Hero.tsx`, galerie) routait toute ref Google vers `/api/demos/photo` (le proxy live). Quand la ref expirait, l'image cassait.
+
+Seules les photos uploadées **manuellement** par l'admin via le PhotoManager étaient persistées sur Supabase Storage (`uploadMaquettePhoto` → bucket `maquettes-assets/photos/`), donc seules celles-là survivaient au temps.
+
+### Parade — Bascule "tout Supabase" à la génération (PR #43)
+
+À la création d'une maquette (`createMaquetteFromProspect` dans `lib/actions/maquette.ts`), juste après l'INSERT :
+
+1. On parcourt `available_photos` et pour chaque entrée `source: 'google'` :
+   - Téléchargement du buffer via `fetchGooglePhotoBuffer(ref)`
+   - Conversion WebP via `sharp` (max 1920px, qualité 82, EXIF auto-rotate)
+   - Upload dans `maquettes-assets/photos/{maquetteId}/{photoId}.webp`
+   - Mutation de l'entrée : `source: 'upload'`, `reference: <URL Supabase publique>`
+2. Si au moins une photo a été persistée, UPDATE de `maquettes.available_photos` (+ champs legacy `hero_photo_url`, `histoire_photo_url`, `univers_photos_urls` pour cohérence).
+
+Logique dans `lib/maquette/photos/persist-google-refs.ts`. **Best-effort** : un échec sur une photo (timeout, ref déjà invalide, etc.) garde l'entrée Google d'origine — la maquette est créée quoi qu'il arrive, juste avec une fragilité résiduelle sur les photos en échec. Idempotent (`upsert: true` côté Storage).
+
+À l'affichage d'une maquette générée après PR #43 : aucune requête `/api/demos/photo`. Les `reference` pointent directement vers `https://*.supabase.co/storage/...webp`.
+
+### Reprise des maquettes existantes (PR Persist Google Photos)
+
+Pour réparer le passif (maquettes créées avant PR #43), route admin :
+
+```
+POST /api/admin/maquettes/persist-google-photos?dryRun=1
+```
+
+Implémentée dans `app/api/admin/maquettes/persist-google-photos/route.ts`. Pilotée depuis `/admin/crm` via le bouton **"Persister photos Google (N)"** (composant `PersistGooglePhotosButton.tsx`).
+
+Par maquette :
+1. **Tentative directe** sur les refs Google présentes dans le pool.
+2. **Re-fetch fresh refs** : pour les entrées qui échouent ET si le prospect a un `google_place_id`, on appelle `getPlaceDetails(placeId)` **une seule fois** par maquette pour obtenir des refs fraîches, puis on tente celles-ci sur les entrées en échec (dans l'ordre).
+3. **Échec irréversible** : l'entrée Google d'origine reste dans le pool — la maquette n'est jamais cassée par la reprise.
+
+Garde-fous :
+- **Dry-run via `?dryRun=1`** : aucune écriture (BDD ni Storage). ⚠️ Les fetch Google sont quand même exécutés (coût identique) pour produire un aperçu fiable du taux de succès.
+- **Idempotent** : les entrées `source: 'upload'` sont ignorées.
+- **Lock optimiste** sur `maquettes.updated_at` pour ne pas écraser un admin en édition simultanée.
+- **Throttling** : 250ms entre maquettes (politesse Google).
+- **Streaming NDJSON** : suivi temps réel côté UI (slug + compteur).
+
+### Choix de design notés au passage
+
+- Le champ legacy `hero_photo_url`/`histoire_photo_url`/`univers_photos_urls` n'est **plus lu côté rendu** (commenté explicitement dans `Hero.tsx`) mais on continue de l'aligner pour ne pas surprendre un import legacy hypothétique. Suppression possible en même temps que la cleanup générale (cf. `CLEANUP-TODO.md`).
+- On utilise `sharp` directement (pas `processPhotoBuffer`) parce que ce dernier est **strict** (refus 4MB+, < 400px, formats non JPEG/PNG/WebP…) — adapté aux uploads admin mais pas à ce que Google peut renvoyer.
+- Le proxy live `/api/demos/photo` n'est PAS supprimé : il reste utile pour les rares maquettes en échec irréversible où la ref Google tient encore.
