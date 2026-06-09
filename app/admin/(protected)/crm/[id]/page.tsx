@@ -469,6 +469,98 @@ export default async function ProspectDetailPage({ params, searchParams }: Props
         </div>
       )}
 
+      {/* Données légales (Sirene) — visible uniquement si le prospect a un
+          SIRET (sourcé via Sirene OU enrichi croisé). Cf. Lot 2 — persistance
+          des champs dirigeant + ancienneté + forme juridique. */}
+      {p.siret && (
+        <div className={sectionClass}>
+          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+            <h2 className="font-heading text-base font-bold text-ink">Données légales (Sirene)</h2>
+            <span className="font-body text-xs text-muted">
+              Dernier enrichissement : {formatDateTime(p.sirene_enriched_at)}
+            </span>
+          </div>
+
+          {/* État administratif — prioritaire car filtre qualité de lead.
+              F (Fermée) et C (Cessée) signalés en rouge → ne pas démarcher. */}
+          {p.etat_administratif && p.etat_administratif !== 'A' && (
+            <div className="mb-4 rounded-sm border border-red-200 bg-red-50 p-3">
+              <p className="font-body text-sm font-semibold text-red-800">
+                ⚠️ Entreprise légalement{' '}
+                {p.etat_administratif === 'F' ? 'fermée' : 'cessée'}
+              </p>
+              <p className="mt-1 font-body text-xs text-red-700">
+                Selon Sirene, cette unité légale n'est plus active. Vérifier
+                avant tout démarchage (Google peut afficher la fiche comme
+                ouverte sans avoir synchronisé).
+              </p>
+            </div>
+          )}
+
+          <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <div>
+              <p className={labelClass}>Forme juridique</p>
+              <p className={`${valueClass} mt-1`}>
+                {p.forme_juridique_label ?? (p.forme_juridique_code ? `Code ${p.forme_juridique_code}` : '—')}
+              </p>
+            </div>
+            <div>
+              <p className={labelClass}>État administratif</p>
+              <p className={`${valueClass} mt-1`}>
+                {p.etat_administratif === 'A'
+                  ? 'Active'
+                  : p.etat_administratif === 'F'
+                    ? 'Fermée'
+                    : p.etat_administratif === 'C'
+                      ? 'Cessée'
+                      : '—'}
+              </p>
+            </div>
+            <div>
+              <p className={labelClass}>Création entreprise</p>
+              <p className={`${valueClass} mt-1`}>{formatDate(p.date_creation_entreprise)}</p>
+            </div>
+            <div>
+              <p className={labelClass}>Création établissement</p>
+              <p className={`${valueClass} mt-1`}>{formatDate(p.date_creation)}</p>
+            </div>
+            <div>
+              <p className={labelClass}>NAF</p>
+              <p className={`${valueClass} mt-1`}>
+                {p.code_naf ? (
+                  <>
+                    {p.code_naf}
+                    {p.libelle_naf && (
+                      <span className="block text-xs text-muted">{p.libelle_naf}</span>
+                    )}
+                  </>
+                ) : '—'}
+              </p>
+            </div>
+            <div>
+              <p className={labelClass}>Tranche d'effectif</p>
+              <p className={`${valueClass} mt-1`}>{p.tranche_effectif ?? '—'}</p>
+            </div>
+          </div>
+
+          {/* Dirigeant — visible UNIQUEMENT si diffusibilité INSEE = 'O'.
+              Cf. règle Lot 2 : ne JAMAIS afficher un nom marqué partiel/non
+              diffusible. Pour les SAS/SARL à dirigeant personne morale,
+              dirigeant_nom est null d'origine. */}
+          {p.dirigeant_nom_diffusible && p.dirigeant_nom && (
+            <div className="mt-6">
+              <p className={labelClass}>Dirigeant (diffusible)</p>
+              <p className={`${valueClass} mt-1`}>
+                {[p.dirigeant_prenom, p.dirigeant_nom].filter(Boolean).join(' ')}
+              </p>
+            </div>
+          )}
+
+          {/* SIRET en bas, plus discret — info technique de traçabilité */}
+          <p className="mt-6 font-body text-[11px] text-muted">SIRET : {p.siret}</p>
+        </div>
+      )}
+
       {/* Notes */}
       <div className={sectionClass}>
         <h2 className={sectionTitleClass}>Notes</h2>
