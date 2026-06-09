@@ -4,9 +4,23 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Modal } from '@/components/ui/Modal'
 
+interface LeftoverMaquette {
+  maquette_id: string
+  prospect_id: string
+  slug: string | null
+  failed_entries: number
+}
+
 interface Props {
   /** Nombre de maquettes ayant au moins une entrée `source: 'google'` dans leur pool. */
   eligibleCount: number
+  /**
+   * Liste actuelle des maquettes avec des photos Google résiduelles —
+   * récupérée à chaque render serveur depuis la BDD. Permet d'identifier
+   * les maquettes à corriger manuellement SANS avoir à relancer la
+   * persistance (et donc sans re-consommer des appels Google).
+   */
+  leftoverList: LeftoverMaquette[]
 }
 
 interface ProgressState {
@@ -79,7 +93,7 @@ const BATCH_SIZE = 8  // ~5 s/maquette × 8 = ~40 s < 60 s maxDuration Hobby
  * Dry-run par défaut dans la modale (sécurité) : on tente les fetch Google
  * (coût identique) mais aucune écriture BDD ni Storage.
  */
-export default function PersistGooglePhotosButton({ eligibleCount }: Props) {
+export default function PersistGooglePhotosButton({ eligibleCount, leftoverList }: Props) {
   const router = useRouter()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [dryRun, setDryRun] = useState(true)
@@ -251,43 +265,50 @@ export default function PersistGooglePhotosButton({ eligibleCount }: Props) {
           <span className="font-body text-xs text-muted">{progress.slug}</span>
         )}
         {done && !error && (
-          <>
-            <span className="font-body text-xs text-primary-dark">
-              {done.dryRun ? `↳ Dry-run lot 1 · ` : `✓ ${done.batches} lot${done.batches > 1 ? 's' : ''} · `}
-              {done.maquettes_updated} maquette{done.maquettes_updated > 1 ? 's' : ''}
-              {' '}· {done.photos_persisted} photos persistées
-              {done.photos_failed > 0 && ` · ${done.photos_failed} échec${done.photos_failed > 1 ? 's' : ''}`}
-              {done.maquettes_stale > 0 && ` · ${done.maquettes_stale} stale`}
-            </span>
-            {done.failures.length > 0 && (
-              <details className="mt-1 w-72 rounded-md border border-amber-200 bg-amber-50 p-2 text-left">
-                <summary className="cursor-pointer font-body text-xs font-semibold text-amber-900">
-                  ⚠ {done.failures.length} maquette{done.failures.length > 1 ? 's' : ''} à corriger manuellement
-                </summary>
-                <ul className="mt-2 space-y-1">
-                  {done.failures.map((f) => (
-                    <li key={f.maquette_id} className="font-body text-xs text-amber-900">
-                      <a
-                        href={`/admin/crm/${f.prospect_id}/maquette`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-semibold underline hover:text-primary"
-                      >
-                        {f.slug ?? f.maquette_id}
-                      </a>
-                      {' '}— {f.failed_entries} photo{f.failed_entries > 1 ? 's' : ''} KO
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2 font-body text-[11px] text-amber-800">
-                  Ouvre l&apos;éditeur de chaque maquette et upload une photo de remplacement
-                  via le PhotoManager (les slots concernés afficheront un placeholder en attendant).
-                </p>
-              </details>
-            )}
-          </>
+          <span className="font-body text-xs text-primary-dark">
+            {done.dryRun ? `↳ Dry-run lot 1 · ` : `✓ ${done.batches} lot${done.batches > 1 ? 's' : ''} · `}
+            {done.maquettes_updated} maquette{done.maquettes_updated > 1 ? 's' : ''}
+            {' '}· {done.photos_persisted} photos persistées
+            {done.photos_failed > 0 && ` · ${done.photos_failed} échec${done.photos_failed > 1 ? 's' : ''}`}
+            {done.maquettes_stale > 0 && ` · ${done.maquettes_stale} stale`}
+          </span>
         )}
         {error && <span className="font-body text-xs text-red-600">{error}</span>}
+
+        {/*
+         * Liste des maquettes avec photos Google résiduelles, lue depuis la
+         * BDD au render serveur (pas besoin de relancer la persistance pour
+         * la voir). Affichée tant qu'il en reste — disparaît automatiquement
+         * quand l'admin a corrigé toutes les maquettes ou quand la
+         * persistance suivante les rattrape.
+         */}
+        {leftoverList.length > 0 && (
+          <details className="mt-1 w-72 rounded-md border border-amber-200 bg-amber-50 p-2 text-left">
+            <summary className="cursor-pointer font-body text-xs font-semibold text-amber-900">
+              ⚠ {leftoverList.length} maquette{leftoverList.length > 1 ? 's' : ''} à corriger manuellement
+            </summary>
+            <ul className="mt-2 space-y-1">
+              {leftoverList.map((f) => (
+                <li key={f.maquette_id} className="font-body text-xs text-amber-900">
+                  <a
+                    href={`/admin/crm/${f.prospect_id}/maquette`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-semibold underline hover:text-primary"
+                  >
+                    {f.slug ?? f.maquette_id}
+                  </a>
+                  {' '}— {f.failed_entries} photo{f.failed_entries > 1 ? 's' : ''} encore en Google
+                </li>
+              ))}
+            </ul>
+            <p className="mt-2 font-body text-[11px] text-amber-800">
+              Ouvre l&apos;éditeur de chaque maquette et upload une photo de remplacement
+              via le PhotoManager. Les photos restant en Google continueront de fonctionner
+              tant que Google les sert, mais finiront par tomber en placeholder.
+            </p>
+          </details>
+        )}
       </div>
 
       <Modal

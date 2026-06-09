@@ -111,21 +111,47 @@ async function countMaquettesToMigrate(): Promise<number> {
  * reste petite (~dizaines de lignes), tirer `available_photos` ne pose
  * aucun problème de bande passante.
  */
-async function countMaquettesWithGooglePhotos(): Promise<number> {
+/**
+ * Liste les maquettes qui ont encore au moins une photo `source: 'google'`
+ * dans leur pool — donc des photos qui restent volatiles et finiront par
+ * casser. Renvoie le slug, le prospect_id (pour pointer vers l'éditeur),
+ * et le nombre de photos Google restantes.
+ *
+ * Utilisé pour afficher la liste à corriger manuellement SANS avoir à
+ * relancer la persistance complète (les échecs sont visibles directement
+ * à partir de l'état de la BDD).
+ */
+export interface LeftoverMaquette {
+  maquette_id: string
+  prospect_id: string
+  slug: string | null
+  failed_entries: number
+}
+
+async function listMaquettesWithGooglePhotos(): Promise<LeftoverMaquette[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('maquettes')
-    .select('available_photos')
+    .select('id, slug, prospect_id, available_photos')
+    .order('slug', { ascending: true })
   if (error || !data) {
-    if (error) console.error('[crm/page] countMaquettesWithGooglePhotos', error)
-    return 0
+    if (error) console.error('[crm/page] listMaquettesWithGooglePhotos', error)
+    return []
   }
-  let count = 0
+  const out: LeftoverMaquette[] = []
   for (const row of data) {
     const pool = (row.available_photos ?? []) as { source?: string }[]
-    if (pool.some((p) => p?.source === 'google')) count += 1
+    const failed = pool.filter((p) => p?.source === 'google').length
+    if (failed > 0) {
+      out.push({
+        maquette_id: row.id,
+        prospect_id: row.prospect_id,
+        slug: row.slug,
+        failed_entries: failed,
+      })
+    }
   }
-  return count
+  return out
 }
 
 async function getProspects(filters: {
@@ -190,7 +216,7 @@ export default async function AdminCrmPage({ searchParams }: Props) {
   const hasFilters = !!(canal || statut || categorie || source || q || sort)
   const eligibleForBackfill = await countEligibleForBackfill()
   const maquettesToMigrate = await countMaquettesToMigrate()
-  const maquettesWithGooglePhotos = await countMaquettesWithGooglePhotos()
+  const leftoverGooglePhotos = await listMaquettesWithGooglePhotos()
 
   return (
     <div>
@@ -229,7 +255,10 @@ export default async function AdminCrmPage({ searchParams }: Props) {
         <MigrateMaquettesPhotosButton pendingCount={maquettesToMigrate} />
         <BackfillGoogleReviewsButton eligibleCount={eligibleForBackfill} />
         <BackfillGooglePhotosButton eligibleCount={eligibleForBackfill} />
-        <PersistGooglePhotosButton eligibleCount={maquettesWithGooglePhotos} />
+        <PersistGooglePhotosButton
+          eligibleCount={leftoverGooglePhotos.length}
+          leftoverList={leftoverGooglePhotos}
+        />
         <RecomputeAllScoresButton />
       </div>
 
