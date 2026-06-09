@@ -256,6 +256,14 @@ export interface SireneImportItem {
   raw: unknown
   /** Catégorie devinée côté UI (par la catégorie de recherche). */
   suggestedCategorie: ProspectCategorie | null
+
+  // ── Lot 2 : champs additionnels persistés ──
+  dirigeant_nom: string | null
+  dirigeant_prenom: string | null
+  dirigeant_nom_diffusible: boolean
+  date_creation_entreprise: string | null
+  forme_juridique_code: string | null
+  forme_juridique_label: string | null
 }
 
 export interface SireneImportFailure {
@@ -346,6 +354,14 @@ export async function importSireneBatchAction(
           sirene_raw: item.raw,
           sirene_enriched_at: nowIso,
           source: newSource,
+          // Lot 2 : champs additionnels — toujours UPDATE en cas de
+          // merge SIRET, car Sirene est la source d'autorité légale.
+          dirigeant_nom: item.dirigeant_nom,
+          dirigeant_prenom: item.dirigeant_prenom,
+          dirigeant_nom_diffusible: item.dirigeant_nom_diffusible,
+          date_creation_entreprise: item.date_creation_entreprise,
+          forme_juridique_code: item.forme_juridique_code,
+          forme_juridique_label: item.forme_juridique_label,
         })
         .eq('id', bySiret.id)
 
@@ -410,6 +426,13 @@ export async function importSireneBatchAction(
       sirene_raw: item.raw,
       sirene_enriched_at: nowIso,
       dedup_warning: dedupWarning,
+      // Lot 2 : champs additionnels persistés
+      dirigeant_nom: item.dirigeant_nom,
+      dirigeant_prenom: item.dirigeant_prenom,
+      dirigeant_nom_diffusible: item.dirigeant_nom_diffusible,
+      date_creation_entreprise: item.date_creation_entreprise,
+      forme_juridique_code: item.forme_juridique_code,
+      forme_juridique_label: item.forme_juridique_label,
     }
 
     const { error } = await supabase.from('prospects').insert(payload)

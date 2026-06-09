@@ -251,6 +251,13 @@ export default function UnifiedSourcingForm({ baseCoords }: Props) {
       ville: r.ville,
       raw: r.raw,
       suggestedCategorie: categorieFromNaf(r.code_naf) ?? fallbackCat,
+      // Lot 2 : propagés depuis SireneEstablishment vers SireneImportItem
+      dirigeant_nom: r.dirigeant_nom,
+      dirigeant_prenom: r.dirigeant_prenom,
+      dirigeant_nom_diffusible: r.dirigeant_nom_diffusible,
+      date_creation_entreprise: r.date_creation_entreprise,
+      forme_juridique_code: r.forme_juridique_code,
+      forme_juridique_label: r.forme_juridique_label,
     }))
     const r = await importSireneBatchAction(items)
     if (!r.success) {

@@ -182,6 +182,13 @@ export function simulationPayloadToRenderProps(
     pagespeed_status: null,
     pagespeed_raw: null,
     dedup_warning: null,
+    // Lot 2 : champs Sirene additionnels (null pour simulation publique)
+    dirigeant_nom: null,
+    dirigeant_prenom: null,
+    dirigeant_nom_diffusible: false,
+    date_creation_entreprise: null,
+    forme_juridique_code: null,
+    forme_juridique_label: null,
   }
 
   return { maquette, prospect }

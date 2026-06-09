@@ -68,6 +68,13 @@ function makeProspect(overrides: Partial<Prospect> = {}): Prospect {
     pagespeed_status: null,
     pagespeed_raw: null,
     dedup_warning: null,
+    // Lot 2 : Sirene additionnels (null pour tests maquette)
+    dirigeant_nom: null,
+    dirigeant_prenom: null,
+    dirigeant_nom_diffusible: false,
+    date_creation_entreprise: null,
+    forme_juridique_code: null,
+    forme_juridique_label: null,
     ...overrides,
   }
 }

@@ -595,6 +595,150 @@ describe('searchSireneSourcing', () => {
     expect(result.data[0].adresse).toBe('BATIMENT B 10 RUE DE LA POSTE')
   })
 
+  it('extrait dirigeant personne physique + diffusibilité O (cas EI réelle)', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'HENRY TESTARD',
+              date_creation: '1989-07-13',
+              nature_juridique: '1000',
+              statut_diffusion: 'O',
+              dirigeants: [
+                {
+                  nom: 'TESTARD (TESTARD)',
+                  prenoms: 'HENRY HENRI',
+                  type_dirigeant: 'personne physique',
+                  qualite: null,
+                },
+              ],
+              siege: {
+                siret: '35138106600049',
+                etat_administratif: 'A',
+                code_postal: '31400',
+                libelle_commune: 'TOULOUSE',
+                date_creation: '2019-01-21',
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '31400' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data).toHaveLength(1)
+    const e = result.data[0]
+    expect(e.dirigeant_nom).toBe('TESTARD')  // parenthèse strippée
+    expect(e.dirigeant_prenom).toBe('HENRY')  // 1er prénom seul
+    expect(e.dirigeant_nom_diffusible).toBe(true)
+    expect(e.date_creation_entreprise).toBe('1989-07-13')
+    expect(e.forme_juridique_code).toBe('1000')
+    expect(e.forme_juridique_label).toBe('Entrepreneur Individuel')
+  })
+
+  it('rejette le nom dirigeant si statut_diffusion != "O"', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'X',
+              statut_diffusion: 'P',  // Partielle → on n'utilise PAS le nom
+              dirigeants: [
+                {
+                  nom: 'DUPONT',
+                  prenoms: 'JEAN',
+                  type_dirigeant: 'personne physique',
+                },
+              ],
+              siege: {
+                siret: '12345678900012',
+                etat_administratif: 'A',
+                code_postal: '32600',
+                libelle_commune: 'X',
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    // Le nom EST extrait pour traçabilité mais marqué non-diffusible
+    expect(result.data[0].dirigeant_nom).toBe('DUPONT')
+    expect(result.data[0].dirigeant_nom_diffusible).toBe(false)
+  })
+
+  it('ignore le dirigeant personne morale (SAS/SARL à holding)', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'ADIBILLON DEPANNAGE',
+              statut_diffusion: 'O',
+              nature_juridique: '5710',
+              dirigeants: [
+                {
+                  siren: '942298779',
+                  denomination: 'ADI CONSEIL GESTION',
+                  qualite: 'Président de SAS',
+                  type_dirigeant: 'personne morale',
+                },
+              ],
+              siege: {
+                siret: '81286326400113',
+                etat_administratif: 'A',
+                code_postal: '34770',
+                libelle_commune: 'GIGEAN',
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '34770' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data[0].dirigeant_nom).toBeNull()
+    expect(result.data[0].dirigeant_prenom).toBeNull()
+    expect(result.data[0].dirigeant_nom_diffusible).toBe(false)
+    expect(result.data[0].forme_juridique_label).toBe('SAS')
+  })
+
+  it('extrait la date_creation_entreprise (unité légale) distincte de celle de l\'établissement', async () => {
+    fetchMock.mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          results: [
+            {
+              nom_complet: 'X',
+              date_creation: '1989-07-13',  // unité légale (entreprise)
+              siege: {
+                siret: '11111111111111',
+                etat_administratif: 'A',
+                code_postal: '32600',
+                date_creation: '2019-01-21',  // établissement (différente)
+              },
+            },
+          ],
+        }),
+        { status: 200 }
+      )
+    )
+    const result = await searchSireneSourcing({ codePostal: '32600' })
+    expect(result.ok).toBe(true)
+    if (!result.ok) return
+    expect(result.data[0].date_creation_entreprise).toBe('1989-07-13')
+    expect(result.data[0].date_creation).toBe('2019-01-21')
+  })
+
   it('exclut les établissements fermés (etat_administratif != "A")', async () => {
     fetchMock.mockResolvedValueOnce(
       new Response(
