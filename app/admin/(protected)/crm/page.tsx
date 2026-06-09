@@ -16,6 +16,7 @@ import ProspectCard from '@/components/admin/ProspectCard'
 import BackfillGooglePhotosButton from './BackfillGooglePhotosButton'
 import BackfillGoogleReviewsButton from './BackfillGoogleReviewsButton'
 import MigrateMaquettesPhotosButton from './MigrateMaquettesPhotosButton'
+import PersistGooglePhotosButton from './PersistGooglePhotosButton'
 import RecomputeAllScoresButton from './RecomputeAllScoresButton'
 import {
   CANAL_BADGE,
@@ -99,6 +100,25 @@ async function countMaquettesToMigrate(): Promise<number> {
   return count ?? 0
 }
 
+/**
+ * Compte les maquettes dont le pool contient encore au moins une entrée
+ * `source: 'google'` (donc une ref Places API volatile à persister).
+ *
+ * Filtre JSONB côté PG via @> pour ne pas tirer tous les pools en mémoire.
+ */
+async function countMaquettesWithGooglePhotos(): Promise<number> {
+  const supabase = await createClient()
+  const { count, error } = await supabase
+    .from('maquettes')
+    .select('id', { count: 'exact', head: true })
+    .contains('available_photos', [{ source: 'google' }])
+  if (error) {
+    console.error('[crm/page] countMaquettesWithGooglePhotos', error)
+    return 0
+  }
+  return count ?? 0
+}
+
 async function getProspects(filters: {
   canal?: ProspectCanal
   statut?: ProspectStatut
@@ -161,6 +181,7 @@ export default async function AdminCrmPage({ searchParams }: Props) {
   const hasFilters = !!(canal || statut || categorie || source || q || sort)
   const eligibleForBackfill = await countEligibleForBackfill()
   const maquettesToMigrate = await countMaquettesToMigrate()
+  const maquettesWithGooglePhotos = await countMaquettesWithGooglePhotos()
 
   return (
     <div>
@@ -199,6 +220,7 @@ export default async function AdminCrmPage({ searchParams }: Props) {
         <MigrateMaquettesPhotosButton pendingCount={maquettesToMigrate} />
         <BackfillGoogleReviewsButton eligibleCount={eligibleForBackfill} />
         <BackfillGooglePhotosButton eligibleCount={eligibleForBackfill} />
+        <PersistGooglePhotosButton eligibleCount={maquettesWithGooglePhotos} />
         <RecomputeAllScoresButton />
       </div>
 
