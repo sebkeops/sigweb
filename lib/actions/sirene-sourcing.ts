@@ -2,7 +2,11 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { searchSireneSourcing, type SireneEstablishment } from '@/lib/sirene/sirene'
+import {
+  extractSireneAdditionalFields,
+  searchSireneSourcing,
+  type SireneEstablishment,
+} from '@/lib/sirene/sirene'
 import { NAF_BY_CATEGORIE } from '@/lib/sirene/naf-mapping'
 import { normalizeNomCommerce } from '@/lib/sirene/normalize-name'
 import {
@@ -342,6 +346,11 @@ export async function importSireneBatchAction(
         bySiret.source === 'sirene' || bySiret.source === 'both'
           ? bySiret.source
           : 'both'
+      // Lot 2 : re-extraction depuis item.raw pour résister à un frontend
+      // désynchronisé (cas observé : Adrien Esquirol importé immédiatement
+      // après deploy → l'item envoyé n'avait pas les nouveaux champs).
+      // Source de vérité unique = payload brut Sirene.
+      const additional = extractSireneAdditionalFields(item.raw)
       const { error: updErr } = await supabase
         .from('prospects')
         .update({
@@ -354,14 +363,12 @@ export async function importSireneBatchAction(
           sirene_raw: item.raw,
           sirene_enriched_at: nowIso,
           source: newSource,
-          // Lot 2 : champs additionnels — toujours UPDATE en cas de
-          // merge SIRET, car Sirene est la source d'autorité légale.
-          dirigeant_nom: item.dirigeant_nom,
-          dirigeant_prenom: item.dirigeant_prenom,
-          dirigeant_nom_diffusible: item.dirigeant_nom_diffusible,
-          date_creation_entreprise: item.date_creation_entreprise,
-          forme_juridique_code: item.forme_juridique_code,
-          forme_juridique_label: item.forme_juridique_label,
+          dirigeant_nom: additional.dirigeant_nom,
+          dirigeant_prenom: additional.dirigeant_prenom,
+          dirigeant_nom_diffusible: additional.dirigeant_nom_diffusible,
+          date_creation_entreprise: additional.date_creation_entreprise,
+          forme_juridique_code: additional.forme_juridique_code,
+          forme_juridique_label: additional.forme_juridique_label,
         })
         .eq('id', bySiret.id)
 
@@ -426,13 +433,9 @@ export async function importSireneBatchAction(
       sirene_raw: item.raw,
       sirene_enriched_at: nowIso,
       dedup_warning: dedupWarning,
-      // Lot 2 : champs additionnels persistés
-      dirigeant_nom: item.dirigeant_nom,
-      dirigeant_prenom: item.dirigeant_prenom,
-      dirigeant_nom_diffusible: item.dirigeant_nom_diffusible,
-      date_creation_entreprise: item.date_creation_entreprise,
-      forme_juridique_code: item.forme_juridique_code,
-      forme_juridique_label: item.forme_juridique_label,
+      // Lot 2 : champs additionnels — re-extraction depuis item.raw
+      // (source de vérité unique, cf. extractSireneAdditionalFields).
+      ...extractSireneAdditionalFields(item.raw),
     }
 
     const { error } = await supabase.from('prospects').insert(payload)

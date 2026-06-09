@@ -451,35 +451,10 @@ function normalizeUniteLegale(
       null
   }
 
-  // ── Lot 2 : extraction dirigeant + ancienneté + forme juridique ──
-  const dirigeants = Array.isArray(obj.dirigeants)
-    ? (obj.dirigeants as Record<string, unknown>[])
-    : []
-  const firstPP = dirigeants.find(
-    (d) => typeof d?.type_dirigeant === 'string' && d.type_dirigeant === 'personne physique'
-  )
-  const dirigeantNom =
-    firstPP && typeof firstPP.nom === 'string'
-      ? cleanDirigeantNom(firstPP.nom)
-      : null
-  const dirigeantPrenom =
-    firstPP && typeof firstPP.prenoms === 'string'
-      ? cleanDirigeantPrenom(firstPP.prenoms)
-      : null
-  // Diffusibilité : on N'autorise le nom qu'avec `statut_diffusion = 'O'`.
-  // Pour 'P' (Partielle) ou 'N' (Non), l'INSEE protège la donnée et le
-  // freelance ne doit pas l'utiliser pour personnaliser un email.
-  const statutDiffusion =
-    typeof obj.statut_diffusion === 'string' ? obj.statut_diffusion : null
-  const dirigeantNomDiffusible =
-    statutDiffusion === 'O' && dirigeantNom !== null
-
-  const dateCreationEntreprise =
-    typeof obj.date_creation === 'string' ? obj.date_creation : null
-
-  const formeJuridiqueCode =
-    typeof obj.nature_juridique === 'string' ? obj.nature_juridique : null
-  const formeJuridiqueLabel = mapNatureJuridique(formeJuridiqueCode)
+  // Lot 2 : champs additionnels — source de vérité unique
+  // (extractSireneAdditionalFields). Évite la duplication entre cette
+  // fonction et la ré-extraction côté server action (import).
+  const additional = extractSireneAdditionalFields(raw)
 
   return {
     siret,
@@ -493,12 +468,83 @@ function normalizeUniteLegale(
     code_postal: codePostal,
     ville,
     raw,
-    dirigeant_nom: dirigeantNom,
-    dirigeant_prenom: dirigeantPrenom,
-    dirigeant_nom_diffusible: dirigeantNomDiffusible,
-    date_creation_entreprise: dateCreationEntreprise,
-    forme_juridique_code: formeJuridiqueCode,
-    forme_juridique_label: formeJuridiqueLabel,
+    ...additional,
+  }
+}
+
+/**
+ * Champs additionnels extraits du payload Sirene (Lot 2).
+ *
+ * Exposé pour permettre la ré-extraction côté server action à partir du
+ * `sirene_raw` (cas défense : le frontend pourrait envoyer un item sans
+ * ces champs si le code client n'est pas synchro avec le serveur).
+ */
+export interface SireneAdditionalFields {
+  dirigeant_nom: string | null
+  dirigeant_prenom: string | null
+  dirigeant_nom_diffusible: boolean
+  date_creation_entreprise: string | null
+  forme_juridique_code: string | null
+  forme_juridique_label: string | null
+}
+
+const EMPTY_ADDITIONAL: SireneAdditionalFields = {
+  dirigeant_nom: null,
+  dirigeant_prenom: null,
+  dirigeant_nom_diffusible: false,
+  date_creation_entreprise: null,
+  forme_juridique_code: null,
+  forme_juridique_label: null,
+}
+
+/**
+ * Ré-extrait les champs additionnels Sirene depuis le payload brut
+ * data.gouv.fr (le même payload stocké dans `prospects.sirene_raw`).
+ *
+ * Utilisé côté server action `importSireneBatchAction` comme source de
+ * vérité : on ne fait pas confiance aux valeurs envoyées par le frontend
+ * (il peut être désynchronisé). Le payload brut, lui, est complet.
+ *
+ * Pour les payloads mal formés / pré-Lot 2, retourne des champs vides.
+ */
+export function extractSireneAdditionalFields(raw: unknown): SireneAdditionalFields {
+  if (!raw || typeof raw !== 'object') return EMPTY_ADDITIONAL
+  const obj = raw as Record<string, unknown>
+
+  const dirigeants = Array.isArray(obj.dirigeants)
+    ? (obj.dirigeants as Record<string, unknown>[])
+    : []
+  const firstPP = dirigeants.find(
+    (d) => typeof d?.type_dirigeant === 'string' && d.type_dirigeant === 'personne physique'
+  )
+  const dirigeant_nom =
+    firstPP && typeof firstPP.nom === 'string'
+      ? cleanDirigeantNom(firstPP.nom)
+      : null
+  const dirigeant_prenom =
+    firstPP && typeof firstPP.prenoms === 'string'
+      ? cleanDirigeantPrenom(firstPP.prenoms)
+      : null
+
+  const statutDiffusion =
+    typeof obj.statut_diffusion === 'string' ? obj.statut_diffusion : null
+  const dirigeant_nom_diffusible =
+    statutDiffusion === 'O' && dirigeant_nom !== null
+
+  const date_creation_entreprise =
+    typeof obj.date_creation === 'string' ? obj.date_creation : null
+
+  const forme_juridique_code =
+    typeof obj.nature_juridique === 'string' ? obj.nature_juridique : null
+  const forme_juridique_label = mapNatureJuridique(forme_juridique_code)
+
+  return {
+    dirigeant_nom,
+    dirigeant_prenom,
+    dirigeant_nom_diffusible,
+    date_creation_entreprise,
+    forme_juridique_code,
+    forme_juridique_label,
   }
 }
 
