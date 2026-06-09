@@ -18,6 +18,14 @@ interface ProgressState {
   cumulativeTotal: number  // eligibleCount au moment du démarrage
 }
 
+interface FailureRecord {
+  maquette_id: string
+  prospect_id: string
+  slug: string | null
+  reason: string
+  failed_entries: number
+}
+
 interface RunTotals {
   dryRun: boolean
   maquettes_updated: number
@@ -25,12 +33,7 @@ interface RunTotals {
   maquettes_stale: number
   photos_persisted: number
   photos_failed: number
-  failures: {
-    maquette_id: string
-    slug: string | null
-    reason: string
-    failed_entries: number
-  }[]
+  failures: FailureRecord[]
   batches: number
 }
 
@@ -59,7 +62,7 @@ interface DoneEvent {
   photos_failed: number
   eligibleTotal: number
   remainingAfter: number
-  failures: RunTotals['failures']
+  failures: FailureRecord[]
 }
 type StreamEvent = StartEvent | ProgressEvent | DoneEvent
 
@@ -248,13 +251,41 @@ export default function PersistGooglePhotosButton({ eligibleCount }: Props) {
           <span className="font-body text-xs text-muted">{progress.slug}</span>
         )}
         {done && !error && (
-          <span className="font-body text-xs text-primary-dark">
-            {done.dryRun ? `↳ Dry-run lot 1 · ` : `✓ ${done.batches} lot${done.batches > 1 ? 's' : ''} · `}
-            {done.maquettes_updated} maquette{done.maquettes_updated > 1 ? 's' : ''}
-            {' '}· {done.photos_persisted} photos persistées
-            {done.photos_failed > 0 && ` · ${done.photos_failed} échec${done.photos_failed > 1 ? 's' : ''}`}
-            {done.maquettes_stale > 0 && ` · ${done.maquettes_stale} stale`}
-          </span>
+          <>
+            <span className="font-body text-xs text-primary-dark">
+              {done.dryRun ? `↳ Dry-run lot 1 · ` : `✓ ${done.batches} lot${done.batches > 1 ? 's' : ''} · `}
+              {done.maquettes_updated} maquette{done.maquettes_updated > 1 ? 's' : ''}
+              {' '}· {done.photos_persisted} photos persistées
+              {done.photos_failed > 0 && ` · ${done.photos_failed} échec${done.photos_failed > 1 ? 's' : ''}`}
+              {done.maquettes_stale > 0 && ` · ${done.maquettes_stale} stale`}
+            </span>
+            {done.failures.length > 0 && (
+              <details className="mt-1 w-72 rounded-md border border-amber-200 bg-amber-50 p-2 text-left">
+                <summary className="cursor-pointer font-body text-xs font-semibold text-amber-900">
+                  ⚠ {done.failures.length} maquette{done.failures.length > 1 ? 's' : ''} à corriger manuellement
+                </summary>
+                <ul className="mt-2 space-y-1">
+                  {done.failures.map((f) => (
+                    <li key={f.maquette_id} className="font-body text-xs text-amber-900">
+                      <a
+                        href={`/admin/crm/${f.prospect_id}/maquette`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold underline hover:text-primary"
+                      >
+                        {f.slug ?? f.maquette_id}
+                      </a>
+                      {' '}— {f.failed_entries} photo{f.failed_entries > 1 ? 's' : ''} KO
+                    </li>
+                  ))}
+                </ul>
+                <p className="mt-2 font-body text-[11px] text-amber-800">
+                  Ouvre l&apos;éditeur de chaque maquette et upload une photo de remplacement
+                  via le PhotoManager (les slots concernés afficheront un placeholder en attendant).
+                </p>
+              </details>
+            )}
+          </>
         )}
         {error && <span className="font-body text-xs text-red-600">{error}</span>}
       </div>

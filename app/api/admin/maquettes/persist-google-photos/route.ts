@@ -128,6 +128,7 @@ export async function POST(req: Request) {
       let totalFailed = 0
       const failures: {
         maquette_id: string
+        prospect_id: string
         slug: string | null
         reason: string
         failed_entries: number
@@ -274,6 +275,7 @@ export async function POST(req: Request) {
           if (finalFailures > 0) {
             failures.push({
               maquette_id: m.id,
+              prospect_id: m.prospect_id,
               slug: m.slug,
               reason: 'entries_unrecoverable',
               failed_entries: finalFailures,
@@ -284,6 +286,7 @@ export async function POST(req: Request) {
           console.error('[persist-google-photos]', m.id, m.slug, msg)
           failures.push({
             maquette_id: m.id,
+            prospect_id: m.prospect_id,
             slug: m.slug,
             reason: msg,
             failed_entries: googleCount,
