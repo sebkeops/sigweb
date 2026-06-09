@@ -38,6 +38,16 @@ import type { MaquettePhotoEntry } from '@/types'
  * Sécurité : admin only.
  */
 
+// Vercel function settings (cf. https://vercel.com/docs/functions/configuring-functions/duration)
+//
+// Cette route est lourde (fetch Google + sharp + upload Storage par photo,
+// pour N maquettes). Sans déclaration explicite, Vercel coupe la fonction
+// au bout du timeout par défaut (10s Hobby / 60s Pro) → côté client, fetch
+// rejette avec "network error". On déclare 300s : Vercel clamp au max
+// autorisé par le plan, c'est sans risque.
+export const maxDuration = 300
+export const dynamic = 'force-dynamic'
+
 const THROTTLE_MS = 250
 
 interface MaquetteRow {
