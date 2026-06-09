@@ -96,12 +96,21 @@ export async function POST(req: Request) {
   const url = new URL(req.url)
   const dryRun = url.searchParams.get('dryRun') === '1'
 
-  const { error, rows } = await selectEligibleMaquettes(supabase)
-  if (error || !rows) {
+  // Plafond par lot pour rester sous la maxDuration Vercel (60s en Hobby).
+  // ~5 s par maquette (fetch Google + sharp + upload), donc 8 = ~40 s + marge.
+  // L'UI boucle automatiquement jusqu'à épuiser la file.
+  const limitRaw = url.searchParams.get('limit')
+  const limit = limitRaw ? Math.max(1, Math.min(100, parseInt(limitRaw, 10) || 0)) : null
+
+  const { error, rows: allRows } = await selectEligibleMaquettes(supabase)
+  if (error || !allRows) {
     return NextResponse.json({ ok: false, error: error ?? 'select' }, { status: 500 })
   }
 
+  const eligibleTotal = allRows.length
+  const rows = limit ? allRows.slice(0, limit) : allRows
   const total = rows.length
+  const remainingAfter = eligibleTotal - total
   const encoder = new TextEncoder()
 
   const stream = new ReadableStream<Uint8Array>({
@@ -110,7 +119,7 @@ export async function POST(req: Request) {
         controller.enqueue(encoder.encode(JSON.stringify(event) + '\n'))
       }
 
-      send({ type: 'start', total, dryRun })
+      send({ type: 'start', total, eligibleTotal, remainingAfter, dryRun })
 
       let maquettesUpdated = 0
       let maquettesUnchanged = 0
@@ -301,6 +310,8 @@ export async function POST(req: Request) {
         maquettes_stale: maquettesStale,
         photos_persisted: totalPersisted,
         photos_failed: totalFailed,
+        eligibleTotal,
+        remainingAfter,
         failures,
       })
       controller.close()
