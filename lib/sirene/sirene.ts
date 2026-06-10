@@ -218,6 +218,51 @@ export async function searchSireneSourcing(
 }
 
 /**
+ * Recherche d'établissements par nom + code postal. Utilisé pour
+ * l'enrichissement d'un prospect existant qui n'a PAS encore de SIRET
+ * (typiquement un prospect sourcé Google qu'on veut compléter via Sirene).
+ *
+ * Renvoie jusqu'à `maxResults` candidats. Le caller arbitre :
+ *   - 0 résultat → not_found
+ *   - 1 résultat → match fiable, enrichissement direct
+ *   - >1 résultats → ambigu, ne PAS écrire et marquer pour revue manuelle
+ *
+ * Important : on filtre `etat_administratif=A` côté API pour ne pas
+ * matcher une vieille fiche fermée homonyme à la nouvelle entreprise du
+ * même nom. Cohérent avec `searchSireneSourcing`.
+ */
+export async function searchSireneByNameAndCp(
+  nom: string,
+  codePostal: string,
+  maxResults: number = 5
+): Promise<SireneResult<SireneEstablishment[]>> {
+  const cleanedNom = nom.trim()
+  const cleanedCp = codePostal.trim()
+  if (!cleanedNom || !cleanedCp) {
+    return { ok: false, reason: 'parse' }
+  }
+
+  const url = new URL(API_BASE)
+  url.searchParams.set('q', cleanedNom)
+  url.searchParams.set('code_postal', cleanedCp)
+  url.searchParams.set('etat_administratif', 'A')
+  url.searchParams.set('per_page', String(Math.min(maxResults, 25)))
+
+  const response = await safeFetchJson(url.toString())
+  if (!response.ok) return response
+
+  const data = response.data as { results?: unknown[] } | undefined
+  const results = data?.results ?? []
+
+  const establishments: SireneEstablishment[] = []
+  for (const item of results) {
+    const normalized = normalizeUniteLegale(item)
+    if (normalized) establishments.push(normalized)
+  }
+  return { ok: true, data: establishments }
+}
+
+/**
  * Enrichissement : récupère les données légales d'un prospect existant
  * par son SIRET. Utilisé par le bouton « Enrichir Sirene » sur la fiche
  * (Lot 2) et lors d'un import quand on dispose déjà du SIRET.

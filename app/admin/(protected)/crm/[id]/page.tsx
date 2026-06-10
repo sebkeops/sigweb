@@ -18,6 +18,7 @@ import MaquetteVisitsStats from '@/components/admin/MaquetteVisitsStats'
 import type { TimelineItem } from '@/lib/crm/timeline-aggregator'
 import AddEventButton from './AddEventButton'
 import DeleteProspectButton from './DeleteProspectButton'
+import EnrichSireneButton from './EnrichSireneButton'
 import GenerateAfficheButton from './GenerateAfficheButton'
 import GenerateMaquetteButton from './GenerateMaquetteButton'
 import RefreshFromGoogleButton from './RefreshFromGoogleButton'
@@ -474,15 +475,19 @@ export default async function ProspectDetailPage({ params, searchParams }: Props
         </div>
       )}
 
-      {/* Données légales (Sirene) — visible uniquement si le prospect a un
-          SIRET (sourcé via Sirene OU enrichi croisé). Cf. Lot 2 — persistance
-          des champs dirigeant + ancienneté + forme juridique. */}
-      {p.siret && (
+      {/* Données légales (Sirene) — visible si le prospect a déjà un SIRET
+          OU s'il a un nom + code postal qui permettrait une recherche.
+          Le bouton « Enrichir / Actualiser » expose la PR B (matching SIRET
+          ou fallback nom+CP). Cf. Lot 2 — persistance des champs dirigeant
+          + ancienneté + forme juridique. */}
+      {(p.siret || (p.nom_commerce && p.code_postal)) && (
         <div className={sectionClass}>
           <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
             <h2 className="font-heading text-base font-bold text-ink">Données légales (Sirene)</h2>
             <span className="font-body text-xs text-muted">
-              Dernier enrichissement : {formatDateTime(p.sirene_enriched_at)}
+              {p.sirene_enriched_at
+                ? `Dernier enrichissement : ${formatDateTime(p.sirene_enriched_at)}`
+                : 'Pas encore enrichi'}
             </span>
           </div>
 
@@ -562,7 +567,23 @@ export default async function ProspectDetailPage({ params, searchParams }: Props
           )}
 
           {/* SIRET en bas, plus discret — info technique de traçabilité */}
-          <p className="mt-6 font-body text-[11px] text-muted">SIRET : {p.siret}</p>
+          {p.siret && (
+            <p className="mt-6 font-body text-[11px] text-muted">SIRET : {p.siret}</p>
+          )}
+
+          {/* Bouton d'enrichissement / actualisation — PR B Lot 2.
+              Visible dans tous les cas où la section est affichée :
+                - Sans SIRET : tente une recherche nom + CP
+                - Avec SIRET : actualise par SIRET (idempotent)
+                - Avec sirene_enriched_at : demande confirmation avant écrasement */}
+          <div className="mt-6 border-t border-border pt-4">
+            <EnrichSireneButton
+              prospectId={p.id}
+              hasSiret={!!p.siret}
+              alreadyEnriched={!!p.sirene_enriched_at}
+              canFallbackSearch={!!(p.nom_commerce && p.code_postal)}
+            />
+          </div>
         </div>
       )}
 
