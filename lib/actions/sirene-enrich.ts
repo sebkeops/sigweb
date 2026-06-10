@@ -8,7 +8,7 @@ import {
   searchSireneByNameAndCp,
   type SireneEstablishment,
 } from '@/lib/sirene/sirene'
-import { normalizeNomCommerce } from '@/lib/sirene/normalize-name'
+import { normalizeNomCommerce, stripCategoryWords } from '@/lib/sirene/normalize-name'
 import { buildScoreDbFields, toScoringInput } from '@/lib/scoring/apply'
 import type { Prospect } from '@/types'
 
@@ -144,19 +144,32 @@ async function resolveEstablishment(p: Prospect): Promise<ResolveOk | ResolveErr
     }
   }
 
-  const r = await searchSireneByNameAndCp(p.nom_commerce, p.code_postal)
+  // Pass 1 : nom tel quel
+  let r = await searchSireneByNameAndCp(p.nom_commerce, p.code_postal)
   if (!r.ok) {
-    if (r.reason === 'not_found') {
-      return {
-        ok: false,
-        error: {
-          success: false,
-          reason: 'sirene_not_found',
-          message: 'Aucun établissement Sirene trouvé pour ce nom + code postal.',
-        },
-      }
+    if (r.reason !== 'not_found') {
+      return { ok: false, error: sireneUnavailable(r.reason) }
     }
-    return { ok: false, error: sireneUnavailable(r.reason) }
+    // not_found côté HTTP → on tentera la pass 2 après
+    r = { ok: true, data: [] }
+  }
+
+  // Pass 2 : si rien trouvé en pass 1, on retente avec le nom strippé
+  // des mots métier (ex. "Boulangerie Le Loup Gourmand" → "Le Loup Gourmand").
+  // Cas typique : Google nomme un prospect avec sa catégorie en préfixe,
+  // mais Sirene stocke la dénomination légale sans ce préfixe → 0 match
+  // en pass 1, 1 match en pass 2. Sans effet si le nom strippé est
+  // identique à l'original (`stripCategoryWords` est idempotent).
+  if (r.ok && r.data.length === 0) {
+    const stripped = stripCategoryWords(p.nom_commerce)
+    if (stripped !== p.nom_commerce.trim() && stripped.length > 0) {
+      const r2 = await searchSireneByNameAndCp(stripped, p.code_postal)
+      if (r2.ok && r2.data.length > 0) r = r2
+    }
+  }
+
+  if (!r.ok) {
+    return { ok: false, error: sireneUnavailable('unknown') }
   }
 
   const candidates = r.data

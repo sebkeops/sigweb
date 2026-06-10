@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalizeNomCommerce } from './normalize-name'
+import { normalizeNomCommerce, stripCategoryWords } from './normalize-name'
 
 describe('normalizeNomCommerce', () => {
   it('lowercase + trim', () => {
@@ -44,5 +44,54 @@ describe('normalizeNomCommerce', () => {
     const input = 'SARL Boulangerie-Dupont '
     const once = normalizeNomCommerce(input)
     expect(normalizeNomCommerce(once)).toBe(once)
+  })
+})
+
+describe('stripCategoryWords (Lot 2 PR B fix — Le Loup Gourmand)', () => {
+  it('cas typique Google : préfixe "Boulangerie" stripé', () => {
+    expect(stripCategoryWords('Boulangerie Le Loup Gourmand')).toBe('Le Loup Gourmand')
+  })
+
+  it('suffixe métier stripé', () => {
+    expect(stripCategoryWords('Le Loup Gourmand - Boulangerie')).toBe('Le Loup Gourmand')
+  })
+
+  it('insensible à la casse', () => {
+    expect(stripCategoryWords('BOULANGERIE LE LOUP GOURMAND')).toBe('LE LOUP GOURMAND')
+  })
+
+  it('expression multi-mots strippée avant ses sous-mots ("salon de coiffure" avant "salon")', () => {
+    expect(stripCategoryWords('Salon de coiffure Audrey')).toBe('Audrey')
+  })
+
+  it('plusieurs préfixes empilés strippés successivement', () => {
+    expect(stripCategoryWords('Boulangerie Pâtisserie Le Vieux Four')).toBe('Le Vieux Four')
+  })
+
+  it('mot métier au milieu PRÉSERVÉ (probablement distinctif)', () => {
+    expect(stripCategoryWords('Au Vieux Boulanger')).toBe('Au Vieux Boulanger')
+  })
+
+  it('nom sans mot métier inchangé', () => {
+    expect(stripCategoryWords('Le Bistrot du Centre')).toBe('Le Bistrot du Centre')
+  })
+
+  it('nom = juste un mot métier → on garde l\'original (refuse de renvoyer "")', () => {
+    expect(stripCategoryWords('Boulangerie')).toBe('Boulangerie')
+  })
+
+  it('chaîne vide → chaîne vide', () => {
+    expect(stripCategoryWords('')).toBe('')
+    expect(stripCategoryWords('   ')).toBe('')
+  })
+
+  it('idempotent', () => {
+    const input = 'Boulangerie - Pâtisserie Le Loup Gourmand'
+    const once = stripCategoryWords(input)
+    expect(stripCategoryWords(once)).toBe(once)
+  })
+
+  it('gère les accents et tirets longs', () => {
+    expect(stripCategoryWords('Pâtisserie — Le Roi du Macaron')).toBe('Le Roi du Macaron')
   })
 })
