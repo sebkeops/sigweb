@@ -28,6 +28,7 @@ import {
   LogoValidationError,
   processLogoBuffer,
 } from '@/lib/maquette/logo'
+import { isProspectClosed } from '@/lib/crm/etat-admin'
 import type { MaquettePhotoEntry, Prospect } from '@/types'
 
 const STORAGE_BUCKET = 'maquettes-assets'
@@ -79,7 +80,8 @@ async function ensureUniqueSlug(
  * l'éditeur (Session 4, section "Avancé") avec confirmation explicite.
  */
 export async function createMaquetteFromProspect(
-  prospectId: string
+  prospectId: string,
+  options: { force?: boolean } = {}
 ): Promise<MaquetteActionResult<{ id: string; slug: string }>> {
   let supabase: SupabaseClient
   try {
@@ -104,7 +106,18 @@ export async function createMaquetteFromProspect(
   }
   const p = prospect as Prospect
 
-  // 2) Garde-fou : pas de doublon de maquette
+  // 2a) Garde-fou prospect fermé (Sirene F ou C) : on bloque sauf si
+  //     l'admin a explicitement confirmé côté UI (window.confirm) qui
+  //     passe `force: true`. Filet de sécurité côté serveur — un appel
+  //     direct API sans force échoue avec un message clair.
+  if (isProspectClosed(p) && !options.force) {
+    return {
+      success: false,
+      error: 'Ce prospect est marqué fermé (Sirene). Confirmation explicite requise pour générer la maquette.',
+    }
+  }
+
+  // 2b) Garde-fou : pas de doublon de maquette
   if (p.maquette_id) {
     return {
       success: false,

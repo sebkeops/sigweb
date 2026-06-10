@@ -6,19 +6,22 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/Button'
 import { createMaquetteFromProspect } from '@/lib/actions/maquette'
 import { isCategorieSupported } from '@/lib/maquette'
-import type { ProspectCategorie } from '@/types'
+import type { EtatAdministratif, ProspectCategorie } from '@/types'
 
 interface Props {
   prospectId: string
   categorie: ProspectCategorie
   /** Présence d'une maquette déjà liée à ce prospect (1:1 en V1). */
   existingMaquette: { id: string; slug: string; published: boolean } | null
+  /** État administratif Sirene pour garde-fou si prospect fermé. */
+  etatAdministratif: EtatAdministratif
 }
 
 export default function GenerateMaquetteButton({
   prospectId,
   categorie,
   existingMaquette,
+  etatAdministratif,
 }: Props) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
@@ -67,9 +70,19 @@ export default function GenerateMaquetteButton({
 
   // Cas 3 : on peut générer.
   function handleClick() {
+    // Garde-fou prospect fermé (Sirene F ou C) : confirmation explicite
+    // avant de générer une maquette pour un commerce légalement fermé.
+    const isClosed = etatAdministratif === 'F' || etatAdministratif === 'C'
+    if (isClosed) {
+      const ok = window.confirm(
+        'Ce prospect est marqué FERMÉ par Sirene. Générer la maquette quand même ?'
+      )
+      if (!ok) return
+    }
+
     setError(null)
     startTransition(async () => {
-      const r = await createMaquetteFromProspect(prospectId)
+      const r = await createMaquetteFromProspect(prospectId, { force: isClosed })
       if (!r.success) {
         setError(r.error)
         return

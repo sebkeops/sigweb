@@ -26,6 +26,7 @@ import {
   SOURCE_LABELS,
 } from '@/lib/crm/constants'
 import { deriveCanalRecommande } from '@/lib/crm/canal-badge'
+import { formatEtatAdministratif, isProspectClosed } from '@/lib/crm/etat-admin'
 
 export const metadata: Metadata = { title: 'CRM | Admin Sigweb' }
 
@@ -39,6 +40,7 @@ interface Props {
     source?: string
     q?: string
     sort?: string
+    hide_closed?: string
   }>
 }
 
@@ -106,6 +108,7 @@ async function getProspects(filters: {
   source?: ProspectSource
   q?: string
   sort?: SortKey
+  hideClosed?: boolean
 }): Promise<Prospect[]> {
   const supabase = await createClient()
   let query = supabase.from('prospects').select('*')
@@ -129,6 +132,14 @@ async function getProspects(filters: {
   if (filters.statut) query = query.eq('statut', filters.statut)
   if (filters.categorie) query = query.eq('categorie', filters.categorie)
   if (filters.source) query = query.eq('source', filters.source)
+
+  // Filtre opt-in : "Masquer les fermés" exclut F et C. Volontairement
+  // jamais activé par défaut — l'état Sirene peut être en retard ou
+  // erroné, on préfère afficher avec un badge plutôt que faire disparaître
+  // silencieusement.
+  if (filters.hideClosed) {
+    query = query.or('etat_administratif.is.null,etat_administratif.eq.A')
+  }
 
   if (filters.q) {
     // PostgREST `.or()` filter : escape commas, parens, % et _ (wildcards ilike)
@@ -156,9 +167,10 @@ export default async function AdminCrmPage({ searchParams }: Props) {
   const q = sp.q?.trim() || undefined
   const sort: SortKey | undefined =
     sp.sort === 'score_desc' || sp.sort === 'score_asc' ? sp.sort : undefined
+  const hideClosed = sp.hide_closed === '1'
 
-  const prospects = await getProspects({ canal, statut, categorie, source, q, sort })
-  const hasFilters = !!(canal || statut || categorie || source || q || sort)
+  const prospects = await getProspects({ canal, statut, categorie, source, q, sort, hideClosed })
+  const hasFilters = !!(canal || statut || categorie || source || q || sort || hideClosed)
   const eligibleForBackfill = await countEligibleForBackfill()
   const maquettesToMigrate = await countMaquettesToMigrate()
 
@@ -258,6 +270,16 @@ export default async function AdminCrmPage({ searchParams }: Props) {
                     >
                       {p.nom_commerce}
                     </Link>
+                    {/* Badge "Fermé/Cessé · Sirene" — signal d'alerte légal. */}
+                    {(() => {
+                      const etat = formatEtatAdministratif(p.etat_administratif)
+                      if (!etat) return null
+                      return (
+                        <span className="ml-2 inline-block">
+                          <Badge variant="red">{etat.label}</Badge>
+                        </span>
+                      )
+                    })()}
                     {/* Picto orange si aucun canal distance (chantier
                         Sirene/PageSpeed étape 6) — signal d'alerte discret
                         pour les commerces neufs Sirene à démarcher terrain. */}

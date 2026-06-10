@@ -9,7 +9,7 @@ import {
   regenerateEmailPreview,
   sendEmail,
 } from '@/lib/actions/email'
-import type { WebVariant } from '@/types'
+import type { EtatAdministratif, WebVariant } from '@/types'
 
 interface Props {
   prospectId: string
@@ -17,6 +17,8 @@ interface Props {
   hasEmail: boolean
   isUnsubscribed: boolean
   hasPublishedMaquette: boolean
+  /** État administratif Sirene pour garde-fou si prospect fermé. */
+  etatAdministratif: EtatAdministratif
 }
 
 interface PreparedContent {
@@ -37,7 +39,9 @@ export default function SendEmailButton({
   hasEmail,
   isUnsubscribed,
   hasPublishedMaquette,
+  etatAdministratif,
 }: Props) {
+  const isClosed = etatAdministratif === 'F' || etatAdministratif === 'C'
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -90,6 +94,19 @@ export default function SendEmailButton({
 
   function handleSend(toOverride?: string) {
     if (!content) return
+
+    // Garde-fou prospect fermé (Sirene F/C) : confirmation explicite avant
+    // envoi RÉEL au prospect. Les envois TEST (toOverride rempli, destinataire
+    // = admin) ne déclenchent pas de confirmation — pas de risque d'envoyer
+    // à un commerce fermé.
+    const isRealSend = !toOverride
+    if (isRealSend && isClosed) {
+      const ok = window.confirm(
+        'Ce prospect est marqué FERMÉ par Sirene. Envoyer l\'email quand même ?'
+      )
+      if (!ok) return
+    }
+
     setError(null)
     setSentInfo(null)
     startSendingTransition(async () => {
@@ -100,6 +117,7 @@ export default function SendEmailButton({
         customBodyHtml: content.bodyHtml,
         customBodyText: content.bodyText,
         toOverride,
+        forceClosed: isRealSend && isClosed,
       })
       if (!result.success) {
         setError(result.error)

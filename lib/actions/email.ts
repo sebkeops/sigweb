@@ -9,7 +9,8 @@ import {
   ScreenshotProviderError,
   sendProspectEmail,
 } from '@/lib/email'
-import type { WebVariant } from '@/types'
+import { isProspectClosed } from '@/lib/crm/etat-admin'
+import type { Prospect, WebVariant } from '@/types'
 
 /**
  * Server actions du flow d'envoi d'email de prospection (Phase 6).
@@ -170,6 +171,12 @@ export interface SendEmailInput {
   customBodyText?: string
   /** Utile pour tester sans envoyer au vrai prospect. */
   toOverride?: string
+  /**
+   * Confirme explicitement l'envoi à un prospect marqué fermé (Sirene F/C).
+   * Sans ce flag, l'envoi à un fermé est refusé. Sans effet si l'envoi est
+   * de toute façon un test (`toOverride` rempli).
+   */
+  forceClosed?: boolean
 }
 
 export type SendEmailResult =
@@ -198,6 +205,25 @@ export async function sendEmail(input: SendEmailInput): Promise<SendEmailResult>
     // `?src=email`), permettant au tracker de distinguer les visites
     // issues des tests de celles issues des vrais envois.
     const isTest = Boolean(input.toOverride)
+
+    // Garde-fou prospect fermé (Sirene F/C) : on bloque l'envoi RÉEL
+    // (toOverride absent) si le prospect est marqué fermé et que l'admin
+    // n'a pas confirmé via `forceClosed: true`. Les tests (toOverride
+    // rempli, destinataire = admin) restent autorisés sans confirmation.
+    if (!isTest && !input.forceClosed) {
+      const { data: p } = await supabase
+        .from('prospects')
+        .select('etat_administratif')
+        .eq('id', input.prospectId)
+        .maybeSingle()
+      if (p && isProspectClosed(p as Pick<Prospect, 'etat_administratif'>)) {
+        return {
+          success: false,
+          error: 'Ce prospect est marqué fermé (Sirene). Confirmation explicite requise pour envoyer un email.',
+          code: 'eligibility',
+        }
+      }
+    }
 
     const sendRow = await sendProspectEmail(
       {

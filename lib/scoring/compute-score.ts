@@ -35,6 +35,24 @@ export function computeScore(input: ScoringInput): ScoringResult {
     malus.explanation,
   ].filter((s) => s.length > 0)
 
+  // Court-circuit prospect légalement fermé : score forcé à 0 pour le tri
+  // (le badge "Fermé · Sirene" affiché en liste signale la cause).
+  // On garde la décomposition des sous-scores (utilisée par l'UI explicative)
+  // mais on ajoute une explanation en tête pour expliciter le forçage.
+  if (input.etatAdministratif === 'F' || input.etatAdministratif === 'C') {
+    return {
+      total: 0,
+      proximite: proximite.points,
+      besoinWeb: besoinWeb.points,
+      activite: activite.points,
+      malus: malus.points,
+      explanations: [
+        `Entreprise marquée ${input.etatAdministratif === 'F' ? 'fermée' : 'cessée'} (Sirene) — score forcé à 0`,
+        ...explanations,
+      ],
+    }
+  }
+
   return {
     total,
     proximite: proximite.points,

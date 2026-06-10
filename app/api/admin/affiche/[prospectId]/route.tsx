@@ -3,6 +3,7 @@ import { renderToBuffer } from '@react-pdf/renderer'
 import { createClient } from '@/lib/supabase/server'
 import { buildAfficheData } from '@/lib/affiche'
 import { generateSlugBase } from '@/lib/maquette'
+import { isProspectClosed } from '@/lib/crm/etat-admin'
 import AfficheDocument from '@/components/affiche/AfficheDocument'
 import type { Prospect } from '@/types'
 
@@ -44,6 +45,18 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     return new NextResponse('Database error', { status: 500 })
   }
   if (!prospect) return new NextResponse('Prospect not found', { status: 404 })
+
+  // Garde-fou prospect fermé (Sirene F ou C) : on bloque sauf si l'UI a
+  // explicitement passé `?force=1` après confirmation admin. 409 Conflict
+  // pour différencier d'un simple 403 (permission) et faire remonter un
+  // message clair côté client.
+  const force = request.nextUrl.searchParams.get('force') === '1'
+  if (isProspectClosed(prospect as Prospect) && !force) {
+    return new NextResponse(
+      'Prospect marqué fermé (Sirene). Confirmation requise (?force=1).',
+      { status: 409 }
+    )
+  }
 
   let buffer: Buffer
   try {

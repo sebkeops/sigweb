@@ -140,6 +140,9 @@ export async function runSourcing(params: SourcingParams): Promise<SourcingResul
           facebookUrl: null,
           googleReviewsCount: details.userRatingCount,
           googleBusinessStatus: details.businessStatus,
+          // Sourcing Google n'a pas l'info Sirene à ce stade — sera
+          // injectée plus tard si le prospect est enrichi via Sirene.
+          etatAdministratif: null,
         })
         const result: SourcingResult = {
           placeId: hit.placeId,
