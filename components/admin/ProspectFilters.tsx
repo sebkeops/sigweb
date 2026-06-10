@@ -22,6 +22,7 @@ export default function ProspectFilters() {
   const categorie = searchParams.get('categorie') ?? ''
   const source = searchParams.get('source') ?? ''
   const sort = searchParams.get('sort') ?? ''
+  const hideClosed = searchParams.get('hide_closed') === '1'
   const initialQ = searchParams.get('q') ?? ''
 
   const [q, setQ] = useState(initialQ)
@@ -45,6 +46,7 @@ export default function ProspectFilters() {
     source?: string
     sort?: string
     q?: string
+    hide_closed?: string
   }) {
     const params = new URLSearchParams(searchParams.toString())
     for (const [k, v] of Object.entries(next)) {
@@ -70,7 +72,7 @@ export default function ProspectFilters() {
   }
 
   // Filtres du drawer actifs (la recherche, toujours visible, est comptee a part).
-  const activeCount = [canal, statut, categorie, source, sort].filter(Boolean).length
+  const activeCount = [canal, statut, categorie, source, sort].filter(Boolean).length + (hideClosed ? 1 : 0)
   const hasFilters = activeCount > 0 || !!q
 
   function reset() {
@@ -152,6 +154,19 @@ export default function ProspectFilters() {
         <option value="score_desc">Score : meilleur en premier</option>
         <option value="score_asc">Score : plus faible en premier</option>
       </select>
+
+      {/* Checkbox "Masquer les fermés" — opt-in seul (jamais activé par
+          défaut). L'état Sirene peut être en retard, on préfère un badge
+          visible plutôt qu'un masquage silencieux. */}
+      <label className="flex items-center gap-2 font-body text-sm text-ink whitespace-nowrap">
+        <input
+          type="checkbox"
+          checked={hideClosed}
+          onChange={(e) => pushParams({ hide_closed: e.target.checked ? '1' : '' })}
+          className="h-4 w-4 rounded border-border accent-primary"
+        />
+        Masquer les fermés
+      </label>
     </>
   )
 

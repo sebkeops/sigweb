@@ -8,6 +8,7 @@ import {
   displayCategorie,
 } from '@/lib/crm/constants'
 import { deriveCanalRecommande } from '@/lib/crm/canal-badge'
+import { formatEtatAdministratif } from '@/lib/crm/etat-admin'
 
 interface ProspectCardProps {
   prospect: Prospect
@@ -43,6 +44,13 @@ export default function ProspectCard({ prospect: p }: ProspectCardProps) {
       </div>
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
+        {/* Badge "Fermé/Cessé · Sirene" : signal d'alerte source légale.
+            Affiché AVANT les autres badges pour être vu en premier. */}
+        {(() => {
+          const etat = formatEtatAdministratif(p.etat_administratif)
+          if (!etat) return null
+          return <Badge variant="red">{etat.label}</Badge>
+        })()}
         <Badge variant={CANAL_BADGE[p.canal]}>{CANAL_LABELS[p.canal]}</Badge>
         <StatusBadge statut={p.statut} />
         {/* Badge canal recommandé DÉRIVÉ (chantier Sirene/PageSpeed étape 6) :

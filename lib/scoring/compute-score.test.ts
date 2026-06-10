@@ -9,6 +9,7 @@ const baseInput: ScoringInput = {
   facebookUrl: null,
   googleReviewsCount: null,
   googleBusinessStatus: null,
+  etatAdministratif: null,
 }
 
 describe('computeScore — cas du brief', () => {
@@ -229,5 +230,69 @@ describe('computeScore — robustesse URL', () => {
     expect(
       computeScore({ ...baseInput, siteExistantUrl: 'https://shop.maboulangerie.fr' }).besoinWeb
     ).toBe(2)
+  })
+})
+
+describe('computeScore — etat_administratif Sirene', () => {
+  it('F (Fermée) → total forcé à 0 même si proximité parfaite', () => {
+    const r = computeScore({
+      ...baseInput,
+      distanceKm: 3,
+      googleReviewsCount: 80,
+      etatAdministratif: 'F',
+    })
+    expect(r.total).toBe(0)
+  })
+
+  it('C (Cessée) → total forcé à 0', () => {
+    const r = computeScore({
+      ...baseInput,
+      distanceKm: 0,
+      etatAdministratif: 'C',
+    })
+    expect(r.total).toBe(0)
+  })
+
+  it('A (Active) → score calculé normalement', () => {
+    const r = computeScore({
+      ...baseInput,
+      distanceKm: 3,
+      googleReviewsCount: 80,
+      etatAdministratif: 'A',
+    })
+    expect(r.total).toBe(10) // identique à un prospect sans info Sirene
+  })
+
+  it('null (non enrichi Sirene) → score calculé normalement', () => {
+    const r = computeScore({
+      ...baseInput,
+      distanceKm: 3,
+      googleReviewsCount: 80,
+      etatAdministratif: null,
+    })
+    expect(r.total).toBe(10)
+  })
+
+  it('F → première explanation mentionne le forçage', () => {
+    const r = computeScore({ ...baseInput, etatAdministratif: 'F' })
+    expect(r.explanations[0]).toContain('fermée')
+    expect(r.explanations[0]).toContain('Sirene')
+  })
+
+  it('C → explanation utilise "cessée"', () => {
+    const r = computeScore({ ...baseInput, etatAdministratif: 'C' })
+    expect(r.explanations[0]).toContain('cessée')
+  })
+
+  it('sous-scores préservés malgré total forcé à 0 (pour décomposition UI)', () => {
+    const r = computeScore({
+      ...baseInput,
+      distanceKm: 3,
+      siteExistantUrl: null,
+      etatAdministratif: 'F',
+    })
+    expect(r.total).toBe(0)
+    expect(r.proximite).toBe(4) // calcul brut conservé
+    expect(r.besoinWeb).toBe(4)
   })
 })

@@ -10,6 +10,13 @@ export interface ScoringInput {
   facebookUrl: string | null
   googleReviewsCount: number | null
   googleBusinessStatus: string | null
+  /**
+   * État administratif Sirene : 'A' (Active), 'F' (Fermée), 'C' (Cessée), null.
+   * Si F ou C, `computeScore` force le total à 0 — un commerce légalement
+   * fermé n'a aucune valeur de prospection, peu importe les autres critères.
+   * Cf. CONTEXT.md (Lot 1) : "Sirene : etat_administratif != 'A' → exclu".
+   */
+  etatAdministratif: 'A' | 'F' | 'C' | null
 }
 
 /** Résultat d'un sous-critère. */

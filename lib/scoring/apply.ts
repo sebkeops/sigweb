@@ -12,6 +12,7 @@ export const SCORE_RELEVANT_FIELDS = [
   'facebook_url',
   'google_reviews_count',
   'google_business_status',
+  'etat_administratif',
 ] as const
 
 /**
@@ -26,6 +27,7 @@ export function toScoringInput(p: Partial<Prospect>): ScoringInput {
     facebookUrl: p.facebook_url ?? null,
     googleReviewsCount: p.google_reviews_count ?? null,
     googleBusinessStatus: p.google_business_status ?? null,
+    etatAdministratif: p.etat_administratif ?? null,
   }
 }
 
@@ -41,6 +43,7 @@ export function relevantSnapshot(p: Partial<Prospect>): string {
     f: p.facebook_url ?? null,
     r: p.google_reviews_count ?? null,
     b: p.google_business_status ?? null,
+    e: p.etat_administratif ?? null,
   })
 }
 

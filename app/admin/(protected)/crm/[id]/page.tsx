@@ -153,13 +153,18 @@ export default async function ProspectDetailPage({ params, searchParams }: Props
               prospectId={p.id}
               categorie={p.categorie}
               existingMaquette={existingMaquette}
+              etatAdministratif={p.etat_administratif}
             />
-            <GenerateAfficheButton prospectId={p.id} />
+            <GenerateAfficheButton
+              prospectId={p.id}
+              etatAdministratif={p.etat_administratif}
+            />
             <SendEmailButton
               prospectId={p.id}
               hasEmail={!!p.email}
               isUnsubscribed={p.email_unsubscribed}
               hasPublishedMaquette={existingMaquette?.published === true}
+              etatAdministratif={p.etat_administratif}
             />
             {p.email_unsubscribed && (
               <ResubscribeButton

@@ -2,9 +2,12 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/Button'
+import type { EtatAdministratif } from '@/types'
 
 interface Props {
   prospectId: string
+  /** État administratif Sirene pour garde-fou si prospect fermé. */
+  etatAdministratif: EtatAdministratif
 }
 
 /**
@@ -22,15 +25,32 @@ interface Props {
  * Le bouton est toujours actif : la route gère elle-même les fallbacks
  * (pas de maquette / pas de photo Google → placeholder).
  */
-export default function GenerateAfficheButton({ prospectId }: Props) {
+export default function GenerateAfficheButton({
+  prospectId,
+  etatAdministratif,
+}: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const isClosed = etatAdministratif === 'F' || etatAdministratif === 'C'
+
+  /** Confirmation explicite si prospect fermé. Renvoie `?force=1` à concaténer. */
+  function confirmClosedOrAbort(): { proceed: boolean; forceParam: string } {
+    if (!isClosed) return { proceed: true, forceParam: '' }
+    const ok = window.confirm(
+      'Ce prospect est marqué FERMÉ par Sirene. Générer l\'affiche quand même ?'
+    )
+    return { proceed: ok, forceParam: ok ? '&force=1' : '' }
+  }
+
   async function handleDownload() {
+    const { proceed, forceParam } = confirmClosedOrAbort()
+    if (!proceed) return
+
     setError(null)
     setLoading(true)
     try {
-      const res = await fetch(`/api/admin/affiche/${prospectId}`)
+      const res = await fetch(`/api/admin/affiche/${prospectId}?_=${Date.now()}${forceParam}`)
       if (!res.ok) {
         const text = await res.text().catch(() => '')
         throw new Error(text || `Erreur ${res.status}`)
@@ -55,6 +75,19 @@ export default function GenerateAfficheButton({ prospectId }: Props) {
     }
   }
 
+  function handlePreviewClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    // Pour Aperçu : on intercepte le click pour confirmer côté UI avant
+    // que le navigateur ouvre la route. Si confirmé, on rebascule sur
+    // l'URL avec ?force=1 (sinon la route renvoie 409 et un onglet vide).
+    if (!isClosed) return
+    e.preventDefault()
+    const ok = window.confirm(
+      'Ce prospect est marqué FERMÉ par Sirene. Ouvrir l\'aperçu quand même ?'
+    )
+    if (!ok) return
+    window.open(`/api/admin/affiche/${prospectId}?preview=1&force=1`, '_blank', 'noopener,noreferrer')
+  }
+
   return (
     <div className="flex flex-col items-end gap-1 max-lg:items-stretch">
       <Button
@@ -69,6 +102,7 @@ export default function GenerateAfficheButton({ prospectId }: Props) {
       </Button>
       <a
         href={`/api/admin/affiche/${prospectId}?preview=1`}
+        onClick={handlePreviewClick}
         target="_blank"
         rel="noopener noreferrer"
         className="font-body text-xs text-primary hover:underline"
