@@ -14,10 +14,12 @@ import {
   ScreenshotProviderError,
 } from './preview-generator'
 import {
+  applyDirigeantPersonalization,
   applyHighlightFallback,
   applyNouveauCommerceIntroSwap,
   applyPreviewBlock,
   interpolate,
+  toTitleCase,
 } from './templating'
 import { generateUnsubscribeToken } from './unsubscribe-token'
 import { hasGoogleReputation } from '@/lib/prospect/has-google-data'
@@ -197,6 +199,22 @@ export async function renderEmailContent(
     ? String(prospect.google_reviews_count!)
     : ''
 
+  // Dirigeant (Sirene Lot 2 PR D) : exposé en variables ET utilisé dans
+  // le swap automatique "Bonjour, → Bonjour {{Prénom}},". Strictement
+  // gated par dirigeant_nom_diffusible (règle INSEE — jamais de fuite
+  // d'un nom marqué non diffusible).
+  const dirigeantIsUsable =
+    prospect.dirigeant_nom_diffusible &&
+    !!(prospect.dirigeant_prenom || prospect.dirigeant_nom)
+  const dirigeantPrenomFormatted =
+    dirigeantIsUsable && prospect.dirigeant_prenom
+      ? toTitleCase(prospect.dirigeant_prenom)
+      : ''
+  const dirigeantNomFormatted =
+    dirigeantIsUsable && prospect.dirigeant_nom
+      ? toTitleCase(prospect.dirigeant_nom)
+      : ''
+
   const vars: Record<string, string> = {
     nom_commerce: prospect.nom_commerce,
     ville: prospect.ville ?? '',
@@ -220,6 +238,11 @@ export async function renderEmailContent(
     contact_phone_display:
       process.env.SIGWEB_CONTACT_PHONE_DISPLAY ?? '06 51 92 73 81',
     contact_email: process.env.SIGWEB_CONTACT_EMAIL ?? 'contact@sigweb.fr',
+    // Variables dirigeant Sirene (Lot 2 PR D) — exposées pour usage dans
+    // subject ou body custom via la modale d'envoi. Chaînes vides si
+    // dirigeant non diffusible ou non renseigné (jamais d'expo INSEE-illégale).
+    dirigeant_prenom: dirigeantPrenomFormatted,
+    dirigeant_nom: dirigeantNomFormatted,
   }
 
   // 7. Sélection des templates selon variante
@@ -250,6 +273,12 @@ export async function renderEmailContent(
   if (isNouveauCommerce) {
     bodyHtmlTpl = applyNouveauCommerceIntroSwap(bodyHtmlTpl)
     bodyTextTpl = applyNouveauCommerceIntroSwap(bodyTextTpl)
+  }
+  // Personnalisation salutation (Lot 2 PR D) : si dirigeant DIFFUSIBLE
+  // récupéré via Sirene, « Bonjour, » devient « Bonjour {{Prénom}}, ».
+  if (dirigeantPrenomFormatted) {
+    bodyHtmlTpl = applyDirigeantPersonalization(bodyHtmlTpl, dirigeantPrenomFormatted, 'html')
+    bodyTextTpl = applyDirigeantPersonalization(bodyTextTpl, dirigeantPrenomFormatted, 'text')
   }
   if (previewImageUrl) {
     bodyHtmlTpl = applyPreviewBlock(
