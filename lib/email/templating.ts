@@ -89,6 +89,77 @@ export function applyHighlightFallback(
   )
 }
 
+// ─── Personnalisation dirigeant (Lot 2 PR D — Sirene) ────────────────────
+//
+// Si on a récupéré le prénom du dirigeant via Sirene ET qu'il est diffusible
+// (statut INSEE = 'O'), on personnalise la salutation : "Bonjour," devient
+// "Bonjour Sébastien,". Sinon le template reste tel quel (générique).
+//
+// Source du prénom : `prospects.dirigeant_prenom` rempli par
+// `extractSireneAdditionalFields`, déjà filtré par diffusibilité côté
+// extracteur (cf. règle Lot 2). Le caller passe une chaîne vide si
+// l'info n'est pas disponible ou non diffusible.
+//
+// Format Sirene = MAJUSCULES (ex. "JEHANNA", "JEAN-PIERRE"). On convertit
+// en titre case pour un rendu pro dans l'email (« Jehanna », « Jean-Pierre »).
+
+/**
+ * Title case « pro » : majuscule sur la 1ère lettre de chaque mot, y
+ * compris après un tiret ou une apostrophe. Exemples :
+ *   "JEHANNA"     → "Jehanna"
+ *   "JEAN-PIERRE" → "Jean-Pierre"
+ *   "MARIE LOUISE" → "Marie Louise"
+ *   "SÉBASTIEN"   → "Sébastien"  (préservation des accents)
+ *
+ * On n'utilise PAS `\b\w` parce que `\b` est ASCII-only en regex JS et
+ * traite les accents (é, à…) comme des frontières de mot — ce qui
+ * mettrait à tort une majuscule sur la lettre qui suit. À la place, on
+ * matche explicitement les séparateurs connus + Unicode property `\p{L}`.
+ *
+ * Exporté pour permettre au sender.ts de formater le prénom/nom du
+ * dirigeant dans les variables `dirigeant_prenom` / `dirigeant_nom`
+ * sans dupliquer la logique.
+ */
+export function toTitleCase(s: string): string {
+  return s
+    .toLowerCase()
+    .replace(/(^|[\s\-'])(\p{L})/gu, (_, sep, letter: string) => sep + letter.toUpperCase())
+}
+
+/**
+ * Remplace la salutation générique « Bonjour, » par « Bonjour {{Prénom}}, »
+ * si le prénom du dirigeant est fourni (et diffusible — décision côté
+ * caller). Sans effet si `prenom` est vide.
+ *
+ * Format gère HTML (`<p>Bonjour,</p>`) ET texte brut (`Bonjour,` en début
+ * de ligne). Le regex est volontairement strict pour ne PAS toucher
+ * d'autres « bonjour » qui pourraient apparaître ailleurs dans le corps.
+ *
+ * Contrat : le `prenom` passé est censé être déjà formaté (title case).
+ * Le caller fait la transformation via `toTitleCase()` avant — pas dupliqué
+ * ici, pour ne pas faire un double passage si la valeur vient des variables
+ * `dirigeant_prenom` déjà formatées côté sender.
+ */
+export function applyDirigeantPersonalization(
+  template: string,
+  prenom: string,
+  format: 'html' | 'text'
+): string {
+  const trimmed = prenom.trim()
+  if (!trimmed) return template
+
+  if (format === 'html') {
+    // Match le <p>Bonjour,</p> exact des templates v2 (seed migration).
+    return template.replace(
+      /<p>Bonjour,<\/p>/,
+      `<p>Bonjour ${escapeHtml(trimmed)},</p>`
+    )
+  }
+  // Texte : match « Bonjour, » en début de ligne (ou début de chaîne)
+  // pour ne pas attraper un « bonjour » plus loin dans le corps.
+  return template.replace(/^Bonjour,/m, `Bonjour ${trimmed},`)
+}
+
 // ─── Swap d'intro maquette pour « nouveau commerce » (Lot 2 corrigé) ──────
 //
 // Le bloc « highlight-fact » n'est pas la SEULE référence Google dans les
