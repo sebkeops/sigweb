@@ -171,38 +171,51 @@ async function resolveEstablishment(p: Prospect): Promise<ResolveOk | ResolveErr
     }
   }
 
-  // Filtrage strict des homonymes : exiger un match exact du nom normalisé
-  // pour ne pas enrichir aveuglément. >1 match exact → ambigu, on refuse.
+  // Stratégie de désambiguïsation :
+  //   - 1 seul candidat → on lui fait confiance. Le filtre CP côté API a
+  //     déjà fait le tri géographique, et le moteur de recherche Sirene
+  //     classe par pertinence. Si une seule entreprise correspond dans
+  //     cette commune, c'est presque certainement la bonne — même si
+  //     Google avait nommé le prospect avec une variante (ex. "Le Loup
+  //     Gourmand - Boulangerie" vs Sirene "LE LOUP GOURMAND").
+  //   - Plusieurs candidats → on exige un match strict du nom normalisé
+  //     pour départager. Si exactement 1 match strict, on prend ; si 0
+  //     ou plusieurs, on refuse l'enrichissement pour ne pas écraser au
+  //     hasard.
+  if (candidates.length === 1) {
+    return { ok: true, data: candidates[0], mode: 'by_name_cp' }
+  }
+
   const normalizedQuery = normalizeNomCommerce(p.nom_commerce)
   const strictMatches = candidates.filter(
     (c) => normalizeNomCommerce(c.nom_commerce) === normalizedQuery
   )
+
+  if (strictMatches.length === 1) {
+    return { ok: true, data: strictMatches[0], mode: 'by_name_cp' }
+  }
 
   if (strictMatches.length === 0) {
     return {
       ok: false,
       error: {
         success: false,
-        reason: 'sirene_not_found',
-        message: `Pas de match exact pour "${p.nom_commerce}" — ${candidates.length} candidat(s) approximatif(s) ignoré(s) par prudence.`,
+        reason: 'sirene_ambiguous',
+        message: `${candidates.length} établissements Sirene trouvés au même CP, aucun avec un nom strictement identique. Renseigner le SIRET pour lever l'ambiguïté.`,
         candidatesCount: candidates.length,
       },
     }
   }
 
-  if (strictMatches.length > 1) {
-    return {
-      ok: false,
-      error: {
-        success: false,
-        reason: 'sirene_ambiguous',
-        message: `${strictMatches.length} établissements Sirene trouvés avec le même nom + CP. Revue manuelle requise (vérifier le SIRET puis ré-essayer).`,
-        candidatesCount: strictMatches.length,
-      },
-    }
+  return {
+    ok: false,
+    error: {
+      success: false,
+      reason: 'sirene_ambiguous',
+      message: `${strictMatches.length} établissements Sirene trouvés avec le même nom + CP. Revue manuelle requise (vérifier le SIRET puis ré-essayer).`,
+      candidatesCount: strictMatches.length,
+    },
   }
-
-  return { ok: true, data: strictMatches[0], mode: 'by_name_cp' }
 }
 
 function sireneUnavailable(reason: string): Extract<EnrichSireneResult, { success: false }> {
