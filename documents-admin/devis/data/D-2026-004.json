@@ -1,0 +1,69 @@
+{
+  "numero": "D-2026-004",
+  "date": "2026-07-20",
+  "validite": "30 jours",
+  "titre": "Refonte du site internet — RFPC Plomberie-Chauffage",
+  "description": "Site vitrine sur-mesure, moderne, rapide, sécurisé et optimisé pour mobile, valorisant la réputation Google et générant des demandes de devis qualifiées.",
+  "client": {
+    "nom": "RFPC PLOMBERIE-CHAUFFAGE",
+    "formeJuridique": "SARL au capital de 60 000 €",
+    "gerant": "Fabien Robert",
+    "contact": "Flavy Robert-Barbier (gestion administrative)",
+    "adresse": ["26 rue Régis de Cambacérès", "ZAC le Bois du Renard", "34160 Beaulieu"],
+    "telephone": "04 67 12 01 99 / 06 14 83 90 90",
+    "email": "RFPC.34@gmail.com",
+    "siret": "817 619 323 00022",
+    "rcs": "RCS Montpellier",
+    "naf": "4322A"
+  },
+  "objet": {
+    "intitule": "Refonte de site vitrine avec formulaire de devis qualifié",
+    "activite": "plomberie – chauffage",
+    "objectif": "valoriser la réputation Google (4,9/5 sur 65 avis), capter les demandes de devis et améliorer la visibilité locale."
+  },
+  "planning": [
+    "Mise en ligne cible : courant septembre 2026 (à confirmer)",
+    "Acompte à la commande : 40% (760 €)",
+    "Solde à la mise en ligne : 60% (1 140 €)",
+    "Déclenchement : devis signé + versement de l'acompte"
+  ],
+  "prestations": [
+    {
+      "intitule": "Refonte du site internet",
+      "description": "Site vitrine sur-mesure (accueil, réalisations, pages légales), mise en avant des avis Google, appel direct sur mobile, formulaire de demande de devis qualifié envoyé par email, reprise et allègement du contenu existant, bases du référencement local et mise en ligne sur hébergement moderne.",
+      "montant": 1900
+    },
+    {
+      "intitule": "Espace de gestion des réalisations",
+      "description": "Interface simple permettant à RFPC de gérer ses réalisations en autonomie : création de familles et ajout de photos avant/après.",
+      "montant": "inclus"
+    }
+  ],
+  "inclus": [
+    "Pages : accueil, réalisations, pages légales (mentions légales, confidentialité, cookies)",
+    "Sections : accroche, services, certifications & partenaires, réalisations avant/après, à propos / équipe, avis Google, contact",
+    "Mise en avant des avis Google (4,9/5 sur 65 avis)",
+    "Appel direct en un geste sur mobile",
+    "Formulaire de demande de devis qualifié (réception par email, sans base de données)",
+    "Reprise et allègement du contenu existant (sans blog)",
+    "Bases du référencement local (balises, données structurées LocalBusiness, sémantique, accessibilité)",
+    "Certifications affichées : RGE Qualibat, RGE QualiPAC, Professionnel du Gaz, Artisan, FFB",
+    "Espace de gestion des réalisations en autonomie",
+    "Mise en ligne sur plateforme d'hébergement moderne"
+  ],
+  "conditions": [
+    "Les contenus finaux (textes, visuels) sont fournis ou validés par le client.",
+    "Les modifications souhaitées sont recueillies avant la mise en ligne.",
+    "RFPC conserve son hébergement OVH (nom de domaine + adresses e-mail) ; l'hébergement du nouveau site est inclus dans l'abonnement annuel (devis séparé).",
+    "Les demandes hors périmètre feront l'objet d'un accord séparé."
+  ],
+  "paiement": {
+    "modes": "Virement bancaire.",
+    "echeancier": "40% à la commande (760 €), 60% à la mise en ligne (1 140 €). Déclenchement du projet : devis signé + versement de l'acompte."
+  },
+  "offreComplementaire": "Deux prestations complémentaires font l'objet de devis séparés : l'abonnement annuel (hébergement, maintenance, mises à jour) à 200 €/an, et le Pack SEO local « pages par commune ».",
+  "mentionsSpecifiques": [
+    "TVA non applicable, art. 293 B du CGI",
+    "Devis reçu avant l'exécution de la prestation"
+  ]
+}

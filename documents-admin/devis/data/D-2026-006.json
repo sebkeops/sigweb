@@ -1,0 +1,51 @@
+{
+  "numero": "D-2026-006",
+  "date": "2026-07-20",
+  "validite": "30 jours",
+  "titre": "Pack SEO local « pages par commune » — RFPC Plomberie-Chauffage",
+  "description": "Pages dédiées par commune pour capter les recherches locales (« Plombier à Castries », « Chauffagiste à Jacou »…).",
+  "client": {
+    "nom": "RFPC PLOMBERIE-CHAUFFAGE",
+    "formeJuridique": "SARL au capital de 60 000 €",
+    "gerant": "Fabien Robert",
+    "contact": "Flavy Robert-Barbier (gestion administrative)",
+    "adresse": ["26 rue Régis de Cambacérès", "ZAC le Bois du Renard", "34160 Beaulieu"],
+    "telephone": "04 67 12 01 99 / 06 14 83 90 90",
+    "email": "RFPC.34@gmail.com",
+    "siret": "817 619 323 00022",
+    "rcs": "RCS Montpellier",
+    "naf": "4322A"
+  },
+  "objet": {
+    "intitule": "Référencement local par pages communales",
+    "activite": "plomberie – chauffage",
+    "objectif": "capter les recherches locales par commune, là où les concurrents apparaissent aujourd'hui."
+  },
+  "planning": [
+    "Délai indicatif : à convenir après la mise en ligne du site"
+  ],
+  "prestations": [
+    {
+      "intitule": "Pages SEO par commune",
+      "description": "Création de pages optimisées dédiées à 6 communes cibles : contenu spécifique, balises, maillage interne et données structurées locales.",
+      "montant": 490
+    }
+  ],
+  "inclus": [
+    "6 pages communales optimisées",
+    "Contenu et balises dédiés par commune",
+    "Maillage interne et données structurées locales"
+  ],
+  "conditions": [
+    "Les communes cibles sont définies avec le client.",
+    "Prestation indépendante du forfait de création."
+  ],
+  "paiement": {
+    "modes": "Virement bancaire.",
+    "echeancier": "40% à la commande, solde à la livraison."
+  },
+  "mentionsSpecifiques": [
+    "TVA non applicable, art. 293 B du CGI",
+    "Devis reçu avant l'exécution de la prestation"
+  ]
+}

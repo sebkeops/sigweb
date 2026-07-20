@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{TITRE}} — Devis {{NUMERO}} — SIGWEB</title>
+    <link rel="stylesheet" href="{{COMMUN}}/styles.css" />
+  </head>
+  <body>
+    <section class="page">
+      <!-- ===================== EN-TÊTE ===================== -->
+      <header class="doc-header">
+        <div class="doc-header__brand">
+          <img src="{{COMMUN}}/assets/logo-v2.png" alt="Logo SIGWEB" />
+          <span class="doc-header__baseline">Création de sites internet</span>
+        </div>
+        {{META}}
+      </header>
+
+      <!-- ===================== BANDEAU DEVIS ===================== -->
+      <div class="banner no-break">
+        <h2 class="section" style="border:none;margin:0 0 4px;">Devis</h2>
+        <p style="margin:0;font-weight:700;color:#333;">{{TITRE}}</p>
+        <p style="margin:6px 0 0;color:#555;">{{DESCRIPTION}}</p>
+      </div>
+
+      <!-- ===================== PARTIES ===================== -->
+      <h2 class="section">Parties</h2>
+      <div class="two-col no-break">
+        <div>
+          <h3 class="subsection">Prestataire</h3>
+          <div class="card">
+            <p class="name">Sébastien SIGUENZA</p>
+            <p>Nom commercial : SIGWEB</p>
+            <p>Entrepreneur individuel (micro-entreprise)</p>
+            <p>33 impasse de l'Autan</p>
+            <p>32600 Ségoufielle</p>
+            <p>06 51 92 73 81</p>
+            <p>contact@sigweb.fr</p>
+            <p>https://sigweb.fr</p>
+            <p>SIRET : 75007848700030</p>
+            <p>TVA non applicable, art. 293 B du CGI</p>
+          </div>
+        </div>
+        <div>
+          <h3 class="subsection">Client</h3>
+          {{CLIENT}}
+        </div>
+      </div>
+
+      <!-- ===================== PROJET ===================== -->
+      <h2 class="section">Projet</h2>
+      <div class="two-col">
+        <div>
+          <h3 class="subsection">Objet</h3>
+          {{OBJET}}
+        </div>
+        <div>
+          {{PROJET_RIGHT}}
+        </div>
+      </div>
+
+      <!-- ===================== DÉTAIL DE LA PRESTATION ===================== -->
+      <h2 class="section">Détail de la prestation</h2>
+      <table class="prestations">
+        <thead>
+          <tr>
+            <th style="width:26%">Prestation</th>
+            <th style="width:56%">Description</th>
+            <th style="width:18%;text-align:right">Montant</th>
+          </tr>
+        </thead>
+        <tbody>
+          {{PRESTATIONS_ROWS}}
+        </tbody>
+      </table>
+      {{TOTALS}}
+
+      {{ABONNEMENT}}
+
+      {{OPTIONS}}
+
+      <!-- ===================== INCLUS / CONDITIONS ===================== -->
+      <div class="two-col two-col--breakable">
+        <div>
+          <h2 class="section">Inclus</h2>
+          {{INCLUS}}
+        </div>
+        <div>
+          <h2 class="section">Conditions de projet</h2>
+          {{CONDITIONS}}
+        </div>
+      </div>
+
+      {{OFFRE_COMPLEMENTAIRE}}
+
+      <!-- ===================== MODALITÉS DE PAIEMENT ===================== -->
+      <h2 class="section">Modalités de paiement</h2>
+      <div class="no-break">
+        {{PAIEMENT}}
+        <h3 class="subsection" style="margin-top:12px">Coordonnées de règlement</h3>
+        <div class="pay-coords">{{COORDS}}</div>
+        <p class="small-note" style="margin-top:10px">
+          <strong>Pénalités de retard —</strong> En cas de retard de paiement, des pénalités égales à
+          3 fois le taux d'intérêt légal seront exigibles à compter du lendemain de la date d'échéance,
+          sans formalité préalable.
+        </p>
+        <p class="small-note">
+          <strong>Indemnité forfaitaire —</strong> En cas de retard de paiement, une indemnité
+          forfaitaire pour frais de recouvrement de 40 € sera due, lorsque cette indemnité est
+          applicable.
+        </p>
+      </div>
+
+      <!-- ===================== MENTIONS ===================== -->
+      <h2 class="section">Mentions</h2>
+      {{MENTIONS}}
+
+      <!-- ===================== VALIDATION ===================== -->
+      <h2 class="section">Validation</h2>
+      {{VALIDATION}}
+    </section>
+  </body>
+</html>
