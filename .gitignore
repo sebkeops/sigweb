@@ -38,3 +38,9 @@ Thumbs.db
 divers/
 sources/
 *.csv
+
+# Documents administratifs générés
+# Données sensibles (IBAN/BIC réels) — NE JAMAIS committer
+documents-admin/_commun/config.private.json
+# devis/out/ (HTML + PDF) contient IBAN + données client : non versionné, régénérable.
+# Déjà couvert par le motif global "out/" ci-dessus — laissé explicite pour mémoire.

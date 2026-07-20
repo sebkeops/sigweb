@@ -1,0 +1,56 @@
+{
+  "numero": "D-2026-005",
+  "date": "2026-07-20",
+  "validite": "30 jours",
+  "titre": "Abonnement annuel — RFPC Plomberie-Chauffage",
+  "description": "Hébergement, maintenance, mises à jour de sécurité et petites modifications du site, à compter de la mise en ligne.",
+  "client": {
+    "nom": "RFPC PLOMBERIE-CHAUFFAGE",
+    "formeJuridique": "SARL au capital de 60 000 €",
+    "gerant": "Fabien Robert",
+    "contact": "Flavy Robert-Barbier (gestion administrative)",
+    "adresse": ["26 rue Régis de Cambacérès", "ZAC le Bois du Renard", "34160 Beaulieu"],
+    "telephone": "04 67 12 01 99 / 06 14 83 90 90",
+    "email": "RFPC.34@gmail.com",
+    "siret": "817 619 323 00022",
+    "rcs": "RCS Montpellier",
+    "naf": "4322A"
+  },
+  "objet": {
+    "intitule": "Abonnement annuel du site internet",
+    "activite": "plomberie – chauffage",
+    "objectif": "assurer la continuité de service, la sécurité courante du site et un point de contact simple."
+  },
+  "cadre": [
+    "Durée : 12 mois",
+    "Facturation : annuelle",
+    "Prise d'effet : à la mise en ligne du site",
+    "Renouvellement : tacite reconduction, sauf résiliation selon les conditions prévues"
+  ],
+  "recurrence": "par an",
+  "prestations": [
+    {
+      "intitule": "Hébergement & maintenance",
+      "description": "Hébergement du site, supervision courante, mises à jour de sécurité, maintien en condition opérationnelle et maintien de l'interface de gestion des réalisations.",
+      "montant": 200
+    }
+  ],
+  "inclus": [
+    "Hébergement du site",
+    "Maintenance et mises à jour de sécurité",
+    "Petites modifications de contenu",
+    "Maintien de l'interface de gestion des réalisations"
+  ],
+  "conditions": [
+    "Ne comprend pas les évolutions ou ajouts de fonctionnalités (devis séparé).",
+    "RFPC conserve son hébergement OVH (nom de domaine + adresses e-mail)."
+  ],
+  "paiement": {
+    "modes": "Virement bancaire.",
+    "echeancier": "Paiement annuel à réception de la facture."
+  },
+  "mentionsSpecifiques": [
+    "TVA non applicable, art. 293 B du CGI",
+    "Devis reçu avant l'exécution de la prestation"
+  ]
+}
