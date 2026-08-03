@@ -4,6 +4,33 @@
     <meta charset="utf-8" />
     <title>CGV — SIGWEB</title>
     <link rel="stylesheet" href="../_commun/styles.css" />
+    <style>
+      /* Annexe 1 : démarre sur une nouvelle page, titre de type « section ». */
+      .annexe {
+        break-before: page;
+        page-break-before: always;
+      }
+      .annexe-title {
+        color: var(--vert);
+        font-weight: 800;
+        font-size: 13pt;
+        margin: 0 0 12px;
+        padding-bottom: 6px;
+        border-bottom: 2px solid var(--orange);
+        break-after: avoid;
+        page-break-after: avoid;
+      }
+      .annexe-intro {
+        font-style: italic;
+        color: var(--texte-doux);
+        margin-bottom: 14px;
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .annexe ul {
+        margin: 4px 0 0;
+      }
+    </style>
   </head>
   <body>
     <section class="page">
@@ -27,7 +54,7 @@
       </header>
 
       <h1 class="doc-title">Conditions générales de vente</h1>
-      <p class="doc-subtitle">Version en vigueur au 18/03/2026</p>
+      <p class="doc-subtitle">Version en vigueur au 03/08/2026</p>
 
       <div class="article">
         <h2 class="article-title">1. Objet</h2>
@@ -68,9 +95,18 @@
         <p>
           Le site repose sur des services tiers (hébergement, base de données, services emailing,
           etc.). Le prestataire ne pourra être tenu responsable des interruptions ou dysfonctionnements
-          liés à ces services. Les coûts liés à ces services sont inclus dans la prestation dans la
-          limite d'un usage standard. En cas d'évolution significative des besoins (trafic, stockage,
-          fonctionnalités), un ajustement tarifaire pourra être proposé.
+          liés à ces services.
+        </p>
+        <p>
+          L'hébergement du site et de ses données peut être assuré sur une infrastructure gérée par le
+          prestataire, le cas échéant mutualisée entre plusieurs clients. Dans ce cas, les données de
+          chaque client sont séparées et isolées logiquement de celles des autres clients. Les données
+          sont hébergées au sein de l'Union européenne.
+        </p>
+        <p>
+          Les coûts liés à ces services sont inclus dans la prestation dans la limite d'un usage
+          standard. En cas d'évolution significative des besoins (trafic, stockage, fonctionnalités),
+          un ajustement tarifaire pourra être proposé.
         </p>
       </div>
 
@@ -142,9 +178,27 @@
       <div class="article">
         <h2 class="article-title">13. Réversibilité</h2>
         <p>
-          En cas de fin de collaboration, le prestataire s'engage à restituer au client ses données.
-          Les modalités techniques de transfert pourront faire l'objet d'une facturation
-          complémentaire.
+          En cas de fin de collaboration, le prestataire s'engage à restituer au client l'ensemble des
+          données lui appartenant.
+        </p>
+        <p>
+          Lorsque les données sont hébergées sur une infrastructure mutualisée gérée par le
+          prestataire, celui-ci est en mesure d'extraire les données propres au client, sans affecter
+          celles des autres clients, et de les restituer dans un format standard et exploitable (par
+          exemple CSV, JSON ou export de base de données).
+        </p>
+        <p>
+          La restitution intervient dans un délai raisonnable, en principe 30 jours à compter de la
+          demande écrite du client ou de la fin du contrat.
+        </p>
+        <p>
+          Après restitution et confirmation par le client, ou à défaut à l'expiration d'un délai de
+          30 jours suivant la restitution, le prestataire supprime les données concernées de son
+          infrastructure, sauf obligation légale de conservation.
+        </p>
+        <p>
+          Les éventuelles modalités techniques spécifiques de transfert pourront faire l'objet d'une
+          facturation complémentaire.
         </p>
       </div>
 
@@ -161,9 +215,189 @@
         <p>Les présentes CGV sont soumises au droit français.</p>
       </div>
 
+      <div class="article">
+        <h2 class="article-title">16. Sauvegardes</h2>
+        <p>
+          Lorsque l'hébergement est assuré sur l'infrastructure gérée par le prestataire, celui-ci met
+          en œuvre des sauvegardes régulières des données, selon une fréquence quotidienne et une durée
+          de conservation de 7 jours.
+        </p>
+        <p>
+          Ces sauvegardes constituent une obligation de moyens et visent à limiter le risque de perte
+          de données. Le prestataire ne peut toutefois garantir l'absence totale de perte, notamment en
+          cas de défaillance d'un service tiers, de force majeure ou d'événement indépendant de sa
+          volonté.
+        </p>
+        <p>
+          Le client est invité à conserver de son côté une copie des contenus et documents qu'il estime
+          essentiels.
+        </p>
+      </div>
+
+      <div class="article">
+        <h2 class="article-title">17. Protection des données personnelles</h2>
+        <p>
+          Dans le cadre de l'hébergement et du fonctionnement du site, le prestataire peut être amené à
+          traiter des données à caractère personnel collectées par le site du client (par exemple, les
+          coordonnées des clients finaux lors d'une commande ou d'une inscription).
+        </p>
+        <p>
+          Pour ces traitements, le client agit en qualité de responsable de traitement et le prestataire
+          en qualité de sous-traitant, au sens de l'article 28 du Règlement général sur la protection
+          des données (RGPD).
+        </p>
+        <p>
+          Les conditions de cette sous-traitance (finalités, sécurité, confidentialité, notification des
+          violations, sort des données en fin de contrat) sont définies dans l'Accord de sous-traitance
+          figurant en Annexe 1, qui fait partie intégrante des présentes CGV.
+        </p>
+        <p>
+          Les données sont hébergées au sein de l'Union européenne. Aucun transfert de données en dehors
+          de l'Union européenne n'est réalisé dans le cadre de la prestation.
+        </p>
+      </div>
+
       <p class="strong-close">
         Le client reconnaît avoir pris connaissance des présentes conditions générales de vente.
       </p>
+
+      <!-- ===================== ANNEXE 1 (nouvelle page) ===================== -->
+      <div class="annexe">
+        <h2 class="annexe-title">ANNEXE 1 — Accord de sous-traitance (RGPD, article 28)</h2>
+
+        <p class="annexe-intro">
+          Le présent accord encadre les traitements de données à caractère personnel réalisés par le
+          prestataire (SIGWEB) pour le compte du client, dans le cadre de l'hébergement et du
+          fonctionnement du site. Il complète les CGV et, pour les seules questions de protection des
+          données personnelles, prévaut sur elles.
+        </p>
+
+        <div class="article">
+          <h3 class="article-title">1. Rôle des parties</h3>
+          <p>
+            Le client est responsable de traitement. Le prestataire (SIGWEB) est sous-traitant. Le
+            prestataire traite les données personnelles concernées uniquement pour le compte du client
+            et conformément à ses instructions documentées.
+          </p>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">2. Description du traitement</h3>
+          <ul>
+            <li>
+              Nature : hébergement, stockage, sauvegarde et maintien en condition opérationnelle des
+              données du site.
+            </li>
+            <li>
+              Finalité : permettre le fonctionnement du site et des services souscrits par le client
+              (par exemple commandes, réservations, formulaires, inscriptions).
+            </li>
+            <li>Durée : pendant toute la durée du contrat et de l'hébergement.</li>
+            <li>
+              Catégories de données (à titre indicatif, à préciser selon le site du client) : données
+              d'identification et de contact des utilisateurs finaux (nom, prénom, email, téléphone,
+              adresse), données de commande ou de réservation.
+            </li>
+            <li>
+              Catégories de personnes concernées : clients, prospects et utilisateurs du site du client.
+            </li>
+          </ul>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">3. Instructions</h3>
+          <p>
+            Le prestataire traite les données uniquement sur instructions documentées du client. Les
+            présentes CGV et le présent accord constituent les instructions initiales. Le prestataire
+            n'utilise pas les données à d'autres fins que l'exécution de la prestation.
+          </p>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">4. Confidentialité</h3>
+          <p>
+            Le prestataire garantit la confidentialité des données traitées. Toute personne autorisée à
+            y accéder est tenue à une obligation de confidentialité.
+          </p>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">5. Sécurité des données (obligation de moyens)</h3>
+          <p>
+            Le prestataire met en œuvre des mesures techniques et organisationnelles raisonnables,
+            adaptées au risque, notamment : hébergement au sein de l'Union européenne, séparation
+            logique des données entre clients, contrôle et limitation des accès, chiffrement des
+            échanges (HTTPS/TLS), sauvegardes régulières et gestion sécurisée des identifiants. Cet
+            engagement constitue une obligation de moyens.
+          </p>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">6. Sous-traitants ultérieurs</h3>
+          <p>
+            Le client autorise le prestataire à recourir à des sous-traitants ultérieurs pour les
+            besoins de l'hébergement, notamment Supabase (hébergement de base de données, région Union
+            européenne). Le prestataire s'assure que ces sous-traitants présentent des garanties
+            suffisantes au regard du RGPD. Il informe le client de tout changement de sous-traitant
+            ultérieur, le client pouvant s'y opposer pour un motif légitime. Le prestataire demeure
+            responsable, vis-à-vis du client, de l'exécution par ces sous-traitants de leurs
+            obligations.
+          </p>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">7. Localisation et transferts</h3>
+          <p>
+            Les données sont hébergées au sein de l'Union européenne. Aucun transfert de données en
+            dehors de l'Union européenne n'est réalisé dans le cadre de la prestation.
+          </p>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">8. Assistance et droits des personnes concernées</h3>
+          <p>
+            Dans la mesure du possible et compte tenu de la nature du traitement, le prestataire aide le
+            client à répondre aux demandes d'exercice des droits des personnes concernées (accès,
+            rectification, effacement, etc.) et à respecter ses propres obligations (sécurité,
+            notification, analyses d'impact éventuelles).
+          </p>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">9. Notification des violations de données</h3>
+          <p>
+            En cas de violation de données personnelles, le prestataire notifie le client dans les
+            meilleurs délais après en avoir pris connaissance, en lui communiquant les informations
+            utiles, afin de permettre au client de respecter ses obligations (notamment, le cas échéant,
+            la notification à la CNIL dans les 72 heures).
+          </p>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">10. Sort des données en fin de traitement</h3>
+          <p>
+            Au terme de la prestation, selon le choix du client, le prestataire restitue les données
+            puis les supprime de son infrastructure (voir Article 13 des CGV), sauf obligation légale de
+            conservation.
+          </p>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">11. Documentation</h3>
+          <p>
+            Le prestataire met à la disposition du client les informations raisonnablement nécessaires
+            pour démontrer le respect des obligations prévues à l'article 28 du RGPD.
+          </p>
+        </div>
+
+        <div class="article">
+          <h3 class="article-title">12. Durée</h3>
+          <p>
+            Le présent accord s'applique pendant toute la durée des traitements réalisés par le
+            prestataire pour le compte du client.
+          </p>
+        </div>
+      </div>
     </section>
   </body>
 </html>
