@@ -17,8 +17,8 @@ import { UNSPLASH_KEYWORDS_BY_CATEGORIE } from './unsplashKeywords'
  *     téléphone bien formaté, slug stable, etc.)
  *   - fakeReviews : 4-6 avis, notes 4 ou 5, pas de duplicate opening,
  *     dates dans la fenêtre [30, 365] jours
- *   - fakeHours : couverture des 34 catégories + 7 lignes
- *   - unsplashKeywords : couverture des 34 catégories
+ *   - fakeHours : couverture des 35 catégories + 7 lignes
+ *   - unsplashKeywords : couverture des 35 catégories
  */
 
 const ALL_CATEGORIES: readonly ProspectCategorie[] = [
@@ -29,7 +29,7 @@ const ALL_CATEGORIES: readonly ProspectCategorie[] = [
   'photographe',
   'bar_cafe', 'traiteur', 'chocolatier', 'epicerie_fine',
   'macon', 'couvreur', 'carreleur', 'piscinier',
-  'osteopathe', 'praticien_bien_etre',
+  'osteopathe', 'praticien_bien_etre', 'coach_formateur',
   'fleuriste', 'bijoutier', 'librairie', 'garagiste',
   'gite', 'camping',
   'autre',
@@ -100,7 +100,7 @@ describe('generateFakeBusiness — reproductibilité + contraintes', () => {
     expect(b.email).toBe(`contact@${b.slug}.fr`)
   })
 
-  it('produit un business valide pour les 34 catégories', () => {
+  it('produit un business valide pour les 35 catégories', () => {
     for (const cat of ALL_CATEGORIES) {
       const b = generateFakeBusiness(cat, makePrng(`s-${cat}`))
       expect(b.nom_commerce.length).toBeGreaterThan(0)
@@ -164,7 +164,7 @@ describe('generateFakeReviews — structure et reproductibilité', () => {
     expect(Number((r.averageRating * 10).toFixed(0)) / 10).toBe(r.averageRating)
   })
 
-  it('produit 3 avis valides pour les 34 catégories', () => {
+  it('produit 3 avis valides pour les 35 catégories', () => {
     for (const cat of ALL_CATEGORIES) {
       const r = generateFakeReviews(cat, FIXED_DATE, makePrng(`c-${cat}`))
       expect(r.maquetteAvis).toHaveLength(3)
@@ -173,7 +173,7 @@ describe('generateFakeReviews — structure et reproductibilité', () => {
 })
 
 describe('generateFakeHours — couverture catégories', () => {
-  it('expose un profil pour les 34 catégories', () => {
+  it('expose un profil pour les 35 catégories', () => {
     for (const cat of ALL_CATEGORIES) {
       expect(HOURS_PROFILES_BY_CATEGORIE[cat]).toBeDefined()
     }
@@ -193,7 +193,7 @@ describe('generateFakeHours — couverture catégories', () => {
 })
 
 describe('UNSPLASH_KEYWORDS_BY_CATEGORIE — couverture', () => {
-  it('expose hero + histoire + tuple univers (5) pour les 34 catégories', () => {
+  it('expose hero + histoire + tuple univers (5) pour les 35 catégories', () => {
     for (const cat of ALL_CATEGORIES) {
       const entry = UNSPLASH_KEYWORDS_BY_CATEGORIE[cat]
       expect(entry).toBeDefined()

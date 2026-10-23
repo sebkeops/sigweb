@@ -189,6 +189,11 @@ const NAME_TEMPLATES_BY_CATEGORIE: Partial<Record<ProspectCategorie, readonly Na
     { pattern: 'L\'Espace Bien-être' },
     { pattern: 'Sérénité & Vous' },
   ],
+  coach_formateur: [
+    { pattern: '{prenom} {nom} Coaching' },
+    { pattern: '{prenom} {nom}, Coach & Formateur' },
+    { pattern: 'Cap Formation {nom}' },
+  ],
   cabinet: [
     { pattern: 'Cabinet {nom}' },
     { pattern: 'Cabinet {prenom} {nom}' },

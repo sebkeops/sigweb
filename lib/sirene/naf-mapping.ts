@@ -59,6 +59,7 @@ export const NAF_BY_CATEGORIE: Record<ProspectCategorie, string[]> = {
   // V2 — Services à la personne additionnels
   osteopathe: ['8690E'],
   praticien_bien_etre: ['9604Z', '9609Z'],
+  coach_formateur: ['8559A', '8559B', '7022Z'],
 
   // V2 — Commerces & services additionnels
   fleuriste: ['4776Z'],

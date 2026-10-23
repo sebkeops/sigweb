@@ -30,7 +30,7 @@ export const CATEGORIE_FAMILIES = {
     label: 'Services à la personne',
     ids: [
       'coiffeur', 'esthetique', 'kine',
-      'osteopathe', 'praticien_bien_etre', 'cabinet',
+      'osteopathe', 'praticien_bien_etre', 'coach_formateur', 'cabinet',
     ] satisfies ProspectCategorie[],
   },
   commerces_services: {
@@ -92,6 +92,7 @@ export const CATEGORIE_OPTIONS: { value: ProspectCategorie; label: string }[] = 
   // V2 — Services à la personne additionnels (Annexe C)
   { value: 'osteopathe', label: 'Ostéopathe' },
   { value: 'praticien_bien_etre', label: 'Praticien bien-être' },
+  { value: 'coach_formateur', label: 'Coach / Formateur' },
   // V2 — Commerces & services additionnels (Annexe D)
   { value: 'fleuriste', label: 'Fleuriste' },
   { value: 'bijoutier', label: 'Bijoutier' },
@@ -134,7 +135,7 @@ export const CATEGORIES_EXPOSED_IN_ADMIN: ReadonlySet<ProspectCategorie> = new S
   // V2 — Commerces & services (Annexe D intégrée)
   'fleuriste', 'bijoutier', 'librairie', 'garagiste',
   // V2 — Services à la personne (Annexe C intégrée)
-  'osteopathe', 'praticien_bien_etre',
+  'osteopathe', 'praticien_bien_etre', 'coach_formateur',
   // V2 — Hébergement (Annexe E intégrée — famille apparaît pour la 1re fois)
   'gite', 'camping',
   // Fallback

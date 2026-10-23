@@ -174,6 +174,11 @@ const BODIES_BY_CATEGORIE: Partial<Record<ProspectCategorie, readonly string[]>>
     'Approche bienveillante et personnalisée.',
     'Cadre apaisant, professionnel à l\'écoute.',
   ],
+  coach_formateur: [
+    'Des séances concrètes, j\'ai enfin avancé sur mon projet.',
+    'Formation claire et vivante, toute l\'équipe a apprécié.',
+    'Très à l\'écoute, des outils simples à appliquer.',
+  ],
   cabinet: [
     'Accueil chaleureux et prise en charge sérieuse.',
     'On se sent en confiance dès la première visite.',

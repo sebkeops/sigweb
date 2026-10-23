@@ -11,7 +11,7 @@ const CATEGORIES = [
   // `CATEGORIES_EXPOSED_IN_ADMIN`, pas par cette validation côté serveur).
   'bar_cafe', 'traiteur', 'chocolatier', 'epicerie_fine',
   'macon', 'couvreur', 'carreleur', 'piscinier',
-  'osteopathe', 'praticien_bien_etre',
+  'osteopathe', 'praticien_bien_etre', 'coach_formateur',
   'fleuriste', 'bijoutier', 'librairie', 'garagiste',
   'gite', 'camping',
   // Fallback

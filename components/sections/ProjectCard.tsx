@@ -33,7 +33,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
       : {}
 
   const card = (
-    <article className="group flex h-full flex-col overflow-hidden rounded-md border border-border bg-surface shadow-sm transition-shadow hover:shadow-card">
+    <article className="group flex h-full flex-1 flex-col overflow-hidden rounded-md border border-border bg-surface shadow-sm transition-shadow hover:shadow-card">
       {/* Image */}
       <div className="relative aspect-video bg-surface-strong">
         {project.cover_image_url ? (
@@ -66,8 +66,13 @@ export default function ProjectCard({ project }: ProjectCardProps) {
 
         <h3 className="mb-2 font-heading text-lg font-bold text-ink">{project.title}</h3>
 
+        {/* Réalisations : description complète. Simulations : extrait limité à 3 lignes. */}
         {project.short_description && (
-          <p className="mb-4 font-body text-sm leading-relaxed text-muted line-clamp-3">
+          <p
+            className={`mb-4 font-body text-sm leading-relaxed text-muted ${
+              project.project_kind === 'simulation' ? 'line-clamp-3' : 'break-words'
+            }`}
+          >
             {project.short_description}
           </p>
         )}
@@ -86,7 +91,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
   if (!href) return card
 
   return (
-    <Link href={href} {...linkProps} className="block h-full">
+    <Link href={href} {...linkProps} className="flex h-full flex-1 flex-col">
       {card}
     </Link>
   )

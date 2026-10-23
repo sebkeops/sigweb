@@ -75,6 +75,9 @@ export const PEDAGOGICAL_BANNER_TEXT_BY_CATEGORIE: Record<ProspectCategorie, str
   praticien_bien_etre:
     "Voici un exemple de site que je peux créer pour un praticien bien-être. Séances individuelles, première rencontre, accompagnement régulier et ateliers : tout ce que vos clients aimeraient comprendre avant de prendre rendez-vous. Ce type de site convient à tout praticien souhaitant être visible en ligne simplement, entre Toulouse et le Gers.",
 
+  coach_formateur:
+    "Voici un exemple de site que je peux créer pour un coach ou un formateur. Coaching individuel, formations en groupe, interventions en entreprise et prise de contact : tout ce que vos clients aimeraient comprendre avant de vous appeler. Ce type de site convient à tout coach ou formateur souhaitant être visible en ligne simplement, entre Toulouse et le Gers.",
+
   cabinet:
     "Voici un exemple de site que je peux créer pour un cabinet de conseil. Domaines d'intervention, accompagnement particuliers, accompagnement entreprises et modalités : tout ce que vos clients cherchent avant de vous contacter. Ce type de site convient à tout cabinet souhaitant être visible en ligne simplement, entre Toulouse et le Gers.",
 
