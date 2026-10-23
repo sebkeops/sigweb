@@ -2669,6 +2669,90 @@ describe('TEMPLATES — snapshots Annexe C (Services à la personne)', () => {
       "variant": "praticien_bien_etre",
     }
   `) })
+  it('coach_formateur', () => { expect(TEMPLATES.coach_formateur).toMatchInlineSnapshot(`
+    {
+      "defaults": {
+        "avisSectionTitre": "Ce qu'en disent les personnes *accompagnées*.",
+        "brandTagline": "Coaching · Formation",
+        "ctaBannerText": "Pour parler de votre projet, d'une formation pour votre équipe ou simplement poser une question, un message ou un appel suffit.",
+        "ctaBannerTitle": "Un *premier échange* ?",
+        "footerColonneLabel": "Mon approche",
+        "heroCtaPrimaire": "Voir les accompagnements →",
+        "heroEyebrow": [Function],
+        "heroLead": "Coaching individuel, formations en groupe, interventions en entreprise. Un accompagnement concret, pensé autour de vos objectifs.",
+        "heroQuote": "Mon rôle n'est pas de donner des réponses toutes faites, mais d'aider chacun à trouver les siennes — et à passer à l'action.",
+        "heroQuoteAuthor": "— Le coach",
+        "heroTitle": "Avancer avec *méthode*, à votre rythme.",
+        "histoireLead": "Écouter, poser un cadre clair, puis avancer étape par étape vers ce qui compte pour vous.",
+        "histoireSuptitle": "Mon approche",
+        "histoireTitle": "Une approche *concrète* et bienveillante.",
+        "navHistoireLabel": "Mon approche",
+        "navUniversLabel": "Accompagnements",
+        "textePresentation": "Tout commence par un premier échange : comprendre où vous en êtes, ce que vous voulez changer ou apprendre, et ce qui vous freine. On construit ensuite un programme adapté — nombre de séances, format, outils. Chaque séance est concrète : des exercices, des mises en situation, des points d'étape. Pour les entreprises, les formations sont construites sur mesure, selon les besoins de l'équipe.",
+        "universSectionIntro": "Coaching individuel, formations en groupe, interventions en entreprise : chaque accompagnement part de votre situation et de vos objectifs. Un programme clair, des séances concrètes, et des outils que vous gardez ensuite.",
+        "universSectionSuptitle": "NOS ACCOMPAGNEMENTS",
+        "universSectionTitle": "Avancer *pas à pas*, avec un cap clair.",
+      },
+      "palette": {
+        "accent": "#E0A458",
+        "accentLight": "#e8bb82",
+        "cream": "#F5F4EF",
+        "creamLight": "#f9f8f5",
+        "creamWarm": "#f6e4cd",
+        "ink": "#1A1612",
+        "inkMuted": "#7A6E60",
+        "inkSoft": "#4A3F35",
+        "primary": "#2E5E6E",
+        "primarySoft": "#628692",
+      },
+      "universItems": [
+        {
+          "cat": "Le cœur du métier",
+          "desc": "Séances en face à face ou en visio, sur un objectif précis : confiance, reconversion, prise de poste, organisation.",
+          "name": "Coaching individuel",
+        },
+        {
+          "cat": "Pour démarrer",
+          "desc": "Un rendez-vous pour faire le point sur votre demande et voir quel accompagnement vous correspond.",
+          "name": "Premier échange",
+        },
+        {
+          "cat": "Formation",
+          "desc": "Sessions en petit groupe sur un thème : prise de parole, gestion du temps, management, communication.",
+          "name": "Formations en groupe",
+        },
+        {
+          "cat": "Entreprises",
+          "desc": "Formations et ateliers construits pour votre équipe, dans vos locaux ou à distance. Devis sur demande.",
+          "name": "Interventions sur mesure",
+        },
+        {
+          "cat": "Pratique",
+          "desc": "Séance à l'unité ou forfait, au bureau ou en visio. Tarifs et conditions précisés lors du premier échange.",
+          "name": "Formats & tarifs",
+        },
+      ],
+      "valeursItems": [
+        {
+          "desc": "On fait le point avant de commencer.",
+          "title": "Point de départ clair",
+        },
+        {
+          "desc": "Des étapes mesurables, pas des promesses.",
+          "title": "Objectifs concrets",
+        },
+        {
+          "desc": "Particuliers, équipes, entreprises.",
+          "title": "Seul ou en groupe",
+        },
+        {
+          "desc": "Supports et exercices pour la suite.",
+          "title": "Outils à garder",
+        },
+      ],
+      "variant": "coach_formateur",
+    }
+  `) })
 })
 
 describe('TEMPLATES — snapshots Annexe E (Hébergement)', () => {

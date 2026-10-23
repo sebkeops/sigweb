@@ -1755,6 +1755,61 @@ const praticien_bien_etre: MetierPreset = {
   },
 }
 
+const coach_formateur: MetierPreset = {
+  id: 'coach_formateur',
+  nom: 'Coach / Formateur',
+  couleurs: {
+    primary: '#2E5E6E',
+    accent: '#E0A458',
+    background: '#F5F4EF',
+  },
+  atouts: [
+    { icon: 'clipboard-list', titre: 'Point de départ clair', sousTitre: 'On fait le point avant de commencer.' },
+    { icon: 'trending-up',    titre: 'Objectifs concrets',    sousTitre: 'Des étapes mesurables, pas des promesses.' },
+    { icon: 'users',          titre: 'Seul ou en groupe',     sousTitre: 'Particuliers, équipes, entreprises.' },
+    { icon: 'book-open',      titre: 'Outils à garder',       sousTitre: 'Supports et exercices pour la suite.' },
+  ],
+  nosCreations: {
+    suptitle: 'NOS ACCOMPAGNEMENTS',
+    titrePrincipal: 'Avancer *pas à pas*, avec un cap clair.',
+    paragraphe:
+      'Coaching individuel, formations en groupe, interventions en entreprise : chaque accompagnement part de votre situation et de vos objectifs. Un programme clair, des séances concrètes, et des outils que vous gardez ensuite.',
+  },
+  brandTagline: 'Coaching · Formation',
+  lexique: {
+    navHistoireLabel: 'Mon approche',
+    navUniversLabel: 'Accompagnements',
+    heroCtaPrimaire: 'Voir les accompagnements →',
+    histoireSuptitle: 'Mon approche',
+    avisSectionTitre: 'Ce qu\'en disent les personnes *accompagnées*.',
+    footerColonneLabel: 'Mon approche',
+  },
+  defaults: {
+    heroEyebrowQualifier: 'Coach & formateur',
+    heroTitle: 'Avancer avec *méthode*, à votre rythme.',
+    heroLead:
+      'Coaching individuel, formations en groupe, interventions en entreprise. Un accompagnement concret, pensé autour de vos objectifs.',
+    heroQuote:
+      'Mon rôle n\'est pas de donner des réponses toutes faites, mais d\'aider chacun à trouver les siennes — et à passer à l\'action.',
+    heroQuoteAuthor: '— Le coach',
+    histoireTitle: 'Une approche *concrète* et bienveillante.',
+    histoireLead:
+      'Écouter, poser un cadre clair, puis avancer étape par étape vers ce qui compte pour vous.',
+    textePresentation:
+      'Tout commence par un premier échange : comprendre où vous en êtes, ce que vous voulez changer ou apprendre, et ce qui vous freine. On construit ensuite un programme adapté — nombre de séances, format, outils. Chaque séance est concrète : des exercices, des mises en situation, des points d\'étape. Pour les entreprises, les formations sont construites sur mesure, selon les besoins de l\'équipe.',
+    ctaBannerTitle: 'Un *premier échange* ?',
+    ctaBannerText:
+      'Pour parler de votre projet, d\'une formation pour votre équipe ou simplement poser une question, un message ou un appel suffit.',
+    universItems: [
+      { cat: 'Le cœur du métier', name: 'Coaching individuel',     desc: 'Séances en face à face ou en visio, sur un objectif précis : confiance, reconversion, prise de poste, organisation.' },
+      { cat: 'Pour démarrer',     name: 'Premier échange',         desc: 'Un rendez-vous pour faire le point sur votre demande et voir quel accompagnement vous correspond.' },
+      { cat: 'Formation',         name: 'Formations en groupe',    desc: 'Sessions en petit groupe sur un thème : prise de parole, gestion du temps, management, communication.' },
+      { cat: 'Entreprises',       name: 'Interventions sur mesure', desc: 'Formations et ateliers construits pour votre équipe, dans vos locaux ou à distance. Devis sur demande.' },
+      { cat: 'Pratique',          name: 'Formats & tarifs',        desc: 'Séance à l\'unité ou forfait, au bureau ou en visio. Tarifs et conditions précisés lors du premier échange.' },
+    ],
+  },
+}
+
 // Famille commerces & services (Annexe D) — presets complets
 
 const fleuriste: MetierPreset = {
@@ -2129,6 +2184,7 @@ export const METIER_PRESETS: Readonly<Record<ProspectCategorie, MetierPreset>> =
   // V2 — Services à la personne additionnels (STUBS — Annexe C à intégrer)
   osteopathe,
   praticien_bien_etre,
+  coach_formateur,
   // V2 — Commerces & services additionnels (STUBS — Annexe D à intégrer)
   fleuriste,
   bijoutier,

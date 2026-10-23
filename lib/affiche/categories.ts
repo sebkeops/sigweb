@@ -43,6 +43,7 @@ const CATEGORIE_LABELS_AFFICHE: Record<ProspectCategorie, string> = {
   piscinier:           'entreprise',
   osteopathe:          'cabinet',
   praticien_bien_etre: 'cabinet',
+  coach_formateur:     'activité',
   fleuriste:           'boutique',
   bijoutier:           'boutique',
   librairie:           'librairie',

@@ -236,7 +236,7 @@ function profilCabinet(): GoogleOpeningHours {
 }
 
 /**
- * Mapping catégorie → profil horaires. Couvre les 34 catégories.
+ * Mapping catégorie → profil horaires. Couvre les 35 catégories.
  * Chaque profil est instancié à chaque appel (les structures retournées
  * sont libres de mutation côté caller mais on n'en a pas besoin).
  */
@@ -260,6 +260,7 @@ export const HOURS_PROFILES_BY_CATEGORIE: Record<ProspectCategorie, () => Google
   kine:                 profilPraticien,
   osteopathe:           profilPraticien,
   praticien_bien_etre:  profilPraticien,
+  coach_formateur:      profilCabinet,
   cabinet:              profilCabinet,
 
   // Famille bâtiment & artisanat

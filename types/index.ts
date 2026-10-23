@@ -57,7 +57,7 @@ export type ProspectCategorie =
   // V2 — Bâtiment & artisanat additionnels
   | 'macon' | 'couvreur' | 'carreleur' | 'piscinier'
   // V2 — Services à la personne additionnels
-  | 'osteopathe' | 'praticien_bien_etre'
+  | 'osteopathe' | 'praticien_bien_etre' | 'coach_formateur'
   // V2 — Commerces & services additionnels
   | 'fleuriste' | 'bijoutier' | 'librairie' | 'garagiste'
   // V2 — Hébergement

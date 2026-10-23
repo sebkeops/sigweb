@@ -249,6 +249,18 @@ export const UNSPLASH_KEYWORDS_BY_CATEGORIE: Record<ProspectCategorie, CategoryU
     ],
   },
 
+  coach_formateur: {
+    hero:     ['training room workshop', 'coaching session', 'bright meeting room'],
+    histoire: ['coach talking with client', 'trainer presenting', 'mentor conversation'],
+    univers: [
+      ['one on one coaching', 'life coach session', 'mentoring conversation'],             // 1. Coaching individuel
+      ['first meeting coffee', 'consultation conversation', 'client welcome meeting'],      // 2. Premier échange
+      ['group training session', 'workshop participants', 'classroom adult training'],      // 3. Formations en groupe
+      ['corporate training', 'team workshop office', 'business seminar'],                   // 4. Interventions sur mesure
+      ['video call coaching', 'planner notebook desk', 'online training laptop'],          // 5. Formats & tarifs
+    ],
+  },
+
   cabinet: {
     hero:     ['professional office', 'consulting office interior', 'modern workplace'],
     histoire: ['consultant meeting client', 'professional advisor', 'office team'],

@@ -33,7 +33,7 @@ const ALL_CATEGORIES: readonly ProspectCategorie[] = [
   'photographe',
   'bar_cafe', 'traiteur', 'chocolatier', 'epicerie_fine',
   'macon', 'couvreur', 'carreleur', 'piscinier',
-  'osteopathe', 'praticien_bien_etre',
+  'osteopathe', 'praticien_bien_etre', 'coach_formateur',
   'fleuriste', 'bijoutier', 'librairie', 'garagiste',
   'gite', 'camping',
   'autre',
@@ -52,7 +52,7 @@ describe('UNSPLASH_KEYWORDS_BY_CATEGORIE — cohérence avec template.universIte
     }
   )
 
-  it('couvre exhaustivement les 34 catégories (pas d\'orphelin ni de manquant)', () => {
+  it('couvre exhaustivement les 35 catégories (pas d\'orphelin ni de manquant)', () => {
     // Chaque catégorie a une entrée
     for (const cat of ALL_CATEGORIES) {
       expect(UNSPLASH_KEYWORDS_BY_CATEGORIE[cat]).toBeDefined()

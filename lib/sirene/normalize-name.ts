@@ -65,6 +65,7 @@ const CATEGORY_KEYWORDS = [
   'esthetique', 'esthétique', 'institut', 'institut de beaute', 'institut de beauté',
   'kine', 'kiné', 'kinesitherapeute', 'kinésithérapeute', 'cabinet',
   'osteopathe', 'ostéopathe',
+  'coach', 'coaching', 'formateur', 'formatrice', 'formation',
   // Bâtiment & artisanat
   'menuisier', 'menuiserie',
   'plombier', 'plomberie',
