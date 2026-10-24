@@ -89,13 +89,50 @@ export default async function HomePage() {
       <Header />
       <main>
         <Hero />
+
+        {/* Réalisations — visible uniquement si projets existants */}
+        {realisations.length > 0 && (
+          <section className="section-pad bg-bg">
+            <div className="container-wide">
+              <AnimateIn>
+                <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+                  <div>
+                    <span className="mb-2 inline-block font-body text-sm font-semibold uppercase tracking-widest text-primary">
+                      Déjà réalisé
+                    </span>
+                    <h2 className="font-heading text-3xl font-extrabold text-ink md:text-4xl">
+                      Des sites déjà réalisés
+                    </h2>
+                    <p className="mt-2 font-body text-base text-muted">
+                      Quelques exemples de sites créés pour des projets réels.
+                    </p>
+                  </div>
+                  <LinkButton href="/realisations" variant="secondary" size="md">
+                    Toutes les réalisations
+                  </LinkButton>
+                </div>
+              </AnimateIn>
+
+              <div className="flex flex-wrap justify-center gap-6">
+                {realisations.map((project, i) => (
+                  <div key={project.id} className="flex w-full flex-col sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+                    <AnimateIn delay={i * 100} className="flex flex-1 flex-col">
+                      <ProjectCard project={project} />
+                    </AnimateIn>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
+
         <Constat />
         <Benefits />
-        <LocalVisibility />
         <Autonomy />
+        <LocalVisibility />
 
         {/* Simulations */}
-        <section className="section-pad bg-bg">
+        <section className="section-pad bg-surface">
           <div className="container-wide">
             <AnimateIn>
               <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
@@ -161,42 +198,6 @@ export default async function HomePage() {
             )}
           </div>
         </section>
-
-        {/* Réalisations — visible uniquement si projets existants */}
-        {realisations.length > 0 && (
-          <section className="section-pad bg-surface">
-            <div className="container-wide">
-              <AnimateIn>
-                <div className="mb-12 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-                  <div>
-                    <span className="mb-2 inline-block font-body text-sm font-semibold uppercase tracking-widest text-primary">
-                      Déjà réalisé
-                    </span>
-                    <h2 className="font-heading text-3xl font-extrabold text-ink md:text-4xl">
-                      Des sites déjà réalisés
-                    </h2>
-                    <p className="mt-2 font-body text-base text-muted">
-                      Quelques exemples de sites créés pour des projets réels.
-                    </p>
-                  </div>
-                  <LinkButton href="/realisations" variant="secondary" size="md">
-                    Toutes les réalisations
-                  </LinkButton>
-                </div>
-              </AnimateIn>
-
-              <div className="flex flex-wrap justify-center gap-6">
-                {realisations.map((project, i) => (
-                  <div key={project.id} className="flex w-full flex-col sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
-                    <AnimateIn delay={i * 100} className="flex flex-1 flex-col">
-                      <ProjectCard project={project} />
-                    </AnimateIn>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
 
         <Method />
         <Trust />
